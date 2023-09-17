@@ -6,15 +6,6 @@ namespace Cascade.Content.Items.Weapons.Rogue
     {
         public new string LocalizationCategory => "Items.Weapons.Rogue";
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Holiday Halberd");
-            /* Tooltip.SetDefault("Normal attacks launch a halberd towards the mouse cursor\n" +
-                "The halberd leaves a trail of baubles and explodes into multiple Red or Green Sacks on impact\n" +
-                "Stealth strikes imbue the halberd with glacial energy and cause them to cast an unknown spell on impact\n" +
-                "'Proceed.'"); */
-        }
-
         public override void SetDefaults()
         {
             Item.width = 70;
