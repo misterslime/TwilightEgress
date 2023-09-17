@@ -8,11 +8,6 @@
 
         public override string Texture => Utilities.ExtraTexturesDirectory + "/EmptyPixel";
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("NPC Spawner");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 1;
