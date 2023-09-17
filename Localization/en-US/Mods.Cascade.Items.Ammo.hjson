@@ -1,14 +1,14 @@
 PoisonArrow: {
 	DisplayName: Poison Arrow
-	Tooltip: ""
+	Tooltip: "Inflicts target with Poison on critical hits"
 }
 
 PoisonRound: {
 	DisplayName: Poison Round
-	Tooltip: ""
+	Tooltip: "Inflicts target with Poison on critical hits"
 }
 
 StingerRound: {
 	DisplayName: Stinger Round
-	Tooltip: ""
+	Tooltip: "Creates stinger explosions on impact"
 }
