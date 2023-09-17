@@ -4,12 +4,6 @@
     {
         public new string LocalizationCategory => "Items.Materials";
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Cometstone");
-            // Tooltip.SetDefault("A shard of a celestial comet, fallen from the stars above.");
-        }
-
         public override void SetDefaults()
         {
             Item.width = 18;
