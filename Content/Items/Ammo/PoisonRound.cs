@@ -1,0 +1,31 @@
+﻿using Cascade.Content.Projectiles.Ranged.Ammo;
+
+namespace Cascade.Content.Items.Ammo
+{
+    public class PoisonRound : ModItem
+    {
+        public override void SetDefaults()
+        {
+            Item.width = 6;
+            Item.height = 14;
+            Item.damage = 8;
+            Item.knockBack = 2;
+            Item.DamageType = DamageClass.Ranged;
+            Item.maxStack = Item.CommonMaxStack;
+            Item.consumable = true;
+            Item.value = Item.sellPrice(copper: 1);
+            Item.rare = ItemRarityID.Blue;
+            Item.shoot = ModContent.ProjectileType<PoisonRoundProjectile>();
+            Item.ammo = AmmoID.Bullet;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(70)
+                .AddIngredient(ItemID.MusketBall, 70)
+                .AddIngredient(ItemID.Stinger, 1)
+                .AddTile(TileID.Anvils)
+                .Register();
+        }
+    }
+}

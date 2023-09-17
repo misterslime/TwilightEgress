@@ -1,0 +1,163 @@
+﻿using System.Runtime.CompilerServices;
+
+namespace Cascade.Content.DedicatedContent.Jacob
+{
+    public class DetonatingDraedonHeart : ModProjectile
+    {
+        private ref float Timer => ref Projectile.ai[0];
+
+        private ref float RandomizedExplosionDelay => ref Projectile.ai[1];
+
+        private ref float FrameSpeed => ref Projectile.ai[2];
+
+        private const int MaxChargeTime = 75;
+
+        private const int DetonationDelay = 30;
+
+        private const int PulseRingInitialScaleIndex = 0;
+
+        private const int HeartBackglowOpacityIndex = 1;
+
+        private const int HeartBackglowSpinIndex = 2;
+
+        private const int HeartBackglowRadiusIndex = 3;
+
+        public override string Texture => "CalamityMod/Items/Accessories/DraedonsHeart";
+
+        public override void SetStaticDefaults()
+        {
+            Main.projFrames[Type] = 11;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.width = 42;
+            Projectile.height = 40;
+            Projectile.aiStyle = -1;
+            Projectile.penetrate = -1;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = false;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.usesIDStaticNPCImmunity = true;
+            Projectile.idStaticNPCHitCooldown = 12;
+            Projectile.timeLeft = 300;
+            Projectile.scale = 0f;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.rotation = Main.rand.NextFloat(TwoPi);
+            RandomizedExplosionDelay = Main.rand.NextFloat(10f, 46f);
+            FrameSpeed = 10f;
+        }
+
+        public override void AI()
+        {
+            ref float pulseRingInitialScale = ref Projectile.Cascade().ExtraAI[PulseRingInitialScaleIndex];
+            ref float heartBackglowOpacity = ref Projectile.Cascade().ExtraAI[HeartBackglowOpacityIndex];
+            ref float heartBackglowRadius = ref Projectile.Cascade().ExtraAI[HeartBackglowRadiusIndex];
+
+            if (Timer <= MaxChargeTime)
+            {
+                Projectile.scale = Lerp(Projectile.scale, 1.5f, SineInOutEasing(Timer / MaxChargeTime, 0));
+            }
+
+            if (Timer >= MaxChargeTime && Timer <= MaxChargeTime + DetonationDelay + (int)RandomizedExplosionDelay && Timer % 5 == 0)
+            {
+                pulseRingInitialScale = Clamp(pulseRingInitialScale + 0.5f, 0.5f, 3.5f);
+                Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
+                SoundEngine.PlaySound(CascadeSoundRegistry.AsrielTargetBeep, Projectile.Center);
+
+                for (int i = 0; i < 36; i++)
+                {
+                    Vector2 magicDustSpawnOffset = (TwoPi * i / 36f).ToRotationVector2() * 200f + Main.rand.NextVector2Circular(15f, 15f);
+                    Dust dust = Dust.NewDustPerfect(Projectile.Center + magicDustSpawnOffset, 267);
+                    dust.color = Color.Lerp(Color.Red, Color.Crimson, Main.rand.NextFloat());
+                    dust.noGravity = true;
+                    dust.scale = 1f * Main.rand.NextFloat(1.1f, 1.25f);
+                    dust.velocity = (Projectile.Center - dust.position) * 0.062f;
+                }
+
+                // Backglow visuals.
+                heartBackglowOpacity = Lerp(heartBackglowOpacity, 1f, SineInOutEasing(Timer / 30 + RandomizedExplosionDelay, 0));
+                heartBackglowRadius = Lerp(0f, 5f, SineInOutEasing(Timer / 30 + RandomizedExplosionDelay, 0));
+
+                // Decrease the frame speed to make the animation appear faster.
+                FrameSpeed = Clamp(FrameSpeed - 1f, 1f, 10f);
+            }
+
+            if (Timer >= MaxChargeTime + DetonationDelay + (int)RandomizedExplosionDelay)
+            {
+                Projectile.Kill();
+                return;
+            }
+
+            Timer++;
+            Projectile.velocity *= 0.98f;
+            Projectile.rotation += Projectile.velocity.X * 0.03f;
+            Projectile.AdjustProjectileHitboxByScale(42f, 40f);
+
+            // Animation.
+            Projectile.frameCounter++;
+            if (Projectile.frameCounter >= FrameSpeed)
+            {
+                Projectile.frameCounter = 0;
+                if (++Projectile.frame >= Main.projFrames[Type])
+                {
+                    Projectile.frame = 0;
+                }
+            }
+            // In the chance that there is an enemy near, move REALLY slowly towards them.
+            NPC target = Projectile.FindClosestNPCToProjectile(1000f);
+            if (target != null && Timer >= MaxChargeTime)
+                Projectile.SimpleMove(target.Center, 10f, 200f);
+        }
+
+        public override void Kill(int timeLeft)
+        {
+            SoundEngine.PlaySound(CommonCalamitySounds.ExoPlasmaExplosionSound, Projectile.Center);
+            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 10f, 75));
+
+            // K  A  B  O  O  M two, electric boogaloo.
+            for (int i = 0; i < 12; i++)
+            {
+                Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
+                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Tanksplosion>(), Projectile.damage, Projectile.knockBack);
+            }
+
+            int sparkLifespan = Main.rand.Next(20, 36);
+            float sparkScale = Main.rand.NextFloat(1.25f, 2.25f);
+            Color sparkColor = Color.Lerp(Color.Red, Color.Goldenrod, Main.rand.NextFloat());
+            for (int i = 0; i < 25; i++)
+            {
+                Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
+                Utilities.SpawnParticleBetter(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
+            }
+
+            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 10f;
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            ref float heartBackglowOpacity = ref Projectile.Cascade().ExtraAI[HeartBackglowOpacityIndex];
+            ref float heartBackglowRadius = ref Projectile.Cascade().ExtraAI[HeartBackglowRadiusIndex];
+            ref float heartBackglowSpin = ref Projectile.Cascade().ExtraAI[HeartBackglowSpinIndex];
+
+            Texture2D heartGlow = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/DetonatingDraedonHeartGlow").Value;
+
+            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            for (int i = 0; i < 8; i++)
+            {
+                heartBackglowSpin += TwoPi / 240f;
+                Vector2 HeartBackglowDrawPosition = Projectile.Center + Vector2.UnitY.RotatedBy(heartBackglowSpin + TwoPi * i / 8f) * heartBackglowRadius + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+                Color color = Color.Red;
+                Main.EntitySpriteDraw(heartGlow, HeartBackglowDrawPosition, null, color * heartBackglowOpacity, Projectile.rotation, heartGlow.Size() / 2f, Projectile.scale * 1.085f, SpriteEffects.None, 0);
+            }
+            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+
+            Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
+            return false;
+        }
+    }
+}

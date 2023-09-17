@@ -1,0 +1,168 @@
+﻿using CalamityMod.Buffs.StatDebuffs;
+
+namespace Cascade.Content.Projectiles.Rogue
+{
+    public class HolidayHalberdThrown : ModProjectile
+    {
+        private ref float Timer => ref Projectile.ai[0];
+
+        private ref float HalberdPowerScale => ref Projectile.ai[1];
+
+        private Player Owner => Main.player[Projectile.owner];
+
+        PrimitiveTrail TrailDrawer = null;
+
+        public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd";
+
+        public override void SetStaticDefaults()
+        {
+            // DisplayName.SetDefault("Holiday Halberd");
+            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
+        }
+
+        public override void SetDefaults()
+        {
+            Projectile.width = Projectile.height = 32;
+            Projectile.aiStyle = -1;
+            Projectile.penetrate = 3;
+            Projectile.ignoreWater = true;
+            Projectile.tileCollide = Projectile.timeLeft <= 180;
+            Projectile.friendly = true;
+            Projectile.DamageType = ModContent.GetInstance<RogueDamageClass>();
+            Projectile.timeLeft = 240;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 16;
+        }
+
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            float collisionPoint = 0f;
+            float lineLength = 78f * Projectile.scale;
+            Vector2 startPoint = Projectile.Center + Projectile.rotation.ToRotationVector2();
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), startPoint, startPoint + Projectile.rotation.ToRotationVector2() * lineLength, 32, ref collisionPoint);
+        }
+
+        public override void AI()
+        {
+            // Projectiles.
+            if (Timer % 4 == 0)
+            {
+                int damage = (int)(Projectile.damage * 0.65f);
+
+                // Spawn two waves of baubles similarly to Berdly's Halberd Attack.
+                Vector2 baubleVelocity = Vector2.Normalize(Projectile.velocity).RotatedBy(PiOver2);
+                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), damage, Projectile.knockBack, owner: Projectile.owner);
+                Vector2 baubleVelocity2 = Vector2.Normalize(Projectile.velocity).RotatedBy(-PiOver2);
+                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), damage, Projectile.knockBack, owner: Projectile.owner);
+            }
+
+            if (Main.rand.NextBool(3))
+            {
+                Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 75f + Main.rand.NextVector2Circular(35f, 35f);
+                float scale = Main.rand.NextFloat(0.2f, 0.8f);
+                int lifespan = Main.rand.Next(15, 30);
+                GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
+                Utilities.SpawnParticleBetter(sparkleParticle);
+            }
+
+            Timer++;
+            Projectile.rotation = Projectile.velocity.ToRotation();
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            // Deltarune reference noway
+            if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
+                Projectile.SpawnProjectile(target.Center, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+        }
+
+        public override void Kill(int timeLeft)
+        {
+
+            for (int i = 0; i < 12; i++)
+            {
+                Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 10f);
+                Color initialColor = Color.Lerp(Color.Red, Color.Lime, Main.rand.NextFloat()) * Main.rand.NextFloat(0.2f, 0.75f);
+                if (Owner.Calamity().rogueStealth > 0f)
+                    initialColor = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat()) * Main.rand.NextFloat(0.2f, 0.75f);
+
+                Color fadeColor = Color.WhiteSmoke;
+                float scale = Main.rand.NextFloat(0.75f, 2f);
+                float opacity = Main.rand.NextFloat(180f, 240f);
+                MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
+                Utilities.SpawnParticleBetter(deathSmoke);
+            }
+        }
+
+        public override bool PreDraw(ref Color lightColor)
+        {
+            // Get the draw points for the primitive trail.
+            for (int i = 0; i < 12; i++)
+            {
+                float localRotation = Projectile.oldRot[i];
+                if (i == 0)
+                    localRotation = Projectile.rotation;
+                Projectile.oldPos[i] = Projectile.position + localRotation.ToRotationVector2() * 78f * Projectile.scale;
+            }
+
+            DrawHalberd();
+            return false;
+        }
+
+        public Color GetHalberdVisualColors()
+        {
+            Color mainColor = ColorSwap(Color.Red, Color.Lime, 2f);
+            Color stealthColor = MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f, Color.Cyan, Color.LightCyan, Color.LightSkyBlue, Color.LightBlue);
+            if (Owner.Calamity().rogueStealth > 0f)
+                mainColor = Color.Lerp(mainColor, stealthColor, Owner.Calamity().rogueStealth / Owner.Calamity().rogueStealthMax);
+
+            return mainColor;
+        }
+
+        public void DrawHalberd()
+        {
+            Texture2D texture = TextureAssets.Projectile[Type].Value;
+            SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            // This is all explained in MSK's file if you're having trouble understanding.
+            float extraAngle = (Owner.direction < 0 ? PiOver2 : 0f);
+            float baseDrawAngle = Projectile.rotation;
+            float drawRotation = baseDrawAngle + PiOver4 + extraAngle;
+
+            Vector2 origin = new Vector2((Owner.direction < 0) ? texture.Width : 0f, texture.Height);
+            Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
+
+            // Draw backglow effects. 
+            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * 3f;
+                Main.EntitySpriteDraw(texture, backglowDrawPositon, null, Projectile.GetAlpha(GetHalberdVisualColors()), drawRotation, origin, Projectile.scale, effects, 0);
+            }
+            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+
+            // Draw the main sprite.
+            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
+        }
+
+        public float SetTrailWidth(float completionRatio)
+        {
+            return 30f * Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * Projectile.scale;
+        }
+
+        public Color SetTrailColor(float completionRatio) => GetHalberdVisualColors();
+
+        public void DrawPrimTrail()
+        {
+            TrailDrawer ??= new PrimitiveTrail(SetTrailWidth, SetTrailColor, null, GameShaders.Misc["CalamityMod:TrailStreak"]);
+
+            Main.spriteBatch.EnterShaderRegion();
+            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
+            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
+
+            TrailDrawer.Draw(Projectile.oldPos.Take(12), trailOffset, 65);
+            Main.spriteBatch.ExitShaderRegion();
+        }
+    }
+}

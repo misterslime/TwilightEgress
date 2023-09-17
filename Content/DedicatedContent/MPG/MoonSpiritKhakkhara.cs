@@ -1,0 +1,78 @@
+﻿using CalamityMod.Items;
+using CalamityMod.Rarities;
+using Cascade.Content.Buffs.Debuffs;
+using Cascade.Content.Buffs.Minions;
+using System.Collections.Generic;
+
+namespace Cascade.Content.DedicatedContent.MPG
+{
+    public class MoonSpiritKhakkhara : ModItem, ILocalizedModType
+    {
+        public new string LocalizationCategory => "Items.Weapons.Summon";
+
+        public override void SetStaticDefaults()
+        {
+            Item.ResearchUnlockCount = 1;
+            ItemID.Sets.ItemsThatAllowRepeatedRightClick[Item.type] = true;
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = 64;
+            Item.height = 64;
+            Item.mana = 25;
+            Item.damage = 200;
+            Item.knockBack = 3f;
+            Item.useTime = 15;
+            Item.useAnimation = 15;
+            Item.noMelee = true;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.autoReuse = true;
+            Item.UseSound = SoundID.Item105;
+            Item.DamageType = DamageClass.Summon;
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.rare = ModContent.RarityType<DarkBlue>();
+            Item.shootSpeed = 0f;
+            Item.shoot = ModContent.ProjectileType<MoonSpiritKhakkharaHoldout>();
+            Item.buffType = ModContent.BuffType<MoonSpiritLanternBuff>();
+            Item.buffTime = 36000;
+        }
+
+        public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<UnderworldLantern>()] > 0;
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            float attackType = 0f;
+            if (player.altFunctionUse == 2)
+                attackType = 1f;
+
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, ai1: attackType);
+            return false;
+        }
+
+        public override bool? UseItem(Player player)
+        {
+            // Get a list of all active Underworld Lanterns.
+            List<Projectile> lanterns = new List<Projectile>();
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile p = Main.projectile[i];
+                if (p.active && p.type == ModContent.ProjectileType<UnderworldLantern>())
+                    lanterns.Add(p);
+            }
+
+            int count = lanterns.Count;
+            Projectile lantern = lanterns.FirstOrDefault();
+            if (player.altFunctionUse == 2 && count > 0)
+            {
+                player.Cascade_Debuff().CurseOfNecromancyMinionSlotStack++;
+                player.AddBuff(ModContent.BuffType<CurseOfNecromancy>(), 3600);
+                lantern.Kill();
+            }
+
+            return true;
+        }
+    }
+}
