@@ -1,12 +1,14 @@
 ﻿namespace Cascade.Content.DedicatedContent.Fluffy
 {
-    public class GiantBastStatue : ModProjectile
+    public class GiantBastStatue : ModProjectile, ILocalizedModType
     {
         public ref float Timer => ref Projectile.ai[0];
 
         public ref float BounceLimit => ref Projectile.ai[1];
 
         public ref float KibbyCount => ref Projectile.ai[2];
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Fluffy/HomingBastStatue";
 

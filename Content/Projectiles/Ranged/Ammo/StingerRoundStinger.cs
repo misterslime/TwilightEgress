@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Projectiles.Ranged.Ammo
 {
-    public class StingerRoundStinger : ModProjectile
+    public class StingerRoundStinger : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+
         public override string Texture => "Terraria/Images/Projectile_55";
 
         public override void SetDefaults()

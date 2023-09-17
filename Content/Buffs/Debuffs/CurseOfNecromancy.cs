@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Buffs.Debuffs
 {
-    public class CurseOfNecromancy : ModBuff
+    public class CurseOfNecromancy : ModBuff, ILocalizedModType
     {
+        public new string LocalizationCategory => "Buffs.Debuffs";
+
         public override string Texture => "Terraria/Images/Buff";
 
         public override void SetStaticDefaults()

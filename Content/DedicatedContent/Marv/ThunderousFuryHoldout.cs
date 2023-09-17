@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.DedicatedContent.Marv
 {
-    public class ThunderousFuryHoldout : ModProjectile
+    public class ThunderousFuryHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -13,6 +13,8 @@ namespace Cascade.Content.DedicatedContent.Marv
         private const int DelayBeforeFiring = 75;
 
         private const int FireRate = 60;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Marv/ThunderousFury";
 

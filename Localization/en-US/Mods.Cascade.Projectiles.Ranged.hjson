@@ -1,0 +1,16 @@
+# Ammo
+PoisonArrowProjectile.DisplayName: Poison Arrow Projectile
+PoisonRoundProjectile.DisplayName: Poison Round Projectile
+StingerRoundProjectile.DisplayName: Stinger Round Projectile
+StingerRoundStinger.DisplayName: Stinger Round Stinger
+# Chicken Cannon
+ChickenCannonExplosion.DisplayName: Chicken Cannon Explosion
+ChickenCannonHoldout.DisplayName: Chicken Cannon Holdout
+ChickenCannonMiniBoom.DisplayName: Chicken Cannon Mini Boom
+# Triploon
+TriploonHarpoon.DisplayName: Triploon Harpoon
+TriploonHoldout.DisplayName: Triploon Holdout
+Bastsplosion.DisplayName: Bastsplosion
+GiantBastStatue.DisplayName: Giant Bast Statue
+HomingBastStatue.DisplayName: Homing Bast Statue
+TheBastOffenseHoldout.DisplayName: The Bast Offense Holdout

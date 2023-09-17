@@ -1,11 +1,6 @@
-﻿using Cascade.Content.Buffs.Minions;
-using Microsoft.CodeAnalysis;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria;
-
-namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
+﻿namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
-    public class GeminiGenieSandy : ModProjectile
+    public class GeminiGenieSandy : ModProjectile, ILocalizedModType
     {
         private enum AIStates
         {
@@ -44,6 +39,8 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 
             private set => myself = value;
         }
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

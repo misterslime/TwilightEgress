@@ -3,7 +3,7 @@ using CalamityMod.Projectiles.Ranged;
 
 namespace Cascade.Content.Projectiles.Ranged
 {
-    public class ChickenCannonHoldout : ModProjectile
+    public class ChickenCannonHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -18,6 +18,8 @@ namespace Cascade.Content.Projectiles.Ranged
         public const int OldRotationIndex = 0;
 
         public const int BackglowRotationIndex = 1;
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "CalamityMod/Projectiles/Ranged/ChickenCannonHeld";
 

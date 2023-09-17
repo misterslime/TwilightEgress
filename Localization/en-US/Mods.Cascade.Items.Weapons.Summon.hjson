@@ -7,6 +7,6 @@ MoonSpiritKhakkhara: {
 		Pressing RMB destroys one lantern and inflicts the player with the Curse of Necromancy debuff, in return for
 		launching two large Underworld Lanterns towards the mouse cursor. Curse of Necromancy takes away one
 		minion slot and stacks for every use of the weapon.
-		[c/#afecf0:You have no regrets?]
+		[c/afecf0:You have no regrets?]
 		'''
 }

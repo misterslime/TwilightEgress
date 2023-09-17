@@ -1,0 +1,9 @@
+﻿GeminiGeniesBuff: {
+	DisplayName: The Legendary Genie Twins
+	Description: You beat us, so now we'll help ya out!
+}
+
+MoonSpiritLanternBuff: {
+	DisplayName: Lanterns of the Undead
+	Description: The power of the undead protects you.
+}

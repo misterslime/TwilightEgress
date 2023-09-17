@@ -10,3 +10,8 @@ TheBastOffense: {
 		"The best defense is a good offense... of cats??"
 		'''
 }
+
+Triploon: {
+	DisplayName: Triploon
+	Tooltip: ""
+}

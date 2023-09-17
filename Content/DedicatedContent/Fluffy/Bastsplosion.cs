@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.DedicatedContent.Fluffy
 {
-    public class Bastsplosion : ModProjectile
+    public class Bastsplosion : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = Main.projFrames[645];

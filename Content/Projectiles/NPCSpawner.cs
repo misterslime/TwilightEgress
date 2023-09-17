@@ -1,8 +1,10 @@
 ﻿namespace Cascade.Content.Projectiles
 {
-    public class NPCSpawner : ModProjectile
+    public class NPCSpawner : ModProjectile, ILocalizedModType
     {
         public ref float NPCTypeToSpawn => ref Projectile.ai[0];
+
+        public new string LocalizationCategory => "Projectiles.Misc";
 
         public override string Texture => Utilities.ExtraTexturesDirectory + "/EmptyPixel";
 

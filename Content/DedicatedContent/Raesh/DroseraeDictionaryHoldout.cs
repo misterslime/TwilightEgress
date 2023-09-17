@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Cascade.Content.DedicatedContent.Raesh
 {
-    public class DroseraeDictionaryHoldout : ModProjectile
+    public class DroseraeDictionaryHoldout : ModProjectile, ILocalizedModType
     {
         private class BloodRune
         {
@@ -93,6 +93,8 @@ namespace Cascade.Content.DedicatedContent.Raesh
         private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<DroseraeDictionary>();
 
         private List<BloodRune> BloodRunes = new List<BloodRune>();
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Raesh/DroseraeDictionary";
 

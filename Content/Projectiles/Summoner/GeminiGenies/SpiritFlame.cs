@@ -1,8 +1,10 @@
 ﻿namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
-    public class SpiritFlame : ModProjectile
+    public class SpiritFlame : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.SpiritFlame;
 

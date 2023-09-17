@@ -4,8 +4,10 @@ using Cascade.Content.Projectiles.Summoner.GeminiGenies;
 
 namespace Cascade.Content.Items.Accessories.Summoner
 {
-    public class GeminiGenieLamp : ModItem
+    public class GeminiGenieLamp : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Accessories";
+
         public override string Texture => "Terraria/Images/Item_" + ItemID.SpiritFlame;
 
         public override void SetDefaults()

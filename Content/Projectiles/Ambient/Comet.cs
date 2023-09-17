@@ -1,8 +1,10 @@
 ﻿namespace Cascade.Content.Projectiles.Ambient
 {
-    public class Comet : ModProjectile
+    public class Comet : ModProjectile, ILocalizedModType
     {
         private PrimitiveTrail TrailDrawer = null;
+
+        public new string LocalizationCategory => "Projectiles.Ambient";
 
         public override void SetStaticDefaults()
         {
@@ -21,7 +23,7 @@
             Projectile.penetrate = -1;
             Projectile.friendly = true;
             // We do a little bit of trolling :)))))
-            Projectile.hostile = Main.getGoodWorld;
+            Projectile.hostile = Main.zenithWorld;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.aiStyle = -1;

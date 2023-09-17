@@ -1,11 +1,13 @@
 ﻿using Cascade.Content.Projectiles.Summoner.GeminiGenies;
-using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade.Content.Buffs.Minions
 {
-    public class GeminiGeniesBuff : ModBuff
+    public class GeminiGeniesBuff : ModBuff, ILocalizedModType
     {
+        public new string LocalizationCategory => "Buffs";
+
         public override string Texture => "CalamityMod/Buffs/Summon/SandyHealingWaifu";
+
         public override void SetStaticDefaults()
         {
             Main.buffNoSave[Type] = true;

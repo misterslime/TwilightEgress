@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
-using Terraria;
+
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
-    public class Asteroid : ModNPC
+    public class Asteroid : ModNPC, ILocalizedModType
     {
         private PrimitiveTrail TrailDrawer = null;
 
         public ref float RotationSpeedSpawnFactor => ref NPC.Cascade().ExtraAI[0];
+
+        public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
         public override string Texture => "Cascade/Content/Projectiles/Ambient/Comet";
 

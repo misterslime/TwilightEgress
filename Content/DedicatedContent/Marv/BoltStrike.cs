@@ -1,10 +1,8 @@
 ﻿using Cascade.Content.Particles;
-using static Humanizer.In;
-using Terraria;
 
 namespace Cascade.Content.DedicatedContent.Marv
 {
-    public class BoltStrike : ModProjectile
+    public class BoltStrike : ModProjectile, ILocalizedModType
     {
         public Player Owner => Main.player[Projectile.owner];
 
@@ -19,6 +17,8 @@ namespace Cascade.Content.DedicatedContent.Marv
         public AresCannonChargeParticleSet ChargingParticles = new AresCannonChargeParticleSet(-1, 15, 100f, Color.LightSkyBlue);
 
         public PrimitiveTrail TrailDrawer { get; set; } = null;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Marv/ElectricSkyBoltExplosion";
 

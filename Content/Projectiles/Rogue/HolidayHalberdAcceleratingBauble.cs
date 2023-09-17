@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Projectiles.Rogue
 {
-    public class HolidayHalberdAcceleratingBauble : ModProjectile
+    public class HolidayHalberdAcceleratingBauble : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 2;

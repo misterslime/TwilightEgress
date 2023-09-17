@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.DedicatedContent.Lynel
 {
-    public class EarPiercingBellbird : ModProjectile
+    public class EarPiercingBellbird : ModProjectile, ILocalizedModType
     {
         public enum AIState
         {
@@ -14,6 +14,8 @@ namespace Cascade.Content.DedicatedContent.Lynel
         public Player Owner => Main.player[Projectile.owner];
 
         public ref float Timer => ref Projectile.ai[0];
+
+        public new string LocalizationCategory => "Projectiles.Pets";
 
         public override string Texture => "Terraria/Images/Extra_13";
 

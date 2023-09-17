@@ -5,7 +5,7 @@ using Terraria.GameContent.Events;
 
 namespace Cascade.Content.Projectiles.Melee
 {
-    public class ResplendentRoarHoldout : ModProjectile
+    public class ResplendentRoarHoldout : ModProjectile, ILocalizedModType
     {
         private enum AttackTypes
         {
@@ -66,6 +66,8 @@ namespace Cascade.Content.Projectiles.Melee
         public float SmallSwingRatio() => PiecewiseAnimation(Timer / SmallSwingMaxTime, Anticipation, Thrust);
 
         public float LargeSwingRatio() => PiecewiseAnimation(Timer / LargeSwingMaxTime, Anticipation, Thrust);
+
+        public new string LocalizationCategory => "Projectiles.Melee";
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/TheBurningSky";
 

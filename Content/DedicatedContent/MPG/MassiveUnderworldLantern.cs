@@ -1,10 +1,6 @@
-﻿using Cascade.Content.Buffs.Debuffs;
-using System.Collections.Generic;
-using Terraria;
-
-namespace Cascade.Content.DedicatedContent.MPG
+﻿namespace Cascade.Content.DedicatedContent.MPG
 {
-    public class MassiveUnderworldLantern : ModProjectile
+    public class MassiveUnderworldLantern : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -19,6 +15,8 @@ namespace Cascade.Content.DedicatedContent.MPG
         private const int MaxChargingTime = 300;
 
         private const int FadeoutTime = 60;
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

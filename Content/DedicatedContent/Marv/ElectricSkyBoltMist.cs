@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.DedicatedContent.Marv
 {
-    public class ElectricSkyBoltMist : ModProjectile
+    public class ElectricSkyBoltMist : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
+
         public override string Texture => "CalamityMod/Projectiles/Summon/SmallAresArms/MinionPlasmaGas";
 
         public override void SetStaticDefaults()

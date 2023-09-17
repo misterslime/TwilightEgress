@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.DedicatedContent.Jacob
 {
-    public class TomeOfTheTankHoldout : ModProjectile
+    public class TomeOfTheTankHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -13,6 +13,8 @@
         private const int OrbitingSummoningCircleRotationIndex = 2;
 
         private const int PulseRingInitialScaleIndex = 3;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Jacob/TomeOfTheTank";
 

@@ -1,9 +1,8 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
-using static Humanizer.In;
 
 namespace Cascade.Content.Projectiles.Rogue
 {
-    public class HolidayHalberdIceShock : ModProjectile
+    public class HolidayHalberdIceShock : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
 
@@ -12,6 +11,8 @@ namespace Cascade.Content.Projectiles.Rogue
         private const int MaxLifetime = 300;
 
         private const int ProjectileTextureOpacityIndex = 0;
+
+        public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override string Texture => "Terraria/Images/Projectile_" + ProjectileID.CultistBossIceMist;
 

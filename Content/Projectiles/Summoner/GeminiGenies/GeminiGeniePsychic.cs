@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
-    public class GeminiGeniePsychic : ModProjectile
+    public class GeminiGeniePsychic : ModProjectile, ILocalizedModType
     {
         private enum AIStates
         {
@@ -31,6 +31,8 @@
 
             private set => myself = value;
         }
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

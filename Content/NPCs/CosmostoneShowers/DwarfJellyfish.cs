@@ -1,15 +1,14 @@
-﻿using CalamityMod.Projectiles.Magic;
-using System.Collections.Generic;
-
-namespace Cascade.Content.NPCs.CosmostoneShowers
+﻿namespace Cascade.Content.NPCs.CosmostoneShowers
 {
-    public class DwarfJellyfish : ModNPC
+    public class DwarfJellyfish : ModNPC, ILocalizedModType
     {
         private ref float Timer => ref NPC.ai[0];
 
         private ref float NaturalDirectionSwitchInterval => ref NPC.ai[1];
 
         private ref float SpeedMultiplier => ref NPC.ai[2];
+
+        public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
         public override void SetStaticDefaults()
         {

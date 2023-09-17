@@ -1,16 +1,17 @@
-﻿using CalamityMod.Items.Placeables.Walls;
-using Cascade.Content.Buffs.Minions;
+﻿using Cascade.Content.Buffs.Minions;
 using System.Collections.Generic;
 
 namespace Cascade.Content.DedicatedContent.MPG
 {
-    public class UnderworldLantern : ModProjectile
+    public class UnderworldLantern : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float Timer => ref Projectile.ai[0];
 
         private const int IdleAngleIndex = 0;
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

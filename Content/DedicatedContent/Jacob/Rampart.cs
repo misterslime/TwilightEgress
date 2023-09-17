@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.DedicatedContent.Jacob
 {
-    public class Rampart : ModProjectile
+    public class Rampart : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
 
@@ -17,6 +17,8 @@
         private const int RampartBackglowRadiusIndex = 3;
 
         private const int RampartBackglowSpinIndex = 4;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "CalamityMod/Items/Accessories/RampartofDeities";
 

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 namespace Cascade.Content.Projectiles.Ranged
 {
-    public class TriploonHoldout : ModProjectile
+    public class TriploonHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float Timer => ref Projectile.ai[0];
 
         private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<Triploon>();
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override void SetDefaults()
         {

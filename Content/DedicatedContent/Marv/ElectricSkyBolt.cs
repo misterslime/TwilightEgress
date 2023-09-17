@@ -3,13 +3,15 @@ using Terraria.Graphics.Shaders;
 
 namespace Cascade.Content.DedicatedContent.Marv
 {
-    public class ElectricSkyBolt : ModProjectile
+    public class ElectricSkyBolt : ModProjectile, ILocalizedModType
     {
         public Vector2 StrikePosition { get; set; }
 
         public List<Vector2> StrikePositions = new List<Vector2>();
 
         public PrimitiveTrail TrailDrawer { get; set; } = null;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/StarNonPixelated";
 

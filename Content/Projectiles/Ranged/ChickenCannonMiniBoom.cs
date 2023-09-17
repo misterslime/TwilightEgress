@@ -2,8 +2,10 @@
 
 namespace Cascade.Content.Projectiles.Ranged
 {
-    public class ChickenCannonMiniBoom : Bastsplosion
+    public class ChickenCannonMiniBoom : Bastsplosion, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+
         public override void SetDefaults()
         {
             Projectile.width = 80;

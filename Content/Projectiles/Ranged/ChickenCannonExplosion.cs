@@ -1,8 +1,10 @@
 ﻿namespace Cascade.Content.Projectiles.Ranged
 {
-    public class ChickenCannonExplosion : ModProjectile
+    public class ChickenCannonExplosion : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => Utilities.EmptyPixelPath;
 

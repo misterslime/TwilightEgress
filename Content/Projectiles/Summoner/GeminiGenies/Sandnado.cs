@@ -2,13 +2,15 @@
 
 namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
-    public class Sandnado : ModProjectile
+    public class Sandnado : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
 
         private ref float ColorPicker => ref Projectile.ai[1];
 
         private ref float SoundTracker => ref Projectile.localAI[1];
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

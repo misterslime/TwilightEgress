@@ -1,8 +1,10 @@
 ﻿namespace Cascade.Content.DedicatedContent.Marv
 {
-    public class ElectricSkyBoltExplosion : ModProjectile
+    public class ElectricSkyBoltExplosion : ModProjectile, ILocalizedModType
     {
         public ref float Timer => ref Projectile.ai[0];
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override void SetStaticDefaults()
         {

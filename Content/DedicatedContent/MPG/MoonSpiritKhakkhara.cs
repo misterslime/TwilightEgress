@@ -36,8 +36,6 @@ namespace Cascade.Content.DedicatedContent.MPG
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.shootSpeed = 0f;
             Item.shoot = ModContent.ProjectileType<MoonSpiritKhakkharaHoldout>();
-            Item.buffType = ModContent.BuffType<MoonSpiritLanternBuff>();
-            Item.buffTime = 36000;
         }
 
         public override bool AltFunctionUse(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<UnderworldLantern>()] > 0;

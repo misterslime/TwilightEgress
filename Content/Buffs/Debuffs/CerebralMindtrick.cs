@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Buffs.Debuffs
 {
-    public class CerebralMindtrick : ModBuff
+    public class CerebralMindtrick : ModBuff, ILocalizedModType
     {
+        public new string LocalizationCategory => "Buffs.Debuffs";
+
         public override string Texture => "Terraria/Images/Buff_321";
 
         public override void SetStaticDefaults()

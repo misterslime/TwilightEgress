@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace Cascade.Content.DedicatedContent.MPG
+﻿namespace Cascade.Content.DedicatedContent.MPG
 {
-    public class MoonSpiritKhakkharaHoldout : ModProjectile
+    public class MoonSpiritKhakkharaHoldout : ModProjectile, ILocalizedModType
     {
         private enum AttackState
         {
@@ -46,6 +44,8 @@ namespace Cascade.Content.DedicatedContent.MPG
             "MPG",
             "TestPG"
         };
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override string Texture => "Cascade/Content/DedicatedContent/MPG/MoonSpiritKhakkhara";
 

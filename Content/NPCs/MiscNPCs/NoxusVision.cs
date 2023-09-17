@@ -1,12 +1,14 @@
 ﻿namespace Cascade.Content.NPCs.MiscNPCs
 {
-    public class NoxusVision : ModNPC
+    public class NoxusVision : ModNPC, ILocalizedModType
     {
         public const int GlowingBackIllusionsOutwardnessIndex = 1;
 
         public const int GlowingBackIllusionsAngleIndex = 2;
 
         public const int EyeGlareScaleIndex = 3;
+
+        public new string LocalizationCategory => "NPCs.Misc";
 
         public override void SetStaticDefaults()
         {

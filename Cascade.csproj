@@ -8,6 +8,30 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Localization\en-US\Mods.Cascade.Buffs.Debuffs.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Buffs.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Configs.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Items.Accessories.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Items.Ammo.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Items.Materials.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Items.Weapons.Rogue.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.NPCs.CosmostoneShowers.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.NPCs.Misc.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Ambient.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Magic.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Melee.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Misc.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Pets.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Ranged.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Rogue.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Summon.hjson" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CalamityMod">
+      <HintPath>ModDependancies\CalamityMod.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -1,8 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Cascade.Content.DedicatedContent.Jacob
+﻿namespace Cascade.Content.DedicatedContent.Jacob
 {
-    public class DetonatingDraedonHeart : ModProjectile
+    public class DetonatingDraedonHeart : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
 
@@ -21,6 +19,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
         private const int HeartBackglowSpinIndex = 2;
 
         private const int HeartBackglowRadiusIndex = 3;
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "CalamityMod/Items/Accessories/DraedonsHeart";
 

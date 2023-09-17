@@ -2,8 +2,10 @@
 
 namespace Cascade.Content.Items.Ammo
 {
-    public class PoisonArrow : ModItem
+    public class PoisonArrow : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Ammo";
+
         public override void SetDefaults()
         {
             Item.width = 14;

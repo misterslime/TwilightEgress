@@ -2,8 +2,10 @@
 
 namespace Cascade.Content.DedicatedContent.Jacob
 {
-    public class Tanksplosion : Bastsplosion
+    public class Tanksplosion : Bastsplosion, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Magic";
+
         // Nothin to see here, just inheriting this class so I don't have to copy the same code over.
         public override void SetDefaults()
         {

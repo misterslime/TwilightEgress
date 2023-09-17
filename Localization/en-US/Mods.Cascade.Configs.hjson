@@ -1,0 +1,9 @@
+GraphicalConfig: {
+	DisplayName: Graphical Config
+	Headers.Graphics: Graphics Header
+
+	SkyEntityLimit: {
+		Label: Sky Entity Limit
+		Tooltip: ""
+	}
+}

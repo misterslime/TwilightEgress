@@ -4,8 +4,10 @@ using Cascade.Content.Projectiles.Ranged;
 
 namespace Cascade.Content.Items.Weapons.Ranged
 {
-    public class Triploon : ModItem
+    public class Triploon : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Ranged";
+
         public override void SetDefaults()
         {
             Item.width = 88;

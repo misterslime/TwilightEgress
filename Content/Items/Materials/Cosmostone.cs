@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Items.Materials
 {
-    public class Cosmostone : ModItem
+    public class Cosmostone : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Materials";
+
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Cometstone");

@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Projectiles.Rogue
 {
-    public class HolidayHalberdThrown : ModProjectile
+    public class HolidayHalberdThrown : ModProjectile, ILocalizedModType
     {
         private ref float Timer => ref Projectile.ai[0];
 
@@ -11,6 +11,8 @@ namespace Cascade.Content.Projectiles.Rogue
         private Player Owner => Main.player[Projectile.owner];
 
         PrimitiveTrail TrailDrawer = null;
+
+        public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd";
 

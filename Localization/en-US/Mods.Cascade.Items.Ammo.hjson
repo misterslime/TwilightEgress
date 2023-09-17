@@ -1,0 +1,14 @@
+PoisonArrow: {
+	DisplayName: Poison Arrow
+	Tooltip: ""
+}
+
+PoisonRound: {
+	DisplayName: Poison Round
+	Tooltip: ""
+}
+
+StingerRound: {
+	DisplayName: Stinger Round
+	Tooltip: ""
+}

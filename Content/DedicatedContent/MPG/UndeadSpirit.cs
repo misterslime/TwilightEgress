@@ -1,8 +1,6 @@
-﻿using Terraria;
-
-namespace Cascade.Content.DedicatedContent.MPG
+﻿namespace Cascade.Content.DedicatedContent.MPG
 {
-    public class UndeadSpirit : ModProjectile
+    public class UndeadSpirit : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -17,6 +15,8 @@ namespace Cascade.Content.DedicatedContent.MPG
         private const int MaxChargingTime = 300;
 
         private const int HitCounterIndex = 0;
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override string Texture => "Terraria/Images/NPC_" + NPCID.PirateGhost;
 

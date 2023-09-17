@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Projectiles.Ranged.Ammo
 {
-    public class PoisonArrowProjectile : ModProjectile
+    public class PoisonArrowProjectile : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Ranged";
+
         public override void SetDefaults()
         {
             Projectile.width = 10;

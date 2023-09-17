@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Projectiles.Rogue
 {
-    public class HolidayHalbertHoldout : ModProjectile
+    public class HolidayHalbertHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -15,6 +15,8 @@ namespace Cascade.Content.Projectiles.Rogue
         private const int RotationSpeedIndex = 0;
 
         private PrimitiveTrail TrailDrawer = null;
+
+        public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd";
 

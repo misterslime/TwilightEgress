@@ -4,7 +4,7 @@ using static Humanizer.In;
 
 namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
-    public class TelekineticallyControlledWeapon : ModProjectile
+    public class TelekineticallyControlledWeapon : ModProjectile, ILocalizedModType
     {
         private enum WeaponTypes
         {
@@ -28,6 +28,8 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
         private const int RotationDirectionIndex = 2;
 
         private const int ForsakenSaberPositionRotationIndex = 3;
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override string Texture => Utilities.EmptyPixelPath;
 

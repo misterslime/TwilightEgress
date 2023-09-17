@@ -1,14 +1,10 @@
-﻿using CalamityMod.NPCs.TownNPCs;
-using CalamityMod.Projectiles.Rogue;
-using Cascade.Content.Items.Weapons.Ranged;
+﻿using Cascade.Content.Items.Weapons.Ranged;
 using Cascade.Core.Systems.CameraSystem;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 namespace Cascade.Content.Projectiles.Ranged
 {
-    public class TriploonHarpoon : ModProjectile
+    public class TriploonHarpoon : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -42,6 +38,8 @@ namespace Cascade.Content.Projectiles.Ranged
         private bool IsChanneling => Owner.active && Owner.channel && Owner.HeldItem.type == ModContent.ItemType<Triploon>();
 
         private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<Triploon>();
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override void SetStaticDefaults()
         {

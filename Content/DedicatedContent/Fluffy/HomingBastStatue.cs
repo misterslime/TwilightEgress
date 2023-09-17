@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.DedicatedContent.Fluffy
 {
-    public class HomingBastStatue : ModProjectile
+    public class HomingBastStatue : ModProjectile, ILocalizedModType
     {
         public Player Owner => Main.player[Projectile.owner];
 
@@ -15,6 +15,8 @@
         private bool CollidedWithTheOwner = false;
 
         private bool CollidedWithTeamPlayer = false;
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override void SetStaticDefaults()
         {

@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.DedicatedContent.Fluffy
 {
-    public class TheBastOffenseHoldout : ModProjectile
+    public class TheBastOffenseHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -21,6 +21,8 @@
         public const int OldRotationIndex = 4;
 
         public const int RecoilStrengthIndex = 5;
+
+        public new string LocalizationCategory => "Projectiles.Ranged";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Fluffy/TheBastOffense";
 

@@ -1,0 +1,10 @@
+Mods: {
+	Cascade: {
+		Items: {
+			TestSword: {
+				DisplayName: Test Sword
+				Tooltip: ""
+			}
+		}
+	}
+}

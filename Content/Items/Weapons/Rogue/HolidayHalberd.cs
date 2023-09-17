@@ -2,8 +2,10 @@
 
 namespace Cascade.Content.Items.Weapons.Rogue
 {
-    public class HolidayHalberd : ModItem
+    public class HolidayHalberd : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Rogue";
+
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Holiday Halberd");
