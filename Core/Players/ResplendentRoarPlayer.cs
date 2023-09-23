@@ -42,7 +42,7 @@
                     Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                     DirectionalPulseRing pulseRing = new(Player.Center, Vector2.Zero, fireColor, new(1f, 1f), 0f, 0.01f, 5f, 60);
-                    Utilities.SpawnParticleBetter(pulseRing);
+                    GeneralParticleHandler.SpawnParticle(pulseRing);
 
                     FinishedChargingResplendentRaze = true;
                 }

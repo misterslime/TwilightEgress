@@ -87,7 +87,7 @@
                 if (ChargeTimer % 15 == 0f)
                 {
                     pulseRingInitialScale = Clamp(pulseRingInitialScale + 0.25f, 0.5f, 3.5f);
-                    Utilities.SpawnParticleBetter(new DirectionalPulseRing(Owner.Center, Vector2.Zero, Color.CornflowerBlue, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
+                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Owner.Center, Vector2.Zero, Color.CornflowerBlue, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
                     SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
 
                     for (int i = 0; i < 36; i++)

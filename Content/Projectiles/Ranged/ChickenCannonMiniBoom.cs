@@ -24,7 +24,7 @@ namespace Cascade.Content.Projectiles.Ranged
         {
             // Spawn a pulse ring particle.
             Color color = Color.Lerp(Color.Yellow, Color.Red, Main.rand.NextFloat(0.2f, 0.8f));
-            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, color, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 2f, 75));
+            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, color, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 2f, 75));
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -120,7 +120,7 @@
         {
             SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound, Projectile.Center);
             Color pulseRingColor = Color.Lerp(Color.Goldenrod, Color.CornflowerBlue, Main.rand.NextFloat());
-            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, pulseRingColor, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 6f, 75));
+            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, pulseRingColor, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 6f, 75));
 
             // Deploy the bombs.
             int bombCount = Main.rand.Next(6, 14);
@@ -137,7 +137,7 @@
                 Color color = Color.Lerp(Color.Goldenrod, Color.CornflowerBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(1.25f, 3f);
                 HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                Utilities.SpawnParticleBetter(heavySmoke);
+                GeneralParticleHandler.SpawnParticle(heavySmoke);
             }
 
             for (int i = 0; i < 20; i++)
@@ -148,7 +148,7 @@
                 float scale = Main.rand.NextFloat(0.45f, 4f);
                 int lifespan = Main.rand.Next(15, 45);
                 Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
-                Utilities.SpawnParticleBetter(sparkle);
+                GeneralParticleHandler.SpawnParticle(sparkle);
             }
         }
 

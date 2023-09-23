@@ -103,7 +103,7 @@
                         Color color = Color.Lerp(Color.Cyan, Color.CornflowerBlue, Main.rand.NextFloat());
                         float scale = Main.rand.NextFloat(3f, 6f);
                         HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                        Utilities.SpawnParticleBetter(heavySmoke);
+                        GeneralParticleHandler.SpawnParticle(heavySmoke);
                     }
 
                     for (int i = 0; i < 20; i++)
@@ -114,7 +114,7 @@
                         float scale = Main.rand.NextFloat(0.45f, 4f);
                         int lifespan = Main.rand.Next(15, 45);
                         Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
-                        Utilities.SpawnParticleBetter(sparkle);
+                        GeneralParticleHandler.SpawnParticle(sparkle);
                     }
                 }
             }
@@ -146,7 +146,7 @@
                 float scale = Main.rand.NextFloat(0.45f, 2f);
                 int lifespan = Main.rand.Next(45, 90);
                 Particle sparkle = new SquishyLightParticle(Projectile.Center, velocity, scale, color, lifespan);
-                Utilities.SpawnParticleBetter(sparkle);
+                GeneralParticleHandler.SpawnParticle(sparkle);
             }
         }
 

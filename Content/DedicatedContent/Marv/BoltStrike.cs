@@ -91,7 +91,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
                             Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
                             int lifespan = (int)Lerp(10, 45, Timer / 480);
-                            Utilities.SpawnParticleBetter(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                            GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
                             Projectile.netUpdate = true;
                         }
                     }
@@ -106,7 +106,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
 
                     Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
-                    Utilities.SpawnParticleBetter(new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                    GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
                     Projectile.netUpdate = true;
                 }
             }
@@ -144,7 +144,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 if (Timer % 10 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int lifespan = (int)Lerp(45, 100, Timer / 480);
-                    Utilities.SpawnParticleBetter(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                    GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
                 }
 
                 if (Timer % 3 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
@@ -154,7 +154,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                     for (int i = 0; i < 5; i++)
                     {
                         Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(6f, 55f);
-                        Utilities.SpawnParticleBetter(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                        GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
                     }
                 }
 

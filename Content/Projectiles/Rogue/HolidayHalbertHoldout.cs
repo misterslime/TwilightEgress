@@ -110,7 +110,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 float scale = Main.rand.NextFloat(0.2f, 0.8f) * Projectile.scale;
                 int lifespan = Main.rand.Next(15, 30);
                 GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
-                Utilities.SpawnParticleBetter(sparkleParticle);
+                GeneralParticleHandler.SpawnParticle(sparkleParticle);
             }
         }
 

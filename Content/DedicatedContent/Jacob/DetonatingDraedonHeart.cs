@@ -66,7 +66,7 @@
             if (Timer >= MaxChargeTime && Timer <= MaxChargeTime + DetonationDelay + (int)RandomizedExplosionDelay && Timer % 5 == 0)
             {
                 pulseRingInitialScale = Clamp(pulseRingInitialScale + 0.5f, 0.5f, 3.5f);
-                Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
+                GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
                 SoundEngine.PlaySound(CascadeSoundRegistry.AsrielTargetBeep, Projectile.Center);
 
                 for (int i = 0; i < 36; i++)
@@ -117,7 +117,7 @@
         public override void Kill(int timeLeft)
         {
             SoundEngine.PlaySound(CommonCalamitySounds.ExoPlasmaExplosionSound, Projectile.Center);
-            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 10f, 75));
+            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 10f, 75));
 
             // K  A  B  O  O  M two, electric boogaloo.
             for (int i = 0; i < 12; i++)
@@ -132,7 +132,7 @@
             for (int i = 0; i < 25; i++)
             {
                 Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                Utilities.SpawnParticleBetter(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
+                GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
             }
 
             Main.LocalPlayer.Calamity().GeneralScreenShakePower = 10f;

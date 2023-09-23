@@ -25,7 +25,7 @@
         public override void OnSpawn(IEntitySource source)
         {
             // Send out a huge spread of particles.
-            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.White, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 8f, 75));
+            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.White, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 8f, 75));
 
             for (int i = 0; i < 25; i++)
             {
@@ -35,7 +35,7 @@
                 float scale = Main.rand.NextFloat(10f, 20f);
                 float opacity = Main.rand.NextFloat(180f, 240f);
                 MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                Utilities.SpawnParticleBetter(deathSmoke);
+                GeneralParticleHandler.SpawnParticle(deathSmoke);
             }
 
             for (int i = 0; i < 50; i++)
@@ -44,7 +44,7 @@
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(35f, 100f);
                 float scale = Main.rand.NextFloat(4f, 6f);
                 HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, fireColor, Main.rand.Next(120, 150), scale, Main.rand.NextFloat(0.7f, 1.75f), 0.06f, true, 0);
-                Utilities.SpawnParticleBetter(heavySmoke);
+                GeneralParticleHandler.SpawnParticle(heavySmoke);
             }
         }
 

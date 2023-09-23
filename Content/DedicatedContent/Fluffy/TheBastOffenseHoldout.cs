@@ -83,7 +83,7 @@
                         {
                             float maxScale = ChargeTimer == chargeTime ? 0.01f : 1.25f;
                             float newScale = ChargeTimer == chargeTime ? 5f : 0.01f;
-                            Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
+                            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
                             SoundEngine.PlaySound(SoundID.Item75, Projectile.Center);
                         }
                     }
@@ -116,7 +116,7 @@
                     // and the delay is decreased by 1, making it charge faster over time.
                     if (ChargeTimer >= increaseBastInterval + bastIncreaseDelay && bastCatCount <= maxBastCatCount)
                     {
-                        Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 1.25f + Main.rand.NextFloat(0.3f), 0.01f, 30));
+                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 1.25f + Main.rand.NextFloat(0.3f), 0.01f, 30));
                         SoundEngine.PlaySound(SoundID.Item149 with { MaxInstances = 0 }, Projectile.Center);
                         // Play a different sound and a spawn a dust circle to indicate it's done charging.
                         if (bastCatCount == maxBastCatCount)
@@ -186,7 +186,7 @@
 
                         ChargeTimer = 0f;
                         bastCatCount = 0f;
-                        Utilities.SpawnParticleBetter(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
+                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
                     }
 
                     // Recoil animation.

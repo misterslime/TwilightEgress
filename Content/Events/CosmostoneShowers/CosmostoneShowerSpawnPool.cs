@@ -3,9 +3,9 @@ using CalamityMod.NPCs.NormalNPCs;
 using Cascade.Content.NPCs.CosmostoneShowers;
 using System.Collections.Generic;
 
-namespace Cascade.Content.Events.CometNight
+namespace Cascade.Content.Events.CosmostoneShowers
 {
-    public class CometNightSpawnPool : GlobalNPC
+    public class CosmostoneShowerSpawnPool : GlobalNPC
     {
         public override bool InstancePerEntity => true;
 

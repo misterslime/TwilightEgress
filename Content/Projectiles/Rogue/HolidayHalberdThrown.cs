@@ -65,7 +65,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 float scale = Main.rand.NextFloat(0.2f, 0.8f);
                 int lifespan = Main.rand.Next(15, 30);
                 GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
-                Utilities.SpawnParticleBetter(sparkleParticle);
+                GeneralParticleHandler.SpawnParticle(sparkleParticle);
             }
 
             Timer++;
@@ -93,7 +93,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 float scale = Main.rand.NextFloat(0.75f, 2f);
                 float opacity = Main.rand.NextFloat(180f, 240f);
                 MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                Utilities.SpawnParticleBetter(deathSmoke);
+                GeneralParticleHandler.SpawnParticle(deathSmoke);
             }
         }
 

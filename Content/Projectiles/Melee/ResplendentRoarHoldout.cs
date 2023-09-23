@@ -253,7 +253,7 @@ namespace Cascade.Content.Projectiles.Melee
 
                         float scale = i == 2 ? 9f : i == 1f ? 6f : 3f;
                         DirectionalPulseRing pulseRing = new(Owner.Center, Vector2.Zero, fireColor, new(1f, 1f), 0f, 0.01f, scale, 60);
-                        Utilities.SpawnParticleBetter(pulseRing);
+                        GeneralParticleHandler.SpawnParticle(pulseRing);
                     }
 
                     Projectile.netUpdate = true;
@@ -310,7 +310,7 @@ namespace Cascade.Content.Projectiles.Melee
                     float opacity = Main.rand.NextFloat(0.9f, 4f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 1f;
 
                     HeavySmokeParticle flames = new(spawnPosition, Vector2.Zero, fireColor, lifespan, scale, opacity, 0.03f, true);
-                    Utilities.SpawnParticleBetter(flames);
+                    GeneralParticleHandler.SpawnParticle(flames);
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -327,7 +327,7 @@ namespace Cascade.Content.Projectiles.Melee
                     float opacity = Main.rand.NextFloat(0.65f, 2f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 1f;
 
                     GenericSparkle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor * opacity, sparkleColor * 1.05f * opacity, scale, lifespan);
-                    Utilities.SpawnParticleBetter(sparkle);
+                    GeneralParticleHandler.SpawnParticle(sparkle);
                 }
             }
         }
@@ -359,7 +359,7 @@ namespace Cascade.Content.Projectiles.Melee
                 Color sparkColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                 SparkParticle sparks = new(target.Center, velocity, false, lifespan, scale, sparkColor);
-                Utilities.SpawnParticleBetter(sparks);
+                GeneralParticleHandler.SpawnParticle(sparks);
             }
 
             if (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge >= 75f)
@@ -375,7 +375,7 @@ namespace Cascade.Content.Projectiles.Melee
                     Color flameColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                     HeavySmokeParticle flames = new(target.Center, velocity, flameColor, lifespan, scale, 1f, 0.03f, true);
-                    Utilities.SpawnParticleBetter(flames);
+                    GeneralParticleHandler.SpawnParticle(flames);
                 }
             }
 

@@ -31,3 +31,4 @@ global using static CalamityMod.CalamityUtils;
 global using Cascade.Assets.Sounds;
 global using Cascade.Assets.ExtraTextures;
 global using Cascade.Core.BaseEntityClasses;
+global using Cascade.Core.Systems;

@@ -78,9 +78,9 @@ namespace Cascade.Content.DedicatedContent.Marv
                 for (int i = 0; i < 50; i++)
                 {
                     Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                    Utilities.SpawnParticleBetter(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
                 }
-                Utilities.SpawnParticleBetter(new RoaringShockwaveParticle(60, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(60, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
             }
 
             if (DelayTimer >= DelayBeforeFiring)

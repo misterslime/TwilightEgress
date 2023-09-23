@@ -1,4 +1,10 @@
 ﻿using CalamityMod.Items;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Items.Weapons.Rogue;
+using CalamityMod.Items.Weapons.Summon;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 
 namespace Cascade.Content.DedicatedContent.Fluffy
 {
@@ -40,6 +46,19 @@ namespace Cascade.Content.DedicatedContent.Fluffy
         {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ItemID.CatBast, 10)
+                .AddIngredient(ItemID.StormTigerStaff)
+                .AddIngredient(ItemID.LicenseCat)
+                .AddIngredient(ModContent.ItemType<Meowthrower>())
+                .AddIngredient(ItemID.Meowmere)
+                .AddIngredient(ModContent.ItemType<ThrowingBrick>())
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
         }
     }
 }

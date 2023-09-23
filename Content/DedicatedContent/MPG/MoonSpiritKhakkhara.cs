@@ -1,5 +1,10 @@
 ﻿using CalamityMod.Items;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Magic;
+using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Rarities;
+using CalamityMod.Tiles.Furniture.CraftingStations;
 using Cascade.Content.Buffs.Debuffs;
 using Cascade.Content.Buffs.Minions;
 using System.Collections.Generic;
@@ -71,6 +76,16 @@ namespace Cascade.Content.DedicatedContent.MPG
             }
 
             return true;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ModContent.ItemType<StaffOfNecrosteocytes>())
+                .AddIngredient(ModContent.ItemType<ClothiersWrath>())
+                .AddIngredient(ModContent.ItemType<NightmareFuel>(), 20)
+                .AddTile(ModContent.TileType<CosmicAnvil>())
+                .Register();
         }
     }
 }

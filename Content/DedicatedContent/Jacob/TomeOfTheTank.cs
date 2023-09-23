@@ -1,4 +1,6 @@
 ﻿using CalamityMod.Items;
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Materials;
 using CalamityMod.Rarities;
 
 namespace Cascade.Content.DedicatedContent.Jacob
@@ -38,6 +40,17 @@ namespace Cascade.Content.DedicatedContent.Jacob
         {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ModContent.ItemType<RampartofDeities>())
+                .AddIngredient(ModContent.ItemType<DraedonsHeart>())
+                .AddIngredient(ItemID.ExplosivePowder, 10)
+                .AddIngredient(ModContent.ItemType<ExoPrism>(), 5)
+                .AddTile(TileID.TinkerersWorkbench)
+                .Register();
         }
     }
 }

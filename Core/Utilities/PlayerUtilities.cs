@@ -1,10 +1,10 @@
-﻿using Cascade.Core.Systems;
+﻿using static Cascade.Core.Systems.WorldSavingSystem;
 
 namespace Cascade
 {
     public static partial class Utilities
     {
-        public static bool ZoneCometNight(this Player player) => AmbientEventHandler.CometNight && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
+        public static bool ZoneCometNight(this Player player) => CosmostoneShower && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
 
         /// <summary>
         /// A copy of Calamity's ConsumeRogueStealth method. This is only to be used if your Rogue Weapon functions under a held projectile or some other mean
