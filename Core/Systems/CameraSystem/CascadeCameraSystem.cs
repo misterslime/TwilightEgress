@@ -68,7 +68,7 @@ namespace Cascade.Core.Systems.CameraSystem
             if (ShakeTime > 0)
             {
                 //float multiplier = GraphicsConfig.Instance.ScreenshakeMult;
-                Main.instance.CameraModifiers.Add(new PunchCameraModifier(ShakePosition, Main.rand.NextFloat(3.14f).ToRotationVector2(), Shake, 15f, ShakeLifespan, 2000, "Exlight Screenshake Instance"));
+                Main.instance.CameraModifiers.Add(new PunchCameraModifier(ShakePosition, Main.rand.NextFloat(3.14f).ToRotationVector2(), Shake, 15f, ShakeLifespan, 2000, "Cascade Custom Screenshake"));
             }
         }
 
