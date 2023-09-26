@@ -1,0 +1,21 @@
+namespace Cascade.Content.EntityOverrides.Items.HoneyComb
+{
+    public class BeeMovementOverride : ItemOverride
+    {
+        public override int TypeToOverride => ItemID.SweetheartNecklace;
+        public override int[] AdditionalOverrideTypes => new int[]
+        {
+            ItemID.BeeCloak,
+            ItemID.HoneyBalloon
+        };
+
+        public override void UpdateAccessory(Item item, Player player, bool hideVisual)
+	    {
+            player.CascadePlayer_HoneyComb().beeFlight = 2; 
+        }
+
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips){
+            tooltips.Add(new(Mod,"BeeFlightEffect","12% increased flight time"));
+        }
+    }
+}
