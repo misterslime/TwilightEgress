@@ -1,6 +1,7 @@
 ﻿// Man I love global usings.
 
 global using System;
+global using System.Collections.Generic;
 global using System.Linq;
 global using System.IO;
 global using static System.MathF;
@@ -24,6 +25,7 @@ global using ReLogic.Content;
 global using CalamityMod;
 global using CalamityMod.NPCs;
 global using CalamityMod.Particles;
+global using CalamityMod.CalPlayer;
 global using CalamityMod.Systems;
 global using CalamityMod.Sounds;
 global using static CalamityMod.CalamityUtils;
@@ -31,3 +33,4 @@ global using static CalamityMod.CalamityUtils;
 global using Cascade.Assets.Sounds;
 global using Cascade.Assets.ExtraTextures;
 global using Cascade.Core.EntityOverridingSystem;
+

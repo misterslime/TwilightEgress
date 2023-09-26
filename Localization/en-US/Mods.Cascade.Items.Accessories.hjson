@@ -7,8 +7,8 @@ GeminiGenieLamp: {
 	DisplayName: Gemini Genie Lamp
 	Tooltip:
 		'''
-		Summons the Gemini Genie Twins to aid you in battle.
-		Duna attacks with Gold and Sand, while Psytri attacks with telekinetically-controlled weapons.
+		Summons the Gemini Genie Twins to aid you in battle
+		Duna attacks with Gold and Sand, while Psytri attacks with telekinetically-controlled weapons
 		"An ancient relic from a bygone era. It's imbued with an elemental power..."
 		'''
 }
