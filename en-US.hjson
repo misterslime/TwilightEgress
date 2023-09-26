@@ -5,6 +5,16 @@ Mods: {
 				DisplayName: Test Sword
 				Tooltip: ""
 			}
+
+			LunarCresent: {
+				DisplayName: Lunar Cresent
+				Tooltip: ""
+			}
+
+			BurningQuasar: {
+				DisplayName: Burning Quasar
+				Tooltip: ""
+			}
 		}
 	}
 }

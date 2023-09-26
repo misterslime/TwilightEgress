@@ -19,6 +19,8 @@ global using Terraria.GameContent;
 global using Terraria.GameContent.Drawing;
 global using Terraria.Graphics.Effects;
 global using Terraria.Graphics.Shaders;
+global using Terraria.ObjectData;
+global using Terraria.Localization;
 
 global using ReLogic.Content;
 

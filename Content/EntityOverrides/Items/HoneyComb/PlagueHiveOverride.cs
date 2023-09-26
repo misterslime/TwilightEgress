@@ -27,10 +27,6 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-<<<<<<< HEAD
-=======
-            
->>>>>>> 4490480a44af693588ca5e235e62d463e91e69bd
             tooltips.Add(new(Mod, "HivePackEffect", "Increases the strength of friendly bees"));
             tooltips.Add(new(Mod,"HoneyCombEffect","Douses the user in honey when damaged\n7% increased flight time"));
         }

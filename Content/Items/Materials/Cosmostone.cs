@@ -7,7 +7,7 @@
         public override void SetDefaults()
         {
             Item.width = 18;
-            Item.width = 18;
+            Item.height = 18;
             Item.maxStack = 9999;
             Item.consumable = true;
             Item.noMelee = true;
