@@ -10,7 +10,7 @@ namespace Cascade.Content.Items.Weapons.Rogue
         {
             Item.width = 70;
             Item.height = 72;
-            Item.damage = 50;
+            Item.damage = 150;
             Item.DamageType = ModContent.GetInstance<RogueDamageClass>();
             Item.knockBack = 4f;
             Item.crit = 4;

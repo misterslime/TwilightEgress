@@ -25,7 +25,7 @@ namespace Cascade.Content.Items.Accessories.Summoner
             if (player.FindBuffIndex(ModContent.BuffType<GeminiGeniesBuff>()) == -1)
                 player.AddBuff(ModContent.BuffType<GeminiGeniesBuff>(), 2);
 
-            int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(175);
+            int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(75);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GeminiGenieSandy>()] < 1)
             {
                 int p = Projectile.NewProjectile(player.GetSource_Accessory(Item), player.Center, Vector2.Zero, ModContent.ProjectileType<GeminiGenieSandy>(), damage, 4f, player.whoAmI);

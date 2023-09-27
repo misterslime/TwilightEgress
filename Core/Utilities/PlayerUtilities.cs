@@ -50,5 +50,17 @@ namespace Cascade
                 owner.Calamity().rogueStealth = remainingStealth;
             }
         }
+
+        /// <summary>
+        /// Manually consumes the player's mana and sets a mana regeneration delay.
+        /// </summary>
+        /// <param name="manaAmount">The amount of mana that should be consumed.</param>
+        /// <param name="maxDelay">The maximum amount of downtime before mana begins to regenerate. Defaults to <see cref="Player.maxRegenDelay"/> if no value is input.</param>
+        public static void ConsumeManaManually(this Player player, int manaAmount, float? maxDelay = null)
+        {
+            maxDelay ??= player.maxRegenDelay;
+            player.statMana -= manaAmount;
+            player.manaRegenDelay = maxDelay.Value;
+        }
     }
 }

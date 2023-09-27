@@ -28,7 +28,7 @@
 
         public override void AI()
         {
-            if (Timer >= 45)
+            if (Timer >= 35f)
             {
                 Projectile.Kill();
                 return;
@@ -52,8 +52,8 @@
                 }
             }
 
-            float sine = SineInOutEasing(Timer / 22.5f, 1);
-            if (Timer <= 45)
+            float sine = SineInOutEasing(Timer / 17.5f, 0);
+            if (Timer <= 35f)
             {
                 Projectile.scale = Lerp(0.1f, 2f, sine);
                 Projectile.Opacity = Lerp(0f, 1f, sine);

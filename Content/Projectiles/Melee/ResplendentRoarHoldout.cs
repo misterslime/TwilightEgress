@@ -71,11 +71,6 @@ namespace Cascade.Content.Projectiles.Melee
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/TheBurningSky";
 
-        public override void Load()
-        {
-            On_Main.DrawInfernoRings += DrawYharon;
-        }
-
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
@@ -444,7 +439,7 @@ namespace Cascade.Content.Projectiles.Melee
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
         }
 
-        public void DrawYharon(On_Main.orig_DrawInfernoRings orig, Main self)
+        /*public void DrawYharon(On_Main.orig_DrawInfernoRings orig, Main self)
         {
             ref float yharonFrame = ref Projectile.Cascade().ExtraAI[YharonFrameIndex];
             ref float yharonOpacity = ref Projectile.Cascade().ExtraAI[YharonOpacityIndex];
@@ -472,7 +467,7 @@ namespace Cascade.Content.Projectiles.Melee
                 Main.spriteBatch.Draw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(chickenColor * 0.9f) * yharonOpacity, rotation, origin, yharonScale, effects, 0);
             }
             orig.Invoke(self);
-        }
+        }*/
 
         public float SetTrailWidth(float completionRatio)
         {

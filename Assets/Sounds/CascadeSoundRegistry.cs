@@ -6,7 +6,7 @@
 
     public static class CascadeSoundRegistry
     {
-        #region Calamity Reworks Sounds
+        #region Cascade Sounds
 
         public static readonly SoundStyle GasterGone = new SoundStyle("Cascade/Assets/Sounds/Misc/MysteryManDisappear");
 
@@ -31,6 +31,8 @@
         public static readonly SoundStyle RequiemBouquetPerish = new SoundStyle("Cascade/Assets/Sounds/Items/MPGWeapon/RequiemBouquetPerish");
 
         public static readonly SoundStyle IceShock = new SoundStyle("Cascade/Assets/Sounds/Items/IceShock");
+
+        public static readonly SoundStyle IceShockPetrify =  new SoundStyle("Cascade/Assets/Sounds/Items/IceShockPetrify");
 
         public static readonly SoundStyle FleshySwordStab = new SoundStyle("Cascade/Assets/Sounds/Misc/FleshySwordStab");
 

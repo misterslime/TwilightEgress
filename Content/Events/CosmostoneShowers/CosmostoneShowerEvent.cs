@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Particles.ScreenParticles;
+﻿using CalamityMod.Events;
+using Cascade.Content.Particles.ScreenParticles;
 using Terraria.GameContent.Events;
 using static Cascade.Core.Systems.WorldSavingSystem;
 
@@ -17,14 +18,15 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         public static void StartAndStopEvent()
         {
+            bool shouldStopEvent = Main.bloodMoon || Main.pumpkinMoon || Main.snowMoon || BossRushEvent.BossRushActive;
             bool shouldIncreaseSpawnRate = LanternNight.NextNightIsLanternNight;
-            if (Utilities.JustTurnedToNight && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
+            if (Utilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
                 Main.NewText("The night sky glimmers with cosmic energy...", Color.DeepSkyBlue);
                 CosmostoneShower = true;
             }
 
-            if (Main.dayTime && CosmostoneShower)
+            if ((Main.dayTime && CosmostoneShower) || shouldStopEvent)
                 CosmostoneShower = false;
         }
 

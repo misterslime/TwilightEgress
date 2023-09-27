@@ -18,7 +18,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
         {
             Item.width = 60;
             Item.height = 64;
-            Item.damage = 1000;
+            Item.damage = 2000;
+            Item.crit = 15;
             Item.knockBack = 3f;
             Item.useTime = 180;
             Item.useAnimation = 180;

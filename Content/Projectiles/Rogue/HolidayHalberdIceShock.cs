@@ -8,7 +8,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         private ref float RandomNewScale => ref Projectile.ai[1];
 
-        private const int MaxLifetime = 300;
+        private const int MaxLifetime = 75;
 
         private const int ProjectileTextureOpacityIndex = 0;
 
@@ -49,17 +49,17 @@ namespace Cascade.Content.Projectiles.Rogue
             }
 
             // Scale up.
-            if (Timer <= 30f)
+            if (Timer <= 20f)
             {
-                Projectile.scale = Lerp(Projectile.scale, RandomNewScale, SineInOutEasing(Timer / 30f, 0));
-                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / 30f, 0));
+                Projectile.scale = Lerp(Projectile.scale, RandomNewScale, SineInOutEasing(Timer / 20f, 0));
+                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / 20f, 0));
             }
 
-            if (Timer >= 60f)
-                projectileTextureOpacity = Clamp(projectileTextureOpacity + 0.05f, 0f, 1f);
+            if (Timer >= 30f)
+                projectileTextureOpacity = Clamp(projectileTextureOpacity + 0.065f, 0f, 1f);
 
             // Particles.
-            if (Main.rand.NextBool(10))
+            if (Main.rand.NextBool(3))
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -72,7 +72,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 }
             }
             
-            if (Main.rand.NextBool(15))
+            if (Main.rand.NextBool(5))
             {
                 for (int i = 0; i < 2; i++)
                 {
@@ -90,10 +90,29 @@ namespace Cascade.Content.Projectiles.Rogue
             Projectile.AdjustProjectileHitboxByScale(92f, 92f);
         }
 
+        public override void Kill(int timeLeft)
+        {
+            SoundEngine.PlaySound(CascadeSoundRegistry.CryogenShieldBreak, Projectile.Center);
+            // Spawn a ring of arcing snowflakes, similar to the original Iceshock.
+            float snowflakeAngularVelocity = ToRadians(3f);
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 snowflakeVelocity = Vector2.UnitX.RotatedBy(TwoPi * i / 6) * 16f;
+                int damage = Projectile.damage.GetPercentageOfInteger(0.65f);
+                Projectile.SpawnProjectile(Projectile.Center, snowflakeVelocity, ModContent.ProjectileType<HolidayHalberdIceShockSnowflake>(), damage, 
+                    Projectile.knockBack, owner: Projectile.owner, ai0: snowflakeAngularVelocity);
+            }
+        }
+
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (Main.rand.NextBool(5) || hit.Crit)
+            target.AddBuff(BuffID.Frostburn2, 180);
+            if (Main.rand.NextBool(10) && !target.HasBuff(ModContent.BuffType<GlacialState>()))
+            {
                 target.AddBuff(ModContent.BuffType<GlacialState>(), 180);
+                SoundEngine.PlaySound(CascadeSoundRegistry.IceShockPetrify, Projectile.Center);
+            }
+            
         }
 
         public override bool PreDraw(ref Color lightColor)

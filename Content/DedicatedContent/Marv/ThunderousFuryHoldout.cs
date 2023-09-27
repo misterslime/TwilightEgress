@@ -10,18 +10,35 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         private ref float DelayTimer => ref Projectile.ai[1];
 
+        private ref float AttackType => ref Projectile.ai[2]; 
+
         private const int DelayBeforeFiring = 75;
 
         private const int FireRate = 60;
 
+        private const int MaxManaForLeftClick = 15;
+
+        private const int MaxManaForRightClick = 100;
+
+        private bool IsManaThresholdMet
+        {
+            get
+            {
+                if (Owner.Calamity().mouseRight)
+                    return Owner.statMana > MaxManaForRightClick;
+                return Owner.statMana > MaxManaForLeftClick;
+            }
+        }
+
+        private string[] ViableEasterEggNames = new string[]
+        {
+            "Marv",
+            "ThatOneEmolgaLiker"
+        };
+
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Marv/ThunderousFury";
-
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Thunderous Fury");
-        }
 
         public override void SetDefaults()
         {
@@ -32,18 +49,30 @@ namespace Cascade.Content.DedicatedContent.Marv
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Magic;
-            Projectile.timeLeft = 1200;
         }
 
         public override void AI()
         {
             bool isChanneling = (Owner.channel || Owner.Calamity().mouseRight) && Owner.active && Owner.HeldItem.type == ModContent.ItemType<ThunderousFury>();
-            if (!isChanneling)
+            bool shouldDespawn = !isChanneling || !IsManaThresholdMet || Owner.CCed || Owner.dead;
+            if (shouldDespawn)
             {
                 Projectile.Kill();
                 return;
             }
 
+            switch (AttackType)
+            {
+                case 0:
+                    DoBehavior_Thunderbolt();
+                    break;
+
+                case 1:
+                    DoBehavior_BoltStrike();
+                    break;
+            }
+
+            DelayTimer++;
             UpdateProjectileSpecificVariables(Owner);
             UpdatePlayerSpecificVariables(Owner);
         }
@@ -53,26 +82,17 @@ namespace Cascade.Content.DedicatedContent.Marv
             Projectile.Center = owner.RotatedRelativePoint(owner.MountedCenter, true);
             Projectile.rotation = owner.MountedCenter.AngleTo(owner.Calamity().mouseWorld);
             if (Projectile.spriteDirection == -1)
-            {
                 Projectile.rotation += Pi;
-            }
+        }
 
-            bool correctPlayerName = owner.name == "Marv" || owner.name == "ThatOneEmolgaLiker";
-            // Play a special sound while charging. Also spawn some particles.
+        public void DoBehavior_Thunderbolt()
+        {
             if (DelayTimer == 1)
             {
-                if (Owner.Calamity().mouseRight)
-                {
-                    SoundStyle boltStrikeStartSound = correctPlayerName ? CascadeSoundRegistry.ZekromCry : CommonCalamitySounds.ExoPlasmaShootSound;
-                    SoundEngine.PlaySound(boltStrikeStartSound, Projectile.Center);
-                }
-                else
-                {
-                    SoundStyle thunderboltStartSound = correctPlayerName ? CascadeSoundRegistry.PikachuCry : CommonCalamitySounds.LightningSound;
-                    SoundEngine.PlaySound(thunderboltStartSound, Projectile.Center);
-                }
+                SoundStyle thunderboltStartSound = ViableEasterEggNames.Contains(Owner.name) ? CascadeSoundRegistry.PikachuCry : CommonCalamitySounds.LightningSound;
+                SoundEngine.PlaySound(thunderboltStartSound, Projectile.Center);
 
-                Color particleColor = Owner.Calamity().mouseRight ? Color.Lerp(Color.Cyan, Color.SkyBlue, Main.rand.NextFloat()) : Color.Lerp(Color.Yellow, Color.Goldenrod, Main.rand.NextFloat());
+                Color particleColor = Color.Lerp(Color.Yellow, Color.Goldenrod, Main.rand.NextFloat());
                 int sparkLifespan = Main.rand.Next(20, 36);
                 float sparkScale = Main.rand.NextFloat(0.75f, 1.25f);
                 for (int i = 0; i < 50; i++)
@@ -80,15 +100,43 @@ namespace Cascade.Content.DedicatedContent.Marv
                     Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
                     GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
                 }
-                GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(60, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
             }
 
             if (DelayTimer >= DelayBeforeFiring)
             {
-                FireProjectiles(owner);
+                if (ChargeTimer % FireRate == 0)
+                {
+                    Owner.ConsumeManaManually(15, 75);
+                    Vector2 spawnPosition = Main.MouseWorld + new Vector2(Main.rand.NextFloat(-300f, 300f), -900f);
+                    Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBolt>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                }
                 ChargeTimer++;
             }
-            DelayTimer++;
+        }
+
+        public void DoBehavior_BoltStrike()
+        {
+            if (DelayTimer == 1)
+            {
+                SoundStyle boltStrikeStartSound = ViableEasterEggNames.Contains(Owner.name) ? CascadeSoundRegistry.ZekromCry : CommonCalamitySounds.ExoPlasmaShootSound;
+                SoundEngine.PlaySound(boltStrikeStartSound, Projectile.Center);
+
+                Color particleColor = Color.Lerp(Color.Cyan, Color.SkyBlue, Main.rand.NextFloat());
+                int sparkLifespan = Main.rand.Next(20, 36);
+                float sparkScale = Main.rand.NextFloat(0.75f, 1.25f);
+                for (int i = 0; i < 50; i++)
+                {
+                    Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
+                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                }
+            }
+
+            if (DelayTimer == DelayBeforeFiring)
+            {
+                Owner.ConsumeManaManually(100, 75);
+                Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 120f;
+                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<BoltStrike>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+            }
         }
 
         public void UpdatePlayerSpecificVariables(Player owner)
@@ -100,55 +148,12 @@ namespace Cascade.Content.DedicatedContent.Marv
             owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
         }
 
-        public void FireProjectiles(Player owner)
-        {
-            if (owner.Calamity().mouseRight)
-            {
-                if (DelayTimer == DelayBeforeFiring + 1 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 120f;
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPosition, Vector2.Zero, ModContent.ProjectileType<BoltStrike>(), Projectile.damage, Projectile.knockBack, Owner: Projectile.owner);
-                }
-            }
-            else
-            {
-                if (ChargeTimer % FireRate == 0 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Vector2 spawnPosition = Main.MouseWorld + new Vector2(Main.rand.NextFloat(-300f, 300f), -900f);
-                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), spawnPosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBolt>(), Projectile.damage, Projectile.knockBack, Owner: Projectile.owner);
-                }
-            }
-        }
-
-        public void UpdateVisuals(Player owner)
-        {
-
-        }
-
-        public override bool PreKill(int timeLeft)
-        {
-            // Ensures that timers aren't gone along for too long.
-            if (Owner.channel)
-            {
-                ResetToStart();
-                return false;
-            }
-            return true;
-        }
-
-        public void ResetToStart()
-        {
-            Projectile.timeLeft = 1200;
-            ChargeTimer = 0f;
-            DelayTimer = 0f;
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
             float rotation = Projectile.rotation + (Owner.direction < 0 ? Pi : 0f);
-            Vector2 drawPosition = Owner.MountedCenter + new Vector2(10f, -15f) + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
+            Vector2 drawPosition = Owner.MountedCenter + new Vector2(0f, -2f) + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
 
             // Draw pulsing backglow effects.
             for (int i = 0; i < 4; i++)

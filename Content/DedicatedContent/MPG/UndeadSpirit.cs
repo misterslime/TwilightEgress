@@ -61,7 +61,7 @@
                     Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / 30f, 0));
                     if (Timer >= TimeBeforeCharging)
                     {
-                        Projectile.velocity = Projectile.SafeDirectionTo(nearestTarget.Center) * 20f;
+                        Projectile.velocity = Projectile.SafeDirectionTo(nearestTarget.Center) * 40f;
                         Projectile.damage = Projectile.originalDamage;
                         AIState = 1f;
                         Timer = 0f;

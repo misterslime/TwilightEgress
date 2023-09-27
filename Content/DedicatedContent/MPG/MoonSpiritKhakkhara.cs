@@ -6,8 +6,6 @@ using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Cascade.Content.Buffs.Debuffs;
-using Cascade.Content.Buffs.Minions;
-using System.Collections.Generic;
 
 namespace Cascade.Content.DedicatedContent.MPG
 {

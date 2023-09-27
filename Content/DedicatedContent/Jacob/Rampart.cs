@@ -108,7 +108,7 @@
                 }
 
                 // Zoom over to the target upon charge completion.
-                Projectile.SimpleMove(target.Center, 60f, 75f);
+                Projectile.SimpleMove(target.Center, 100f, 55f);
                 Projectile.rotation += Projectile.velocity.X * 0.03f;
             }
 

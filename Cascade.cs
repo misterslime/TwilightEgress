@@ -1,4 +1,5 @@
 using Cascade.Assets.Effects;
+using Cascade.Core.Balancing;
 
 namespace Cascade
 {
@@ -9,6 +10,7 @@ namespace Cascade
         public override void Load()
         {
             Instance = this;
+            CascadeBalancingChangesManager.Load();
             if (Main.netMode != NetmodeID.Server)
             {
                 CascadeEffectRegistry.LoadAllShaders();
@@ -24,6 +26,7 @@ namespace Cascade
         public override void Unload()
         {
             Instance = null;
+            CascadeBalancingChangesManager.Unload();
         }
     }
 }

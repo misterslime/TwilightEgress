@@ -10,7 +10,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         private bool ShouldDespawn => Owner.dead || !Owner.channel || !Owner.active || Owner.CCed || Owner.HeldItem.type != ModContent.ItemType<HolidayHalberd>();
 
-        private const int MaxSpinTimeThreshold = 90;
+        private const int MaxSpinTimeThreshold = 50;
 
         private const int RotationSpeedIndex = 0;
 
@@ -74,8 +74,8 @@ namespace Cascade.Content.Projectiles.Rogue
             ref float rotationSpeed = ref Projectile.Cascade().ExtraAI[RotationSpeedIndex];
 
             // Increase the spin speed over time.
-            if (Timer <= 60f)
-                rotationSpeed = Lerp(45f, 10f, Timer / 60f);
+            if (Timer <= 30f)
+                rotationSpeed = Lerp(45f, 8f, Timer / 30f);
 
 
             // Fire and kill.
@@ -91,6 +91,7 @@ namespace Cascade.Content.Projectiles.Rogue
                     if (Owner.Calamity().StealthStrikeAvailable())
                     {
                         Main.projectile[p].Calamity().stealthStrike = true;
+                        Main.projectile[p].damage = Projectile.damage.GetPercentageOfInteger(0.25f);
                         Owner.ConsumeStealthManually();
                     }
                 }
@@ -190,7 +191,7 @@ namespace Cascade.Content.Projectiles.Rogue
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
             Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition; 
 
-            TrailDrawer.Draw(Projectile.oldPos.Take(12), trailOffset, 65);
+            TrailDrawer.Draw(Projectile.oldPos, trailOffset, 36);
             Main.spriteBatch.ExitShaderRegion();
         }
     }

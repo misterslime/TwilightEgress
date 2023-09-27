@@ -163,20 +163,6 @@ namespace Cascade.Content.Skies
                     GlowBalls.Add(glowBall);
                 }
 
-                if (Main.LocalPlayer.ZoneSkyHeight)
-                {
-                    if (Main.rand.NextBool(StardustPillarChance) && StardustPillars.Count < MaxStardustPillars)
-                    {
-                        Vector2 position = Main.screenPosition + Main.rand.NextVector2Circular(Main.screenWidth / 2f, Main.screenHeight / 2f);
-                        float scale = 0.3f;
-                        float depth = Main.rand.NextFloat() * 12f + 1.5f;
-                        int lifespan = Main.rand.Next(720, 840);
-                        StardustPillar pillar = new StardustPillar(position, GetGlowStarColor(), scale, depth, lifespan);
-                        SkyEntityHandler.SpawnSkyEntity(pillar);
-                        StardustPillars.Add(pillar);
-                    }
-                }
-
                 // Remove inactive entities from the list when its time to.
                 GlowStars.RemoveAll(star => star.Time >= star.Lifespan);
                 GlowBalls.RemoveAll(ball => ball.Time >= ball.Lifespan);
@@ -202,15 +188,6 @@ namespace Cascade.Content.Skies
 
                 if (maxDepth >= ball.Depth && minDepth < ball.Depth)
                     ball.Draw(spriteBatch, FadeOpacity);
-            }
-
-            foreach (StardustPillar pillar in StardustPillars)
-            {
-                if (pillar == null)
-                    continue;
-
-                if (maxDepth >= pillar.Depth && minDepth < pillar.Depth)
-                    pillar.Draw(spriteBatch, FadeOpacity);
             }
         }
     }

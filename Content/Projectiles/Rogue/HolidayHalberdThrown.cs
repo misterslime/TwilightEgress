@@ -50,13 +50,11 @@ namespace Cascade.Content.Projectiles.Rogue
             // Projectiles.
             if (Timer % 4 == 0)
             {
-                int damage = (int)(Projectile.damage * 0.65f);
-
                 // Spawn two waves of baubles similarly to Berdly's Halberd Attack.
                 Vector2 baubleVelocity = Vector2.Normalize(Projectile.velocity).RotatedBy(PiOver2);
-                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), damage, Projectile.knockBack, owner: Projectile.owner);
+                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
                 Vector2 baubleVelocity2 = Vector2.Normalize(Projectile.velocity).RotatedBy(-PiOver2);
-                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), damage, Projectile.knockBack, owner: Projectile.owner);
+                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
             }
 
             if (Main.rand.NextBool(3))
@@ -76,7 +74,13 @@ namespace Cascade.Content.Projectiles.Rogue
         {
             // Deltarune reference noway
             if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
-                Projectile.SpawnProjectile(target.Center, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 spawnPosition = target.Center + Vector2.UnitX.RotatedBy(TwoPi * i / 3) * 50f;
+                    Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                }
+            }
         }
 
         public override void Kill(int timeLeft)

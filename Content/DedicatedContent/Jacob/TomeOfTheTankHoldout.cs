@@ -14,6 +14,8 @@
 
         private const int PulseRingInitialScaleIndex = 3;
 
+        private bool IsManaThresholdMet => Owner.statMana >= 300;
+
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/DedicatedContent/Jacob/TomeOfTheTank";
@@ -37,7 +39,7 @@
 
         public override void AI()
         {
-            bool shouldDespawn = !Owner.channel || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<TomeOfTheTank>();
+            bool shouldDespawn = !IsManaThresholdMet || !Owner.channel || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<TomeOfTheTank>();
             if (shouldDespawn)
             {
                 Projectile.Kill();
@@ -113,6 +115,7 @@
             {
                 if (ChargeTimer % 120 == 0)
                 {
+                    Owner.ConsumeManaManually(300);
                     Vector2 spawnPosition = Owner.Center + Vector2.UnitY.RotatedByRandom(TwoPi) * 250f;
                     Vector2 velocity = -spawnPosition.DirectionTo(Owner.Center).SafeNormalize(Vector2.UnitY) * 5f;
                     Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<Rampart>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item105);

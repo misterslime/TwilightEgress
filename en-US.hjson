@@ -16,5 +16,7 @@ Mods: {
 				Tooltip: ""
 			}
 		}
+
+		Projectiles.HolidayHalberdIceShockSnowflake.DisplayName: Holiday Halberd Ice Shock Snowflake
 	}
 }

@@ -15,7 +15,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override void SetDefaults()
         {
-            Item.damage = 100;
+            Item.damage = 500;
             Item.DamageType = DamageClass.Magic;
             Item.width = 124;
             Item.height = 52;
@@ -39,7 +39,8 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ThunderousFuryHoldout>(), damage, knockback, player.whoAmI);
+            float attackType = player.altFunctionUse == 2 ? 1 : 0;
+            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<ThunderousFuryHoldout>(), damage, knockback, player.whoAmI, ai2: attackType);
             return false;
         }
     }

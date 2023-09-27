@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
-
-namespace Cascade
+﻿namespace Cascade
 {
     public static partial class Utilities
     {
+        /// <summary>
+        /// Very simple mathematical function. Calculates the percentage of the value of an integer.
+        /// </summary>
+        /// <returns>A value representing the specified percentage of the integer's original value. </returns>
+        public static int GetPercentageOfInteger(this int integer, float percentage) => (int)(integer * percentage);
+
         /// <summary>
         /// Creates random, jagged <see cref="Vector2"/> points along the distance bewteen the source and destination of a line, akin to those of a lightning bolt.
         /// </summary>

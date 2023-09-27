@@ -65,7 +65,6 @@
             Projectile.DrawBackglow(Projectile.GetAlpha(drawColor * 0.45f), 3f);
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.scale, animated: true);
 
-
             return false;
         }
     }

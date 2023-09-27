@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.DedicatedContent.MPG
+﻿using Cascade.Content.Buffs.Minions;
+
+namespace Cascade.Content.DedicatedContent.MPG
 {
     public class MoonSpiritKhakkharaHoldout : ModProjectile, ILocalizedModType
     {
@@ -118,6 +120,7 @@
             // Spawn in the lanterns.
             if (Timer >= MaxChargeTime && Timer % 30 == 0)
             {
+                Owner.AddBuff(ModContent.BuffType<MoonSpiritLanternBuff>(), 180000);
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 85f;
                 Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<UnderworldLantern>(), Projectile.damage, 0f, true, SoundID.DD2_BetsyFireballShot, Projectile.owner);
 
@@ -144,12 +147,12 @@
                 {
                     Vector2 spawnPosition = Owner.Center + Main.rand.NextVector2CircularEdge(120f, 120f);
                     Vector2 initialVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 16f;
-                    Projectile.SpawnProjectile(spawnPosition, initialVelocity, ModContent.ProjectileType<MassiveUnderworldLantern>(), (int)(Projectile.damage * 3f), Projectile.knockBack * 3f, true, SoundID.Item107, Projectile.owner);
+                    Projectile.SpawnProjectile(spawnPosition, initialVelocity, ModContent.ProjectileType<MassiveUnderworldLantern>(), (int)(Projectile.damage * 15f), Projectile.knockBack * 3f, true, SoundID.Item107, Projectile.owner);
                 }
 
-                // If the player matches the Easter Egg Name Criteria, play a special sound and 
-                // shoot up some text.
-                if (!ViableEasterEggNames.Contains(Owner.name))
+                // If the player matches the Easter Egg Name Criteria,
+                // play a special sound and shoot up some text.
+                if (ViableEasterEggNames.Contains(Owner.name))
                 {
                     CombatText.NewText(Owner.Hitbox, Color.SkyBlue, "Requiem Bouquet", true);
                     SoundEngine.PlaySound(CascadeSoundRegistry.RequiemBouquetPerish, Owner.Center);

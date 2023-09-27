@@ -5,7 +5,7 @@
         private enum AIStates
         {
             Idle,
-            Attacking
+            Attacking        
         }
 
         private Player Owner => Main.player[Projectile.owner];
@@ -96,31 +96,21 @@
             Myself = Projectile;
 
             // Search for nearby targets.
-            Projectile.SearchForViableTargetsForMinion(Owner, 1750f, 100f, out bool foundTarget, out float _, out Vector2 targetCenter);
-            // If the player is using the acceessory as vanity, make sure to always set this to false so no attacks are done.
-            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
-                foundTarget = false;
+            Projectile.SearchForViableTargetsForMinion(Owner, 1750f, 100f, out bool _, out float _, out Vector2 _);
 
-            // Spawn in the weapons.
-            if (!HasSpawnedInWeaponsYet)
+            // If the vanity bool is enabled, stick to the idle movement and do not spawn anything.
+            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
             {
-                HasSpawnedInWeaponsYet = true;
-                for (int i = 0; i < 2; i++)
-                {
-                    int weaponType = i;
-                    Projectile.SpawnProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticallyControlledWeapon>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, true, SoundID.DD2_DarkMageCastHeal, Projectile.owner, ai2: weaponType);
-                }
-                Projectile.netUpdate = true;
+                AttackState = 0f;
             }
 
+            SpawnInWeapons();
+           
+            // AI State control.
             switch ((AIStates)AttackState)
             {
                 case AIStates.Idle:
-                    DoBehavior_Idle(foundTarget);
-                    break;
-
-                case AIStates.Attacking:
-                    DoBehavior_Attacking(foundTarget, targetCenter);
+                    DoBehavior_Idle();
                     break;
             }
 
@@ -130,7 +120,7 @@
             Projectile.AdjustProjectileHitboxByScale(54f, 114f);
         }
 
-        public void DoBehavior_Idle(bool foundTarget)
+        public void DoBehavior_Idle()
         {
             Vector2 idlePosition = Owner.Center + Vector2.UnitX * 175f;
             idlePosition.Y += Lerp(-15f, 15f, SineInOutEasing(Timer / 240f, 0));
@@ -162,7 +152,31 @@
 
         public void DoBehavior_Attacking(bool foundTarget, Vector2 targetCenter)
         {
+            // Will be done later.
+            // This will involve constantly sticking to the player and spawning
+            // defensive projectiles around them, along with healing them occasionally.
+        }
 
+        public void SpawnInWeapons()
+        {
+            // Spawn nothing if the player has them equipped as vanity.
+            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            {
+                HasSpawnedInWeaponsYet = true;
+                return;
+            }
+
+            // Spawn in the weapons.
+            if (!HasSpawnedInWeaponsYet)
+            {
+                HasSpawnedInWeaponsYet = true;
+                for (int i = 0; i < 2; i++)
+                {
+                    int weaponType = i;
+                    Projectile.SpawnProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticallyControlledWeapon>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, true, SoundID.DD2_DarkMageCastHeal, Projectile.owner, ai2: weaponType);
+                }
+                Projectile.netUpdate = true;
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
