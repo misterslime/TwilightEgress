@@ -64,7 +64,7 @@
             Projectile.UpdateProjectileAnimationFrames(0, 4, 3);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             Utilities.CreateRandomizedDustExplosion(20, Projectile.Center, DustID.Shadowflame);
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);

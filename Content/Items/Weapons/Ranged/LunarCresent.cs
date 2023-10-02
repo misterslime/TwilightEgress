@@ -28,7 +28,7 @@ namespace Cascade.Content.Items.Weapons.Ranged
         public override void AddRecipes()
 	    {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<CosmostoneBar>(),8) //this could probably be made more interesting but this is functional for now
+                .AddIngredient(ModContent.ItemType<CosmostoneBar>(), 8) //this could probably be made more interesting but this is functional for now
                 .AddTile(TileID.Anvils)
                 .Register();
         }

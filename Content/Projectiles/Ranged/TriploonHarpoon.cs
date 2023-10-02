@@ -179,7 +179,7 @@ namespace Cascade.Content.Projectiles.Ranged
                 HitCounter += 2f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             // Kill the Triploon Holdout here as well since it seems to not want to die whenever the harpoons retract.
             List<Projectile> activeHarpoons = Main.projectile.Take(Main.maxProjectiles).Where(p => p.active && p.type == ModContent.ProjectileType<TriploonHarpoon>()).ToList();

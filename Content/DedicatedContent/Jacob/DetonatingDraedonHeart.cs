@@ -114,7 +114,7 @@
                 Projectile.SimpleMove(target.Center, 10f, 200f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(CommonCalamitySounds.ExoPlasmaExplosionSound, Projectile.Center);
             GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 10f, 75));

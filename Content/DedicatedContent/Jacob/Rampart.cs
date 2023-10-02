@@ -116,7 +116,7 @@
             Projectile.AdjustProjectileHitboxByScale(62f, 64f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound, Projectile.Center);
             Color pulseRingColor = Color.Lerp(Color.Goldenrod, Color.CornflowerBlue, Main.rand.NextFloat());

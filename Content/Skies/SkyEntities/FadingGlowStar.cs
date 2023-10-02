@@ -6,6 +6,8 @@ namespace Cascade.Content.Skies.SkyEntities
     {
         private float RotationSpeed;
 
+        private float RotationDirection;
+
         public FadingGlowStar(Vector2 position, Color color, float scale, float depth, int lifespan)
         {
             Position = position;
@@ -16,11 +18,12 @@ namespace Cascade.Content.Skies.SkyEntities
             Opacity = 0f;
             Rotation = Main.rand.NextFloat(TwoPi);
             RotationSpeed = Main.rand.NextFloat(0.0025f, 0.01f);
+            RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
         public override void Update()
         {
-            Rotation += RotationSpeed;
+            Rotation += RotationSpeed * RotationDirection;
             if (Time >= Lifespan - 45)
                 Opacity = Clamp(Opacity - 0.1f, 0f, 1f);
             else

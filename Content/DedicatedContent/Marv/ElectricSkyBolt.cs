@@ -9,7 +9,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public List<Vector2> StrikePositions = new List<Vector2>();
 
-        public PrimitiveTrail TrailDrawer { get; set; } = null;
+        public PrimitiveDrawingSystem TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
@@ -69,7 +69,7 @@ namespace Cascade.Content.DedicatedContent.Marv
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 30; i++)
             {
@@ -91,12 +91,12 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override bool PreDraw(ref Color lightColor)
         {
-            TrailDrawer ??= new PrimitiveTrail(SetTrailWidth, SetTrailColor, null, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
+            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
-            TrailDrawer.Draw(StrikePositions, -Main.screenPosition, 22);
+            TrailDrawer.DrawPrimitives(StrikePositions, -Main.screenPosition, 22);
             Main.spriteBatch.ExitShaderRegion();
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;

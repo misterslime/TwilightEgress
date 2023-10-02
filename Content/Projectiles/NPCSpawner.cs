@@ -19,7 +19,7 @@
             Projectile.timeLeft = 1;
         }
 
-        public override void Kill(int timeLeft) 
+        public override void OnKill(int timeLeft) 
         {
             // Spawn the required NPC on death.
             if (Main.netMode != NetmodeID.MultiplayerClient)

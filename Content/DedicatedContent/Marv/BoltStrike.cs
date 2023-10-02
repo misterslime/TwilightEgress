@@ -16,7 +16,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public AresCannonChargeParticleSet ChargingParticles = new AresCannonChargeParticleSet(-1, 15, 100f, Color.LightSkyBlue);
 
-        public PrimitiveTrail TrailDrawer { get; set; } = null;
+        public PrimitiveDrawingSystem TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
@@ -210,7 +210,7 @@ namespace Cascade.Content.DedicatedContent.Marv
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (ScaleControl < 0.25f)
             {
@@ -252,12 +252,12 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public void DrawPrims()
         {
-            TrailDrawer ??= new PrimitiveTrail(SetTrailWidth, SetTrailColor, null, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-            TrailDrawer.Draw(Projectile.oldPos.ToArray(), Projectile.Size * 0.5f - Main.screenPosition, 85);
+            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
             Main.spriteBatch.ExitShaderRegion();
         }
 

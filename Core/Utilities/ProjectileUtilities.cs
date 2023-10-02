@@ -1,4 +1,5 @@
 ﻿using rail;
+using static Humanizer.In;
 
 namespace Cascade
 {
@@ -150,13 +151,13 @@ namespace Cascade
             return closestNPC;
         }
 
-        public static void SearchForViableTargetsForMinion(this Projectile projectile, Player owner, float maxSearchDistance, float maxChaseDistanceThroughWalls, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter) 
+        public static void SearchForViableTargetsForMinion(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter) 
         {
             distanceFromTarget = maxSearchDistance;
             targetCenter = projectile.position;
             foundTarget = false;
 
-            // Ensures minions using this are compatible with the item's right click targetting feature.
+            // Ensures minions using this will still target accordingly if the minion is compatible with the right-click targeting feature.
             if (owner.HasMinionAttackTargetNPC)
             {
                 NPC target = Main.npc[owner.MinionAttackTargetNPC];
@@ -182,7 +183,7 @@ namespace Cascade
                         bool closestToProjectile = Vector2.Distance(projectile.Center, target.Center) > distanceBetween;
                         bool inRangeOfProjectile = distanceBetween < maxSearchDistance;
                         bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, target.position, target.width, target.height);
-                        bool closestTargetThroughWalls = distanceBetween < maxChaseDistanceThroughWalls;
+                        bool closestTargetThroughWalls = distanceBetween < maxSearchDistanceThroughWalls;
 
                         if (((closestToProjectile && inRangeOfProjectile) || !foundTarget) || (lineOfSight || closestTargetThroughWalls))
                         {
@@ -193,6 +194,44 @@ namespace Cascade
                     }
                 }
             }
-        }       
+        }
+        
+        public static void GetMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
+        {
+            target = null;
+            foundTarget = false;
+
+            // Ensures minions using this will still target accordingly if the minion is compatible with the right-click targeting feature.
+            if (owner.HasMinionAttackTargetNPC)
+            {
+                target = Main.npc[owner.MinionAttackTargetNPC];
+                float distanceBetweem = Vector2.Distance(target.Center, projectile.Center);
+                if (distanceBetweem < maxSearchDistance)
+                    foundTarget = true;
+            }
+
+            // Usual targetting code.
+            if (!foundTarget)
+            {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (npc.CanBeChasedBy())
+                    {
+                        float distanceBetween = Vector2.Distance(npc.Center, projectile.Center);
+                        bool closestToProjectile = Vector2.Distance(projectile.Center, npc.Center) > distanceBetween;
+                        bool inRangeOfProjectile = distanceBetween < maxSearchDistance;
+                        bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
+                        bool closestTargetThroughWalls = distanceBetween < maxSearchDistanceThroughWalls;
+
+                        if (((closestToProjectile && inRangeOfProjectile) || !foundTarget) || (lineOfSight || closestTargetThroughWalls))
+                        {
+                            target = npc;
+                            foundTarget = true;
+                        }
+                    }
+                }
+            }
+        }
     }
 }

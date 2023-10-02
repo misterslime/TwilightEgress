@@ -10,7 +10,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         private Player Owner => Main.player[Projectile.owner];
 
-        PrimitiveTrail TrailDrawer = null;
+        PrimitiveDrawingSystem TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Rogue";
 
@@ -18,8 +18,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Holiday Halberd");
-            ProjectileID.Sets.TrailCacheLength[Type] = 14;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
             ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
@@ -83,7 +82,7 @@ namespace Cascade.Content.Projectiles.Rogue
             }
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
 
             for (int i = 0; i < 12; i++)
@@ -161,13 +160,13 @@ namespace Cascade.Content.Projectiles.Rogue
 
         public void DrawPrimTrail()
         {
-            TrailDrawer ??= new PrimitiveTrail(SetTrailWidth, SetTrailColor, null, GameShaders.Misc["CalamityMod:TrailStreak"]);
+            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
             Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
 
-            TrailDrawer.Draw(Projectile.oldPos.Take(12), trailOffset, 65);
+            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 65);
             Main.spriteBatch.ExitShaderRegion();
         }
     }

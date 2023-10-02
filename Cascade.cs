@@ -5,12 +5,17 @@ namespace Cascade
 {
     public class Cascade : Mod
 	{
+        public Mod CalamityMod;
+
         public static Cascade Instance { get; private set; }
 
         public override void Load()
         {
             Instance = this;
+            CalamityMod = ModLoader.GetMod("CalamityMod");
+
             CascadeBalancingChangesManager.Load();
+
             if (Main.netMode != NetmodeID.Server)
             {
                 CascadeEffectRegistry.LoadAllShaders();

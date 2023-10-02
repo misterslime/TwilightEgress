@@ -15,12 +15,9 @@ TheBastOffense: {
 Triploon: {
 	DisplayName: Triploon
 	Tooltip: Fires a trio of piercing harpoons which embed themselves into enemies
-<<<<<<< HEAD
-=======
 }
 
 LunarCresent: {
 	DisplayName: Lunar Cresent
 	Tooltip: Converts wooden arrows into Jester's Arrows
->>>>>>> 1e2ea38601e58b1776570d671fff97b5ca2f7dec
 }

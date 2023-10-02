@@ -13,8 +13,6 @@ namespace Cascade.Content.Skies.SkyEntities
 
         private Vector2 Destination;
 
-        private PrimitiveTrail ConstellationDrawer = null;
-
         public StarConstellation(Vector2 position, Vector2 destination, Color color, float scale, float depth, int lifespan, int constellationSegments, float constellationSway, float constellationJagednessNumerator)
         {
             Position = position;
@@ -40,7 +38,6 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Draw(SpriteBatch spriteBatch, float intensity)
         {
-            DrawConstellationLines(spriteBatch, intensity);
             DrawEndingPointStars(spriteBatch, intensity, Position);
             DrawEndingPointStars(spriteBatch, intensity, Destination);
         }
@@ -48,22 +45,6 @@ namespace Cascade.Content.Skies.SkyEntities
         public float GetConstellationWidth(float completionValue) => 5f * Scale * Opacity;
 
         public Color GetConstellationColor(float completionValue) => Color * Opacity;
-
-        public void DrawConstellationLines(SpriteBatch spriteBatch, float intensity)
-        {
-            ConstellationDrawer ??= new PrimitiveTrail(GetConstellationWidth, GetConstellationColor, null, GameShaders.Misc["CalamityMod:TrailStreak"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
-            List<Vector2> trailPoints = Utilities.CreateLightningBoltPoints(Position, Destination, ConstellationSway, ConstellationJagednessNumerator);
-
-            Vector2 screenBounds = Main.screenPosition + new Vector2(Main.screenWidth >> 1, Main.screenHeight >> 1);
-            Vector2 depthRelation = new Vector2(1f / Depth, 1.1f / Depth);
-            Vector2 drawOffset = (Destination - screenBounds) * depthRelation + screenBounds - Main.screenPosition;
-
-            ConstellationDrawer.Draw(trailPoints, -Main.screenPosition, ConstellationSegments);
-            Main.spriteBatch.ExitShaderRegion();
-        }
 
         public void DrawEndingPointStars(SpriteBatch spriteBatch, float intensity, Vector2 drawPos)
         {

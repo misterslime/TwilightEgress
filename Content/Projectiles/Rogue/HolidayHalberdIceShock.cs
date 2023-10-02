@@ -90,7 +90,7 @@ namespace Cascade.Content.Projectiles.Rogue
             Projectile.AdjustProjectileHitboxByScale(92f, 92f);
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(CascadeSoundRegistry.CryogenShieldBreak, Projectile.Center);
             // Spawn a ring of arcing snowflakes, similar to the original Iceshock.

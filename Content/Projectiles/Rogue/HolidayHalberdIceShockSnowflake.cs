@@ -37,7 +37,7 @@
             Projectile.velocity *= 0.987f;
         }
 
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Shatter, Projectile.Center);
             Utilities.CreateRandomizedDustExplosion(12, Projectile.Center, DustID.IceTorch, dustScale: 5f);

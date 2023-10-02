@@ -61,7 +61,7 @@ namespace Cascade.Content.Projectiles.Melee
 
         private const int YharonDrawImageRadiusIndex = 5;
 
-        private PrimitiveTrail TrailDrawer = null;
+        private PrimitiveDrawingSystem TrailDrawer { get; set; }
 
         public float SmallSwingRatio() => PiecewiseAnimation(Timer / SmallSwingMaxTime, Anticipation, Thrust);
 
@@ -74,8 +74,8 @@ namespace Cascade.Content.Projectiles.Melee
         public override void SetStaticDefaults()
         {
             ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
-            ProjectileID.Sets.TrailCacheLength[Type] = 24;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailingMode[Type] = 0;
         }
 
         public override void SetDefaults()
@@ -123,7 +123,6 @@ namespace Cascade.Content.Projectiles.Melee
 
             Timer++;
             Projectile.Center = Owner.MountedCenter + DistanceFromPlayer;
-            ParticleVisuals();
             UpdatePlayerVariables(AttackType == 1f);
         }
 
@@ -400,9 +399,6 @@ namespace Cascade.Content.Projectiles.Melee
             // This sets the starting position of the primitive trail so that the other positions follow it accordingly
             Projectile.oldPos[0] = Projectile.position + Projectile.rotation.ToRotationVector2() * 128f * Projectile.scale;
 
-            if (AttackType != 1f)
-                DrawPrimTrail();
-
             DrawHalberd();
             return false;
         }
@@ -471,7 +467,7 @@ namespace Cascade.Content.Projectiles.Melee
 
         public float SetTrailWidth(float completionRatio)
         {
-            return 60f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Projectile.scale;
+            return 40f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Projectile.scale;
         }
 
         public Color SetTrailColor(float completionRatio)
@@ -484,7 +480,7 @@ namespace Cascade.Content.Projectiles.Melee
 
         public void DrawPrimTrail()
         {
-            TrailDrawer ??= new PrimitiveTrail(SetTrailWidth, SetTrailColor, null, GameShaders.Misc["CalamityMod:ExobladePierce"]);
+            /*TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ExobladePierce"]);
 
             Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
             Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
@@ -497,8 +493,8 @@ namespace Cascade.Content.Projectiles.Melee
             GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
             Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
 
-            TrailDrawer.Draw(Projectile.oldPos.Take(9), trailOffset, 48);
-            Main.spriteBatch.ExitShaderRegion();
+            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 60);
+            Main.spriteBatch.ExitShaderRegion();*/
         }
     }
 }

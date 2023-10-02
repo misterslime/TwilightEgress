@@ -1,6 +1,7 @@
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Ranged;
 using Cascade.Content.Items.Materials;
+using Terraria.ID;
 
 namespace Cascade.Content.Items.Weapons.Ranged
 {
@@ -27,7 +28,8 @@ namespace Cascade.Content.Items.Weapons.Ranged
             Item.rare = ItemRarityID.Blue;
             Item.shootSpeed = 8.5f;
             Item.useAmmo = AmmoID.Gel;
-            Item.shoot = 85; //why is it red tho i stole this from elf melter not flamethrower wtf..,.,.,.
+            Item.shoot = ProjectileID.Flames; //why is it red tho i stole this from elf melter not flamethrower wtf..,.,.,.
+                                              // Top ten reasons to not use Visual Studio Code iirc -fryzahh
             Item.UseSound = SoundID.Item34;
             Item.consumeAmmoOnFirstShotOnly = true;
             
@@ -36,7 +38,7 @@ namespace Cascade.Content.Items.Weapons.Ranged
         public override void AddRecipes()
 	    {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<CosmostoneBar>(),8)
+                .AddIngredient(ModContent.ItemType<CosmostoneBar>(), 8)
                 .AddIngredient<SparkSpreader>()
                 .AddTile(TileID.Anvils)
                 .Register();
