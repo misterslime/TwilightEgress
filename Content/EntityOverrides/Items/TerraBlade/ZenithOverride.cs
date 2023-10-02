@@ -1,5 +1,4 @@
-//this is only worth reimplementing if we can manage to get First Fractal to work so i will also comment this out
-/*using CalamityMod.Items.Materials;
+using CalamityMod.Items.Materials;
 
 namespace Cascade.Content.EntityOverrides.Items.TerraBlade
 {
@@ -26,4 +25,4 @@ namespace Cascade.Content.EntityOverrides.Items.TerraBlade
 
         }
     }
-}*/
+}
