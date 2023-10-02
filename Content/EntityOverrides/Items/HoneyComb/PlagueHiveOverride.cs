@@ -41,7 +41,7 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
             // Not incrementing here will cause new lines we insert to be pushed down under new ones,
             // similarly to what happens to the main index line we are inserting at.
             tooltips.InsertNewTooltipLine(index + 1, "HoneyCombEffect", "Douses the user in honey when damaged\nIncreases flight time by 7%");
-            tooltips.InsertNewTooltipLine(index + 2, "FlavorText", "The hive has found its new host.");
+            tooltips.InsertNewTooltipLine(index + 2, "FlavorText", "\'The hive has found its new host\'");
         }
     }
 }

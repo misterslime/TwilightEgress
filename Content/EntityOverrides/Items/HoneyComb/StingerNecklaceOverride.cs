@@ -10,7 +10,8 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips){
-            tooltips.Add(new(Mod,"BeeFlightEffect","7% increased flight time"));
+            int index = tooltips.FindIndex(line => line.Name == "JourneyResearch");
+            tooltips.InsertNewTooltipLine(index, "BeeFlightEffect", "7% increased flight time");
         }
     }
 }
