@@ -1,5 +1,6 @@
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Rarities;
 using Terraria.GameContent.Creative;
 
 namespace Cascade.Content.EntityOverrides.Items.TerraBlade
@@ -11,6 +12,7 @@ namespace Cascade.Content.EntityOverrides.Items.TerraBlade
         public override void SetDefaults(Item item)
         {
             item.noUseGraphic = true;
+            item.rare = ModContent.RarityType<Turquoise>();
             item.SetNameOverride("First Fractal");
         }
 

@@ -1,5 +1,3 @@
-//commented this out because it just messes with stuff and also still doesnt work atm
-/*
 namespace Cascade.Content.EntityOverrides.Items.DepthCrusher
 {
     public class DepthCrusherOverride : ItemOverride
@@ -16,22 +14,20 @@ namespace Cascade.Content.EntityOverrides.Items.DepthCrusher
             item.DamageType = DamageClass.MeleeNoSpeed;
             item.noUseGraphic = true;
             item.useTurn = false;
-            item.useStyle = 1;
+            item.useStyle = ItemUseStyleID.Swing;
             item.shoot = ProjectileID.WoodenArrowFriendly;
             item.shootSpeed = 10f;
         }
 
-        public override bool AltFunctionUse(Item item, Player player)
-        {
-            return true;
-        }
-        public override bool CanUseItem(Item item, Player player)
+        public override bool AltFunctionUse(Item item, Player player) => true;
+
+        public override bool? UseItem(Item item, Player player)
         {
             if (player.altFunctionUse == 2)
             {
                 item.hammer = 70;
                 item.noUseGraphic = false;
-                item.shoot = 0;
+                item.shoot = ProjectileID.None;
                 item.useTurn = true;
             }
             else
@@ -41,8 +37,8 @@ namespace Cascade.Content.EntityOverrides.Items.DepthCrusher
                 item.shoot = ProjectileID.WoodenArrowFriendly;
                 item.useTurn = false;
             }
-            return CanUseItem(item, player);
+
+            return true;
         }
     }
 }
-*/
