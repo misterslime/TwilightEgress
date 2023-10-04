@@ -1,4 +1,5 @@
 ﻿using Cascade.Content.Buffs.Minions;
+using Terraria.GameContent.UI.Elements;
 
 namespace Cascade.Content.DedicatedContent.MPG
 {
@@ -12,6 +13,8 @@ namespace Cascade.Content.DedicatedContent.MPG
 
         private bool ShouldDealContactDamage = false;
 
+        private bool ShouldDrawUndeadSpirit = false;
+
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float Timer => ref Projectile.ai[0];
@@ -21,6 +24,10 @@ namespace Cascade.Content.DedicatedContent.MPG
         private ref float LocalAIState => ref Projectile.ai[2]; 
 
         private const int IdleAngleIndex = 0;
+
+        private const int UndeadSpiritFrameIndex = 1;
+
+        private const int UndeadSpiritFrameCounterIndex = 2;
 
         public new string LocalizationCategory => "Projectiles.Summon";
 
@@ -51,9 +58,17 @@ namespace Cascade.Content.DedicatedContent.MPG
             Projectile.minionSlots = 1;
         }
 
-        public override void SendExtraAI(BinaryWriter writer) => writer.Write(ShouldDealContactDamage);
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(ShouldDealContactDamage);
+            writer.Write(ShouldDrawUndeadSpirit);
+        }
 
-        public override void ReceiveExtraAI(BinaryReader reader) => ShouldDealContactDamage = reader.ReadBoolean();
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            ShouldDealContactDamage = reader.ReadBoolean();
+            ShouldDrawUndeadSpirit = reader.ReadBoolean();
+        }
 
         public override bool? CanCutTiles() => false;
 
@@ -87,7 +102,7 @@ namespace Cascade.Content.DedicatedContent.MPG
 
         public void DoBehavior_Idle(bool foundTarget)
         {
-            int timeBeforeSwitchingAI = 60;
+            int timeBeforeSwitchingAI = 30;
             ref float idleAngle = ref Projectile.Cascade().ExtraAI[IdleAngleIndex];
 
             // Get a list of all active Underworld Lanterns and sort them according to their 
@@ -118,6 +133,8 @@ namespace Cascade.Content.DedicatedContent.MPG
             Projectile.Center = Vector2.Lerp(Projectile.Center, idlePosition, 0.225f);
             Projectile.Opacity = Clamp(Projectile.Opacity + 0.1f, 0f, 1f);
             Projectile.scale = Clamp(Projectile.scale - 0.1f, 1f, 1.75f);
+            Projectile.rotation *= 0.9f;
+            ShouldDrawUndeadSpirit = false;
 
             // Switch to attack mode after some time.
             if (Timer >= timeBeforeSwitchingAI && foundTarget)
@@ -130,7 +147,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             int chaseTime = 720;
             int returnTime = 60;
             int cooldownTime = 15;
-            float maxChaseSpeed = 45f;
+            float maxChaseSpeed = 55f;
             float maxTurnResistance = 40f;
 
             // Immediately move into the return phase if there is nothing to target.
@@ -173,6 +190,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                     Projectile.Opacity = Clamp(Projectile.Opacity + 0.1f, 0f, 1f);
                     Projectile.scale = Clamp(Projectile.scale + 0.1f, 0f, 1.75f);
                     Projectile.SimpleMove(target.Center, maxChaseSpeed, maxTurnResistance);
+                    Projectile.rotation = Projectile.velocity.X * 0.03f;
 
                     // Adjust the hitbox to accommodate for the new sprite.
                     Projectile.AdjustProjectileHitboxByScale(42f, 50f);
@@ -186,6 +204,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                     }
                 }
 
+                ShouldDrawUndeadSpirit = true;
                 ShouldDealContactDamage = true;
             }
 
@@ -207,7 +226,13 @@ namespace Cascade.Content.DedicatedContent.MPG
                     // Velocity is reset here in order to not screw up the alignment of each lantern for the idle AI code.
                     Projectile.velocity *= 0f;
                 }
+
+                // Turn off contact damage.
+                ShouldDealContactDamage = false;
             }
+
+            Projectile.spriteDirection = target != null ? (target.Center.X < Projectile.Center.X).ToDirectionInt() : Projectile.direction;
+            AnimateSpirit();
         }
 
         public void SwitchAIStates(int aiState)
@@ -216,7 +241,14 @@ namespace Cascade.Content.DedicatedContent.MPG
             Timer = 0f;
             LocalAIState = 0f;
             ShouldDealContactDamage = false;
+            ShouldDrawUndeadSpirit = false;
             Projectile.netUpdate = true;
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (target.type == Projectile.Cascade().SpecificNPCTypeToCheckOnHit.Value)
+                SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh);
         }
 
         public override void OnKill(int timeLeft)
@@ -231,20 +263,47 @@ namespace Cascade.Content.DedicatedContent.MPG
             }
         }
 
+        public void AnimateSpirit()
+        {
+            ref float undeadSpiritFrame = ref Projectile.Cascade().ExtraAI[UndeadSpiritFrameIndex];
+            ref float undeadSpiritFrameCounter = ref Projectile.Cascade().ExtraAI[UndeadSpiritFrameCounterIndex];
+
+            undeadSpiritFrameCounter++;
+            if (undeadSpiritFrameCounter >= 4f)
+            {
+                undeadSpiritFrame++;
+                if (undeadSpiritFrame >= 4f)
+                    undeadSpiritFrame = 0f;
+                undeadSpiritFrameCounter = 0f;
+            }
+        }
+
         public override bool PreDraw(ref Color lightColor)
         {
+            ref float undeadSpiritFrame = ref Projectile.Cascade().ExtraAI[UndeadSpiritFrameIndex];
+            ref float undeadSpiritFrameCounter = ref Projectile.Cascade().ExtraAI[UndeadSpiritFrameCounterIndex];
+
             Texture2D baseTexture = TextureAssets.Projectile[Type].Value;
+            Texture2D spiritTexture = TextureAssets.Npc[NPCID.PirateGhost].Value;
+
+            SpriteEffects spiritEffects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             int frameHeight = baseTexture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
             Rectangle projRec = new Rectangle(0, frameY, baseTexture.Width, frameHeight);
+
+            Rectangle spiritRec = spiritTexture.Frame(1, 4, 0, (int)(undeadSpiritFrame % 4));
 
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
             {
                 Vector2 drawPosition = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
                 Color trailColor = Color.Cyan * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
-                Main.EntitySpriteDraw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.rotation, projRec.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+
+                if (ShouldDrawUndeadSpirit)
+                    Main.EntitySpriteDraw(spiritTexture, drawPosition, spiritRec, Projectile.GetAlpha(trailColor), Projectile.rotation, spiritRec.Size() / 2f, Projectile.scale, spiritEffects, 0);
+                else
+                    Main.EntitySpriteDraw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.rotation, projRec.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
             Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
 

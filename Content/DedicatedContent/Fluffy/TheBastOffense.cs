@@ -1,10 +1,6 @@
 ﻿using CalamityMod.Items;
-using CalamityMod.Items.Materials;
-using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Ranged;
 using CalamityMod.Items.Weapons.Rogue;
-using CalamityMod.Items.Weapons.Summon;
-using CalamityMod.Tiles.Furniture.CraftingStations;
 
 namespace Cascade.Content.DedicatedContent.Fluffy
 {
@@ -44,7 +40,8 @@ namespace Cascade.Content.DedicatedContent.Fluffy
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
+            float attackType = player.altFunctionUse == 2 ? 1 : 0;
+            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, ai2: attackType);
             return false;
         }
 

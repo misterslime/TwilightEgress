@@ -46,32 +46,33 @@
                 return;
             }
 
-            UpdateProjectileVariablesAndFunctions(Owner);
-            UpdatePlayerVariables(Owner);
+            UpdateProjectileVariablesAndFunctions();
+            UpdatePlayerVariables();
         }
 
-        public void UpdateProjectileVariablesAndFunctions(Player owner)
+        public void UpdateProjectileVariablesAndFunctions()
         {
-            Projectile.Center = owner.RotatedRelativePoint(owner.MountedCenter);
+            Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter);
             Projectile.rotation += 0.03f * Projectile.direction;
             if (Projectile.spriteDirection == -1)
             {
                 Projectile.rotation += Pi;
             }
 
-            PerformAttack(owner);
+            PerformAttack();
         }
 
-        public void UpdatePlayerVariables(Player owner)
+        public void UpdatePlayerVariables()
         {
-            owner.heldProj = Projectile.whoAmI;
-            owner.itemTime = 2;
-            owner.itemAnimation = 2;
-            owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, owner.Center.AngleTo(Main.MouseWorld) - PiOver2);
-            owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, owner.Center.AngleTo(Main.MouseWorld) - PiOver2);
+            Owner.heldProj = Projectile.whoAmI;
+            Owner.itemTime = 2;
+            Owner.itemAnimation = 2;
+            Owner.ChangeDir(Sign(Owner.AngleTo(Main.MouseWorld).ToRotationVector2().X));
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Owner.Center.AngleTo(Main.MouseWorld) - PiOver2);
+            Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Owner.Center.AngleTo(Main.MouseWorld) - PiOver2);
         }
 
-        public void PerformAttack(Player owner)
+        public void PerformAttack()
         {
             ref float ritualCircleScale = ref Projectile.Cascade().ExtraAI[RitualCircleScaleIndex];
             ref float ritualCircleOpacity = ref Projectile.Cascade().ExtraAI[RitualCircleOpacityIndex];
@@ -137,7 +138,7 @@
                 DrawRitualCircle();
                 Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
             }
-            DrawBook();
+            DrawBook(lightColor);
             return false;
         }
 
@@ -172,17 +173,18 @@
 
                 Main.EntitySpriteDraw(orbitingCircle, orbitingRitualDrawPosition, null, Projectile.GetAlpha(outerOrbitingCircleColor), Projectile.rotation, orbitingCircle.Size() / 2f, scale, SpriteEffects.None);
                 Main.EntitySpriteDraw(blurredOrbitingCircle, orbitingRitualDrawPosition, null, Projectile.GetAlpha(blurredOrbitingCircleColor), -Projectile.rotation, blurredOrbitingCircle.Size() / 2f, scale, SpriteEffects.None);
-
             }
         }
 
-        public void DrawBook()
+        public void DrawBook(Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            SpriteEffects spriteDirection = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            float rotation = Owner.MountedCenter.AngleTo(Main.MouseWorld) + Pi;
-            Vector2 drawPosition = Owner.MountedCenter - rotation.ToRotationVector2() * 20f - Main.screenPosition;
-            Main.EntitySpriteDraw(texture, drawPosition, texture.Frame(), Projectile.GetAlpha(Color.White), rotation, texture.Size() / 2f, Projectile.scale, spriteDirection, 0);
+            SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+            float rotation = Owner.AngleTo(Main.MouseWorld) + (Owner.direction < 0 ? Pi : 0f);
+            Vector2 drawPosition = Owner.MountedCenter + new Vector2(0f, -2f) + rotation.ToRotationVector2() * (Owner.direction < 0 ? -30f : 30f) - Main.screenPosition;
+
+            Main.EntitySpriteDraw(texture, drawPosition, texture.Frame(), Projectile.GetAlpha(lightColor), rotation, texture.Size() / 2f, Projectile.scale, effects, 0);
         }
     }
 }

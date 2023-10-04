@@ -8,9 +8,13 @@
 
         private Player ClosestHostilePlayer = null;
 
-        public ref float Timer => ref Projectile.ai[0];
+        private ref float Timer => ref Projectile.ai[0];
 
-        public ref float BounceLimit => ref Projectile.ai[1];
+        private ref float BounceLimit => ref Projectile.ai[1];
+
+        private ref float RotationDirection => ref Projectile.Cascade().ExtraAI[0];
+
+        private ref float RotationSpeed => ref Projectile.Cascade().ExtraAI[1];
 
         private bool CollidedWithTheOwner = false;
 
@@ -29,6 +33,7 @@
         {
             Projectile.width = 32;
             Projectile.height = 32;
+            Projectile.scale = 0f;
             Projectile.aiStyle = -1;
             Projectile.penetrate = 1;
             Projectile.ignoreWater = true;
@@ -37,6 +42,13 @@
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 30;
+        }
+
+        public override void OnSpawn(IEntitySource source)
+        {
+            Projectile.rotation = Projectile.velocity.ToRotation();
+            RotationDirection = Main.rand.NextBool().ToDirectionInt();
+            RotationSpeed = Main.rand.NextFloat(45f, 150f);
         }
 
         public override void AI()
@@ -62,7 +74,7 @@
             {
                 // Slow down for a second before homing in.
                 Projectile.velocity *= 0.98f;
-                Projectile.rotation += TwoPi / 45f;
+                Projectile.rotation += TwoPi / RotationSpeed * RotationDirection;
             }
             else
             {
@@ -122,6 +134,7 @@
             }         
 
             Timer++;
+            Projectile.scale = Clamp(Projectile.scale + 0.05f, 0f, 1f);
             if (Main.rand.NextBool(3))
                 Utilities.CreateDustLoop(2, Main.rand.NextVector2Circular(Projectile.width, Projectile.height), Vector2.Zero, DustID.FireworkFountain_Yellow, shouldDefyGravity: true);
         }

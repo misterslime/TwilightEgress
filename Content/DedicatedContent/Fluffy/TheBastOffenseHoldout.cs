@@ -2,13 +2,21 @@
 {
     public class TheBastOffenseHoldout : ModProjectile, ILocalizedModType
     {
+        private enum AttackState
+        {
+            BastBarrage,
+            BIGSHOTS
+        }
+
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float ChargeTimer => ref Projectile.ai[0];
 
         private ref float ResetAnimationTimer => ref Projectile.ai[1];
 
-        private ref float AIState => ref Projectile.ai[2];
+        private ref float AttackType => ref Projectile.ai[2]; 
+
+        private ref float AIState => ref Projectile.localAI[0];
 
         public const int BastIncreaseDelayIndex = 0;
 
@@ -16,7 +24,7 @@
 
         public const int BackglowRotationIndex = 2;
 
-        public const int WeaponShakeIndex = 3;
+        public const int WeaponShakeAngleIndex = 3;
 
         public const int OldRotationIndex = 4;
 
@@ -35,180 +43,224 @@
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
-            Projectile.timeLeft = 2700;
+            Projectile.timeLeft = 3600;
         }
 
         public override void AI()
         {
             ref float bastIncreaseDelay = ref Projectile.Cascade().ExtraAI[BastIncreaseDelayIndex];
             ref float bastCatCount = ref Projectile.Cascade().ExtraAI[BastCatCountIndex];
-            ref float weaponShake = ref Projectile.Cascade().ExtraAI[WeaponShakeIndex];
-            
-            bool shouldDespawn = !Owner.active || Owner.HeldItem.type != ModContent.ItemType<TheBastOffense>();
+            ref float weaponShakeAngle = ref Projectile.Cascade().ExtraAI[WeaponShakeAngleIndex];
+            ref float oldRotation = ref Projectile.Cascade().ExtraAI[OldRotationIndex];
+            ref float recoilStrength = ref Projectile.Cascade().ExtraAI[RecoilStrengthIndex];
+
+            bool shouldDespawn = !Owner.active || Owner.dead || Owner.CCed || Owner.HeldItem.type != ModContent.ItemType<TheBastOffense>();
             if (shouldDespawn)
             {
                 Projectile.Kill();
                 return;
             }
 
-            UpdateProjectileVariablesAndFunctions(Owner, ref bastIncreaseDelay, ref bastCatCount);
-            UpdatePlayerVariables(Owner);
+
+            switch ((AttackState)AttackType)
+            {
+                case AttackState.BastBarrage:
+                    DoBehavior_BastBarrage(ref bastIncreaseDelay, ref bastCatCount, ref weaponShakeAngle, ref oldRotation, ref recoilStrength);
+                    break;
+
+                case AttackState.BIGSHOTS:
+                    DoBehavior_BIGSHOTS(ref oldRotation);
+                    break;
+            }
+
+            UpdateProjectileVariablesAndFunctions();
+            UpdatePlayerVariables();
         }
 
-        public void UpdateProjectileVariablesAndFunctions(Player owner, ref float bastIncreaseDelay, ref float bastCatCount)
+        public void UpdateProjectileVariablesAndFunctions()
         {
-            Projectile.Center = owner.RotatedRelativePoint(owner.MountedCenter, true);
+            Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             if (Projectile.spriteDirection == -1)
             {
                 Projectile.rotation += Pi;
             }
-
-            PerformAttacks(owner, ref bastIncreaseDelay, ref bastCatCount);
         }
 
-        public void PerformAttacks(Player owner, ref float bastIncreaseDelay, ref float bastCatCount)
+        public void DoBehavior_BastBarrage(ref float bastIncreaseDelay, ref float bastCatCount, ref float weaponShakeAngle, ref float oldRotation, ref float recoilStrength)
         {
-            bool isChanneling = Owner.channel && Owner.active && Owner.HeldItem.type == ModContent.ItemType<TheBastOffense>();
-            bool isChannelingRMB = Owner.Calamity().mouseRight && Owner.active && Owner.HeldItem.type == ModContent.ItemType<TheBastOffense>();
-
             if (AIState == 0f)
             {
-                int chargeTime = 120;
-                if (Owner.altFunctionUse == 2 && isChannelingRMB)
+                // Blow up after some time.
+                if (ChargeTimer >= 1200f)
                 {
-                    Projectile.rotation = Projectile.rotation.AngleLerp(owner.MountedCenter.AngleTo(Main.MouseWorld), 0.2f);
-                    if (ChargeTimer <= chargeTime)
-                    {
-                        if (ChargeTimer % 10 == 0)
-                        {
-                            float maxScale = ChargeTimer == chargeTime ? 0.01f : 1.25f;
-                            float newScale = ChargeTimer == chargeTime ? 5f : 0.01f;
-                            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
-                            SoundEngine.PlaySound(SoundID.Item75, Projectile.Center);
-                        }
-                    }
-
-                    if (ChargeTimer >= chargeTime)
-                    {
-                        AIState = 1f;
-                        Vector2 bastStatueMegaVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 10f;
-                        Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
-                    }
-
-                    ChargeTimer++;
+                    Projectile.Kill();
+                    return;
                 }
+
+                Projectile.rotation = Owner.MountedCenter.AngleTo(Main.MouseWorld);
+
+                int increaseBastInterval = 5;
+                int maxBastCatCount = 200;
+
+                // Initialization.
+                if (ChargeTimer == 0)
+                {
+                    bastIncreaseDelay = 60f;
+                    Projectile.netUpdate = true;
+                }
+
+                // Everytime the charge timer has reached past both the interval and delay it is set back to 0
+                // and the delay is decreased by 1, making it charge faster over time.
+                if (ChargeTimer >= increaseBastInterval + bastIncreaseDelay && bastCatCount <= maxBastCatCount)
+                {
+                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 1.25f + Main.rand.NextFloat(0.3f), 0.01f, 30));
+                    SoundEngine.PlaySound(SoundID.Item149 with { MaxInstances = 0 }, Projectile.Center);
+                    // Play a different sound and a spawn a dust circle to indicate it's done charging.
+                    if (bastCatCount == maxBastCatCount)
+                    {
+                        Utilities.CreateDustCircle(30, Projectile.Center, DustID.Firework_Yellow, 10f, shouldDefyGravity: true);
+                        SoundEngine.PlaySound(SoundID.ResearchComplete with { MaxInstances = 0 }, Projectile.Center);
+                    }
+                    bastIncreaseDelay = (int)Clamp(bastIncreaseDelay - 2f, 5f, 60f);
+                    bastCatCount++;
+                    ChargeTimer = increaseBastInterval;
+                }
+
+                // Shake progressively as the count increases.
+                weaponShakeAngle = Lerp(0f, 12f, ChargeTimer / 720f);
+                Projectile.rotation = Projectile.rotation + Vector2.UnitX.RotatedByRandom(ToRadians(weaponShakeAngle)).ToRotation();
+
+                // Spawn small smoke particles along with the shaking.
+                if (ChargeTimer > 120f && Main.rand.NextBool(3))
+                {
+                    Vector2 smokeSpawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f + Main.rand.NextVector2Circular(15f, 15f);
+                    Vector2 smokeVelocity = -Vector2.UnitY * Main.rand.NextFloat(3f, 8f);
+
+                    float smokeScale = Main.rand.NextFloat(0.65f, 1f) * Lerp(0f, 1f, ChargeTimer / 720f);
+                    float smokeOpacity = Main.rand.NextFloat(0.45f, 0.85f) * Lerp(0f, 1f, ChargeTimer / 720f);
+                    int smokeLifespan = Main.rand.Next(30, 60);
+
+                    TimedSmokeParticle smoke = new(smokeSpawnPosition, smokeVelocity, Color.Lerp(Color.DarkGray, Color.Black, 0.75f), Color.Gray, smokeScale, smokeOpacity, smokeLifespan, 0.02f);
+                    GeneralParticleHandler.SpawnParticle(smoke);
+                }                
+
+                if (Owner.PlayerIsChannelingWithItem(ModContent.ItemType<TheBastOffense>()))
+                    ChargeTimer++;
                 else
                 {
-                    Projectile.rotation = owner.MountedCenter.AngleTo(Main.MouseWorld);
-                    
-
-                    int increaseBastInterval = 5;
-                    int maxBastCatCount = 200;
-
-                    // Initialization.
-                    if (ChargeTimer == 0)
-                    {
-                        bastIncreaseDelay = 60f;
-                        Projectile.netUpdate = true;
-                    }
-
-                    // Everytime the charge timer has reached past both the interval and delay it is set back to 0
-                    // and the delay is decreased by 1, making it charge faster over time.
-                    if (ChargeTimer >= increaseBastInterval + bastIncreaseDelay && bastCatCount <= maxBastCatCount)
-                    {
-                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 1.25f + Main.rand.NextFloat(0.3f), 0.01f, 30));
-                        SoundEngine.PlaySound(SoundID.Item149 with { MaxInstances = 0 }, Projectile.Center);
-                        // Play a different sound and a spawn a dust circle to indicate it's done charging.
-                        if (bastCatCount == maxBastCatCount)
-                        {
-                            Utilities.CreateDustCircle(30, Projectile.Center, DustID.Firework_Yellow, 10f, shouldDefyGravity: true);
-                            SoundEngine.PlaySound(SoundID.ResearchComplete with { MaxInstances = 0 }, Projectile.Center);
-                        }
-                        bastIncreaseDelay = (int)Clamp(bastIncreaseDelay - 2f, 5f, 60f);
-                        bastCatCount++;
-                        ChargeTimer = increaseBastInterval;
-                    }
-
-                    if (isChanneling)
-                        ChargeTimer++;
-                    else
-                    {
-                        AIState = 1f;
-                        ChargeTimer = 0f;
-                        Projectile.netUpdate = true;
-                    }
+                    AIState = 1f;
+                    ChargeTimer = 0f;
+                    Projectile.netUpdate = true;
                 }
             }
 
             if (AIState == 1f)
             {
-                ref float oldRotation = ref Projectile.Cascade().ExtraAI[OldRotationIndex];
-                ref float recoilStrength = ref Projectile.Cascade().ExtraAI[RecoilStrengthIndex];
                 recoilStrength = Lerp(1f, 3f, bastCatCount / 200f);
 
-                if (Owner.altFunctionUse == 2)
+                // Play a fart sound if there were not cats loaded.
+                if (ResetAnimationTimer == 0f)
                 {
-                    if (ResetAnimationTimer == 0f)
+                    if (bastCatCount <= 0)
+                        SoundEngine.PlaySound(SoundID.Item16, Projectile.Center);
+                    oldRotation = Owner.MountedCenter.AngleTo(Main.MouseWorld);
+
+                    // Buncha particles.
+                    int smokeCount = (int)Lerp(3, 45, bastCatCount / 200f);
+                    for (int i = 0; i < smokeCount; i++)
                     {
-                        oldRotation = owner.MountedCenter.AngleTo(Main.MouseWorld);
-                        Projectile.netUpdate = true;
+                        Vector2 smokeSpawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f;
+                        Vector2 smokeVelocity = Owner.DirectionTo(Main.MouseWorld).RotatedByRandom(ToRadians(60f)) * Main.rand.NextFloat(10f, 25f);
+
+                        float smokeScale = Main.rand.NextFloat(0.65f, 1.25f);
+                        float smokeOpacity = Main.rand.NextFloat(0.45f, 0.85f);
+                        int smokeLifespan = Main.rand.Next(30, 60);
+
+                        TimedSmokeParticle smoke = new(smokeSpawnPosition, smokeVelocity, Color.Black, Color.Orange, smokeScale, smokeOpacity, smokeLifespan, 0.02f);
+                        GeneralParticleHandler.SpawnParticle(smoke);
                     }
-
-                    // Recoil animation.
-                    ResetAnimationTimer++;
-                    if (ResetAnimationTimer <= 45f)
-                        Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-135f) * Owner.direction, ExpOutEasing(ResetAnimationTimer / 35f, 0));
-
-
-                    if (ResetAnimationTimer >= 45f)
-                        Projectile.Kill();
-                }
-                else
-                {
-                    // Play a fart sound if there were not cats loaded.
-                    if (ResetAnimationTimer == 0f)
-                    {
-                        if (bastCatCount <= 0)
-                            SoundEngine.PlaySound(SoundID.Item16, Projectile.Center);
-                        oldRotation = owner.MountedCenter.AngleTo(Main.MouseWorld);
-                        Projectile.netUpdate = true;
-                    }
-
-                    // Fire the cat armada.
-                    if (bastCatCount > 0)
-                    {
-                        for (int i = 0; i < bastCatCount; i++)
-                        {
-                            Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedByRandom(ToRadians(25f)) * Main.rand.NextFloat(13f, 19f);
-                            Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f;
-                            Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
-                        }
-
-                        ChargeTimer = 0f;
-                        bastCatCount = 0f;
-                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
-                    }
-
-                    // Recoil animation.
-                    ResetAnimationTimer++;
-                    if (ResetAnimationTimer <= 45f)
-                    {
-                        Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-85f) * Owner.direction * recoilStrength, ExpOutEasing(ResetAnimationTimer / 25f, 0));
-                    }
-
-                    if (ResetAnimationTimer >= 45f)
-                    {
-                        Projectile.Kill();
-                        return;
-                    }
+                    Projectile.netUpdate = true;
                 }
 
-                
+                // Fire the cat armada.
+                if (bastCatCount > 0)
+                {
+                    for (int i = 0; i < bastCatCount; i++)
+                    {
+                        Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedByRandom(ToRadians(25f)) * Main.rand.NextFloat(13f, 19f);
+                        Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f;
+                        Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                    }
+
+                    ChargeTimer = 0f;
+                    bastCatCount = 0f;
+                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
+                }
+
+                // Recoil animation.
+                ResetAnimationTimer++;
+                if (ResetAnimationTimer <= 45f)
+                {
+                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-85f) * Owner.direction * recoilStrength, ExpOutEasing(ResetAnimationTimer / 25f, 0));
+                }
+
+                if (ResetAnimationTimer >= 45f)
+                {
+                    Projectile.Kill();
+                    return;
+                }
             }
         }
 
-        public void KibbyExplosion(Player owner)
+        public void DoBehavior_BIGSHOTS(ref float oldRotation)
         {
+            if (AIState == 0f)
+            {
+                int chargeTime = 120;
+                Projectile.rotation = Projectile.rotation.AngleLerp(Owner.MountedCenter.AngleTo(Main.MouseWorld), 0.2f);
+                if (ChargeTimer <= chargeTime)
+                {
+                    if (ChargeTimer % 10 == 0)
+                    {
+                        float maxScale = ChargeTimer == chargeTime ? 0.01f : 1.25f;
+                        float newScale = ChargeTimer == chargeTime ? 5f : 0.01f;
+                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
+                        SoundEngine.PlaySound(SoundID.Item75, Projectile.Center);
+                    }
+                }
+
+                if (ChargeTimer >= chargeTime)
+                {
+                    AIState = 1f;
+                    ChargeTimer = 0f;
+                    Vector2 bastStatueMegaVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 10f;
+                    Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.damage.GetPercentageOfInteger(4f), Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                }
+                ChargeTimer++;
+            }
+
+            if (AIState == 1f)
+            {
+                if (ResetAnimationTimer == 0f)
+                {
+                    oldRotation = Owner.MountedCenter.AngleTo(Main.MouseWorld);
+                    Projectile.netUpdate = true;
+                }
+
+                // Recoil animation.
+                ResetAnimationTimer++;
+                if (ResetAnimationTimer <= 45f)
+                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-135f) * Owner.direction, ExpOutEasing(ResetAnimationTimer / 35f, 0));
+
+
+                if (ResetAnimationTimer >= 45f)
+                    Projectile.Kill();
+            }
+        }
+
+        public void KibbyKaboom()
+        {
+
         }
 
         public void Reset()
@@ -219,22 +271,22 @@
             Projectile.timeLeft = 2700;
         }
 
-        public void UpdatePlayerVariables(Player owner)
+        public void UpdatePlayerVariables()
         {
-            owner.heldProj = Projectile.whoAmI;
-            owner.itemTime = 2;
-            owner.itemAnimation = 2;
+            Owner.heldProj = Projectile.whoAmI;
+            Owner.itemTime = 2;
+            Owner.itemAnimation = 2;
             if (AIState == 0f)
-                owner.ChangeDir(Math.Sign(Projectile.rotation.ToRotationVector2().X));
-            owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
-            owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
+                Owner.ChangeDir(Math.Sign(Projectile.rotation.ToRotationVector2().X));
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
+            Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
         }
 
         public override bool PreKill(int timeLeft)
         {
             // Blow the player to smithereenes if they decide not too fire for the entire duration.
             if (Owner.channel)
-                KibbyExplosion(Owner);
+                KibbyKaboom();
             return true;
         }
 

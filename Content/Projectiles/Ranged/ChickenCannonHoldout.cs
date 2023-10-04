@@ -13,7 +13,7 @@ namespace Cascade.Content.Projectiles.Ranged
 
         private const int ChargeUpTime = 180;
 
-        private const int TimeSpentReloading = 150;
+        private const int TimeSpentReloading = 60;
 
         public const int OldRotationIndex = 0;
 

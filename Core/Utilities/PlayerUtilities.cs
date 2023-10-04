@@ -7,6 +7,13 @@ namespace Cascade
         public static bool ZoneCometNight(this Player player) => CosmostoneShower && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
 
         /// <summary>
+        /// Checks if a player is alive and is channeling while holding a specific item.
+        /// </summary>
+        /// <returns>Whether or not the player's alive, properly channeling and holding the correct item.</returns>
+        public static bool PlayerIsChannelingWithItem(this Player player, int specificItemType, bool rightClick = false) 
+            => player.active && (rightClick ? player.Calamity().mouseRight : player.channel) && player.HeldItem.type == specificItemType;
+
+        /// <summary>
         /// A copy of Calamity's ConsumeRogueStealth method. This is only to be used if your Rogue Weapon functions under a held projectile or some other mean
         /// that isn't taken into consideration during manual stealth updating. This was made because the original method is internal.
         /// </summary>

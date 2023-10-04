@@ -43,9 +43,18 @@
                 BounceLimit = 10;
             }
 
+            if (Timer % 15 == 0)
+            {
+
+            }
+
+            if (Projectile.velocity.Y < 16f)
+                Projectile.velocity.Y += 0.3f;
+
             // Speed up over time.
             Projectile.velocity *= 1.002f;
             Projectile.velocity.ClampMagnitude(10f, 15f);
+
             // Adjust the hitbox.
             Projectile.AdjustProjectileHitboxByScale(32, 32);
             Projectile.rotation = Projectile.velocity.ToRotation() + 1.57f;
@@ -93,7 +102,7 @@
             {
                 Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
                 SoundStyle meow = Utils.SelectRandom(Main.rand, SoundID.Item57, SoundID.Item58);
-                SoundEngine.PlaySound(meow, Projectile.position);
+                SoundEngine.PlaySound(meow with { MaxInstances = 0 }, Projectile.position);
 
                 if (Math.Abs(Projectile.velocity.X - oldVelocity.X) > float.Epsilon)
                     Projectile.velocity.X = -oldVelocity.X;

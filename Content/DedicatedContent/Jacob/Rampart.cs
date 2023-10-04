@@ -206,7 +206,7 @@
             CalamityUtils.ExitShaderRegion(Main.spriteBatch);
 
             // Cosmic Anvil.
-            Vector2 cosmicAnvilDrawPosition = summoningCircleDrawPosition - Vector2.UnitY * 30f;
+            Vector2 cosmicAnvilDrawPosition = summoningCircleDrawPosition + new Vector2(10f, -20f);
             CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
@@ -224,7 +224,7 @@
         public void ApplyShader(Texture2D texture, float opacity, float circularRotation, float directionRotation, Color startingColor, Color endingColor, BlendState blendMode)
         {
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, blendMode, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
             CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseColor(startingColor);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSecondaryColor(endingColor);

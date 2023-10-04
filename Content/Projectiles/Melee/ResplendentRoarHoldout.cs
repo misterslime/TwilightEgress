@@ -372,7 +372,6 @@ namespace Cascade.Content.Projectiles.Melee
                     GeneralParticleHandler.SpawnParticle(flames);
                 }
             }
-
         }
 
         public void UpdatePlayerVariables(bool updateDirectionByRotation = false)
