@@ -44,6 +44,10 @@
 
         public static readonly SoundStyle FleshySwordRip2 = new SoundStyle("Cascade/Assets/Sounds/Misc/FleshySwordRip2");
 
+        public static readonly SoundStyle FlytrapMawSpawn = new SoundStyle("Cascade/Assets/Sounds/Items/RaeshWeapon/FlytrapMawSpawn");
+
+        public static readonly SoundStyle FlytrapMawBounce = new SoundStyle("Cascade/Assets/Sounds/Items/RaeshWeapon/FlytrapMawBounce");
+
         #endregion
 
         #region Vanilla Calamity Custom Sounds

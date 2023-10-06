@@ -1,113 +1,35 @@
-﻿using System.Collections.Generic;
-using System.Xml;
-
-namespace Cascade.Content.DedicatedContent.Raesh
+﻿namespace Cascade.Content.DedicatedContent.Raesh
 {
     public class DroseraeDictionaryHoldout : ModProjectile, ILocalizedModType
     {
-        private class BloodRune
-        {
-            public Vector2 Position;
-
-            public Vector2 Velocity;
-
-            public float Scale;
-
-            public float Opacity;
-
-            public float Rotation;
-
-            public float RotationSpeed;
-
-            public float RotationDirction;
-
-            public Color Color;
-
-            private string[] Textures = new string[]
-            {
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Aflame",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Bloodthirsty",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Capricorn",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Ephemeral",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Eratic",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Evasive",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Evocative",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Hellbound",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Incisive",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Indigant",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Lecherous",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Oblatory",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Obstinate",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Persecuted",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Polluted",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Relentless",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Resentful",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Splintered",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Tainted",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Traitorous",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Vindictive",
-                "CalamityMod/UI/CalamitasEnchantments/CurseIcon_Withered"
-            };
-
-            private Texture2D Texture;
-
-            public BloodRune(Vector2 position, Vector2 velocity, Color color, float scale, float rotation, float rotationSpeed)
-            {
-                Position = position;
-                Velocity = velocity;
-                Color = color;
-                Scale = scale;
-                Rotation = rotation;
-                RotationSpeed = rotationSpeed;
-                RotationDirction = Main.rand.NextBool(-1).ToDirectionInt();
-                Opacity = 0f;
-
-                for (int i = 0; i < Textures.Length; i++)
-                    Texture = ModContent.Request<Texture2D>(Textures[i]).Value;
-            }
-
-            public void Update()
-            {
-                Opacity = Clamp(Opacity + 0.01f, 0f, 1f);
-                Rotation += RotationSpeed * RotationDirction;
-            }
-
-            public void Draw()
-            {
-                Rectangle rec = Texture.Frame();
-                Vector2 origin = rec.Size() / 2f;
-                Main.spriteBatch.Draw(Texture, Position - Main.screenPosition, rec, Color * Opacity, Rotation, origin, Scale, SpriteEffects.None, 0f);
-            }
-        }
-
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float Timer => ref Projectile.ai[0];
 
         private const int MaxChargeTime = 60;
 
-        private const int BackglowRotationIndex = 0;
+        private const int RitualCircleOpacityIndex = 0;
 
-        private const int BackglowOpacityIndex = 1;
+        private const int RitualCircleRotationIndex = 1;
+
+        private const int RitualCircleScaleIndex = 2;
 
         private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<DroseraeDictionary>();
 
-        private List<BloodRune> BloodRunes = new List<BloodRune>();
-
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Raesh/DroseraeDictionary";
+        public override string Texture => Utilities.EmptyPixelPath;
 
         public override void SetStaticDefaults()
         {
+            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 10;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 2;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 50;
-            Projectile.height = 50;
+            Projectile.width = Projectile.height = 114;
             Projectile.friendly = true;
             Projectile.ignoreWater = true;
             Projectile.tileCollide = false;
@@ -116,27 +38,94 @@ namespace Cascade.Content.DedicatedContent.Raesh
             Projectile.DamageType = DamageClass.Magic;
         }
 
+        public override bool? CanDamage() => false;
+
         public override void AI()
         {
-            if (ShouldDespawn)
+            ref float ritualCircleOpacity = ref Projectile.Cascade().ExtraAI[RitualCircleOpacityIndex];
+            ref float ritualCircleRotation = ref Projectile.Cascade().ExtraAI[RitualCircleRotationIndex];
+            ref float ritualCircleScale = ref Projectile.Cascade().ExtraAI[RitualCircleScaleIndex];
+
+            bool manaIsAvailable = Owner.CheckMana(Owner.HeldItem.mana);
+            bool weaponIsInUse = manaIsAvailable && Owner.PlayerIsChannelingWithItem(ModContent.ItemType<DroseraeDictionary>());
+
+            if (ShouldDespawn || !weaponIsInUse)
             {
                 Projectile.Kill();
                 return;
             }
 
-            // Update all Blood Runes.
-            foreach (BloodRune rune in BloodRunes)
-            {
-                rune.Position += rune.Velocity;
-                rune.Update();
-            }
+            DoBehavior_MainAttack(ref ritualCircleOpacity, ref ritualCircleScale);
 
+            Timer++;
+            Projectile.Center = Owner.MountedCenter + Projectile.rotation.ToRotationVector2() * 60f;
+            Projectile.rotation = Owner.AngleTo(Main.MouseWorld);
+            ritualCircleRotation += TwoPi / 150f;
             UpdatePlayerVariables();
         }
 
-        public override void OnKill(int timeLeft)
+        public void DoBehavior_MainAttack(ref float ritualCircleOpacity, ref float ritualCircleScale)
         {
-            BloodRunes.Clear();
+            // Scale up and fade in.
+            if (Timer <= MaxChargeTime)
+            {
+                ritualCircleOpacity = Lerp(ritualCircleOpacity, 1f, Timer / MaxChargeTime);
+                ritualCircleScale = Lerp(ritualCircleScale, 1f, Timer / MaxChargeTime);
+                DrawInChargeParticles();
+            }
+
+            // Fire.
+            if (Timer >= MaxChargeTime && Timer % 30 == 0)
+            {
+                Vector2 flytrapMawSpawnPos = Projectile.Center;
+                Vector2 flyTrapMawVelocity = Projectile.SafeDirectionTo(Main.MouseWorld) * 35f;
+
+                float damageScaleFactor = Lerp(1f, 5f, Utils.GetLerpValue(Owner.statLifeMax, 100f, Owner.statLife, true));
+                int damage = Projectile.originalDamage.GetPercentageOfInteger(damageScaleFactor);
+                Projectile.SpawnProjectile(flytrapMawSpawnPos, flyTrapMawVelocity, ModContent.ProjectileType<FlytrapMaw>(), damage, Projectile.knockBack, true, CascadeSoundRegistry.FlytrapMawSpawn, Projectile.owner);
+
+                Owner.ConsumeManaManually(Owner.HeldItem.mana);
+                ParticleBurst();
+                Timer = MaxChargeTime;
+            }
+        }
+
+        public void DrawInChargeParticles()
+        {
+            Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2CircularEdge((Projectile.width * 0.375f) + 50f, (Projectile.height * 0.485f) + 50f);
+            Vector2 velocity = Vector2.Normalize(Projectile.Center - spawnPosition) * Main.rand.NextFloat(5f, 9f);
+
+            int lifespan = Main.rand.Next(30, 45);
+            float scale = Main.rand.NextFloat(0.65f, 1f);
+
+            SparkParticle magicSparks = new(spawnPosition, velocity, false, lifespan, scale, Color.Crimson);
+            GeneralParticleHandler.SpawnParticle(magicSparks);
+        }
+
+        public void ParticleBurst()
+        {
+            int sparkCount = Main.rand.Next(15, 25);
+            for (int i = 0; i < sparkCount; i++)
+            {
+                Vector2 velocity = Main.rand.NextVector2CircularEdge(Projectile.width * 0.375f, Projectile.height * 0.485f) * Main.rand.NextFloat(0.05f, 0.2f);
+
+                int lifespan = Main.rand.Next(30, 45);
+                float scale = Main.rand.NextFloat(0.65f, 1f);
+
+                SparkParticle magicSparks = new(Projectile.Center, velocity, false, lifespan, scale, Color.Crimson);
+                GeneralParticleHandler.SpawnParticle(magicSparks);
+            }
+        }
+
+        public void IdleDustEffects()
+        {
+            if (Main.rand.NextBool(3))
+            {
+                Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width * 0.375f, Projectile.height * 0.485f);
+                Color dustColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat());
+                float dustScale = Main.rand.NextFloat(0.65f, 1f);
+                Utilities.CreateDustLoop(3, spawnPosition, Vector2.Zero, 264, dustScale: dustScale, dustColor: dustColor);
+            }
         }
 
         public void UpdatePlayerVariables()
@@ -150,49 +139,29 @@ namespace Cascade.Content.DedicatedContent.Raesh
 
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawBloodRitualCircle();
-            DrawBook(lightColor);
-
-            foreach (BloodRune rune in  BloodRunes)
-                rune.Draw();
+            DrawRitualCircle();
+            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
 
             return false;
         }
 
-        public void DrawBook(Color lightColor)
+        public void DrawRitualCircle()
         {
-            ref float backglowRotation = ref Projectile.Cascade().ExtraAI[BackglowRotationIndex];
-            ref float backglowOpacity = ref Projectile.Cascade().ExtraAI[BackglowOpacityIndex];
+            ref float ritualCircleOpacity = ref Projectile.Cascade().ExtraAI[RitualCircleOpacityIndex];
+            ref float ritualCircleRotation = ref Projectile.Cascade().ExtraAI[RitualCircleRotationIndex];
+            ref float ritualCircleScale = ref Projectile.Cascade().ExtraAI[RitualCircleScaleIndex];
 
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
-            SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-            float rotation = Projectile.rotation + (Owner.direction < 0 ? Pi : 0f);
-            Vector2 drawPosition = Owner.MountedCenter + new Vector2(0f, 0f) + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
+            Texture2D ritualCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircle").Value;
+            Texture2D blurredRitualCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircleGlowmask").Value;
 
-            // Draw pulsing backglow effects.
-            if (backglowOpacity > 0f)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    backglowRotation += TwoPi / 300f;
-                    float backglowRadius = Lerp(2f, 5f, SineInOutEasing((float)(Main.timeForVisualEffects / 30f), 1));
-                    Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(backglowRotation + TwoPi * i / 6) * backglowRadius;
+            // Summoning Circle.
+            Vector2 ritualCircleDrawPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
 
-                    Main.spriteBatch.SetBlendState(BlendState.Additive);
-                    Main.EntitySpriteDraw(texture, backglowDrawPositon, texture.Frame(), Projectile.GetAlpha(Color.Crimson) * backglowOpacity, rotation, texture.Size() / 2f, Projectile.scale, effects, 0);
-                    Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
-                }
-            }
-
-            // Draw the main sprite.
-            Main.EntitySpriteDraw(texture, drawPosition, texture.Frame(), Projectile.GetAlpha(lightColor), rotation, texture.Size() / 2f, Projectile.scale, effects, 0);
-        }
-
-        public void DrawBloodRitualCircle()
-        {
-            Texture2D mainCircleOuter = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/TankGodRitualCircle").Value;
-            Texture2D mainCircleInner = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/TankGodRitualCircleInner").Value;
-            
+            Utilities.ApplyRancorMagicCircleShader(blurredRitualCircle, ritualCircleOpacity, -ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.Crimson, Color.Red, BlendState.Additive);
+            Main.EntitySpriteDraw(blurredRitualCircle, ritualCircleDrawPosition, null, Color.Red, 0f, blurredRitualCircle.Size() / 2f, ritualCircleScale * 1.275f, SpriteEffects.None, 0);
+            Utilities.ApplyRancorMagicCircleShader(ritualCircle, ritualCircleOpacity, ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.DarkRed, Color.Crimson, BlendState.AlphaBlend);
+            Main.EntitySpriteDraw(ritualCircle, ritualCircleDrawPosition, null, Color.Red, 0f, ritualCircle.Size() / 2f, ritualCircleScale, SpriteEffects.None, 0);
+            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
         }
     }
 }
