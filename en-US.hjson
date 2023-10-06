@@ -17,6 +17,9 @@ Mods: {
 			}
 		}
 
-		Projectiles.HolidayHalberdIceShockSnowflake.DisplayName: Holiday Halberd Ice Shock Snowflake
+		Projectiles: {
+			HolidayHalberdIceShockSnowflake.DisplayName: Holiday Halberd Ice Shock Snowflake
+			FlytrapMaw.DisplayName: Flytrap Maw
+		}
 	}
 }

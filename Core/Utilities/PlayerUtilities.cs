@@ -65,9 +65,11 @@ namespace Cascade
         /// <param name="maxDelay">The maximum amount of downtime before mana begins to regenerate. Defaults to <see cref="Player.maxRegenDelay"/> if no value is input.</param>
         public static void ConsumeManaManually(this Player player, int manaAmount, float? maxDelay = null)
         {
-            maxDelay ??= player.maxRegenDelay;
-            player.statMana -= manaAmount;
-            player.manaRegenDelay = maxDelay.Value;
-        }
+            if (player.CheckMana(manaAmount, true, false))
+            {
+                maxDelay ??= player.maxRegenDelay;
+                player.manaRegenDelay = maxDelay.Value;
+            }
+        }   
     }
 }
