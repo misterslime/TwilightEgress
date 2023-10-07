@@ -1,4 +1,4 @@
-﻿namespace Cascade.Core.GlobalInstances.GlobalProjectiles
+﻿namespace Cascade.Core.Globals
 {
     public partial class CascadeGlobalProjectile : GlobalProjectile
     {

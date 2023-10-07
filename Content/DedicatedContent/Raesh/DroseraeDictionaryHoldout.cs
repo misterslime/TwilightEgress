@@ -14,8 +14,6 @@
 
         private const int RitualCircleScaleIndex = 2;
 
-        private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<DroseraeDictionary>();
-
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => Utilities.EmptyPixelPath;
@@ -48,8 +46,9 @@
 
             bool manaIsAvailable = Owner.CheckMana(Owner.HeldItem.mana);
             bool weaponIsInUse = manaIsAvailable && Owner.PlayerIsChannelingWithItem(ModContent.ItemType<DroseraeDictionary>());
+            bool shouldDespawn = Owner.ShouldDespawnHeldProj() || !weaponIsInUse;
 
-            if (ShouldDespawn || !weaponIsInUse)
+            if (shouldDespawn)
             {
                 Projectile.Kill();
                 return;

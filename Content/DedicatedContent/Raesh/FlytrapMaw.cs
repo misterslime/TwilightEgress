@@ -60,7 +60,7 @@
                 /* Add the whoAmI indexes of each hit NPC to the list. 
                  * This is how we'll keep track of which NPCs we shouldn't target. */
                 NPCsWhoHaveBeenHit.Add(target);
-                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 0 }, Projectile.Center);
+                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 10 }, Projectile.Center);
             }
 
             // Find the closest target in range and bounce to them from the last enemy.
@@ -107,7 +107,7 @@
             else
             {
                 Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 0 }, Projectile.Center);
+                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 10 }, Projectile.Center);
 
                 if (Math.Abs(Projectile.velocity.X - oldVelocity.X) > float.Epsilon)
                     Projectile.velocity.X = -oldVelocity.X;
