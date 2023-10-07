@@ -1,8 +1,8 @@
 ﻿using Cascade.Content.DedicatedContent.MPG;
 
-namespace Cascade.Core.GlobalInstances.GlobalItems
+namespace Cascade.Core.Globals.GlobalItems
 {
-    public partial class CascadeGlobalItem : GlobalItem
+    public class MSKUseFixGlobalItem : GlobalItem
     {
         public override bool CanUseItem(Item item, Player player)
         {

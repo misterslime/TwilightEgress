@@ -1,6 +1,6 @@
 ﻿using Terraria.ModLoader.IO;
 
-namespace Cascade.Core.GlobalInstances.GlobalNPCs
+namespace Cascade.Core.Globals
 {
     public partial class CascadeGlobalNPC
     {

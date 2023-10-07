@@ -4,6 +4,9 @@ namespace Cascade
 {
     public static partial class Utilities
     {
+        public static SpriteEffects DirectionBasedSpriteEffects(this Entity entity)
+            => entity.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
         public static void DrawTextureOnProjectile(this Projectile projectile, Color lightColor, float rotation, float scale, SpriteEffects spriteEffects = SpriteEffects.None, bool animated = false, Texture2D texture = null)
         {
             texture ??= TextureAssets.Projectile[projectile.type].Value;

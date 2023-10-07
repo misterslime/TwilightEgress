@@ -7,3 +7,13 @@ MoonSpiritLanternBuff: {
 	DisplayName: Lanterns of the Undead
 	Description: The power of the undead protects you.
 }
+
+BellbirdCry: {
+	DisplayName: Bellbird Cry
+	Description: Mods.Cascade.Buffs.BellbirdCry.Description
+}
+
+BellbirdBuff: {
+	DisplayName: Bellbird Buff
+	Description: Mods.Cascade.Buffs.BellbirdBuff.Description
+}

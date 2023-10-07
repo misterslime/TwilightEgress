@@ -1,5 +1,5 @@
-﻿using Cascade.Core.GlobalInstances.GlobalNPCs;
-using Cascade.Core.GlobalInstances.GlobalProjectiles;
+﻿using Cascade.Core.Globals;
+using Cascade.Core.Globals.GlobalNPCs;
 using Cascade.Core.Players;
 using Cascade.Core.Players.BuffHandlers;
 
@@ -8,6 +8,8 @@ namespace Cascade
     public static class GlobalExtensionMethods
     {
         public static CascadeGlobalNPC Cascade(this NPC npc) => npc.GetGlobalNPC<CascadeGlobalNPC>();
+
+        public static DebuffHandlerGlobalNPC Cascade_Debuff(this NPC npc) => npc.GetGlobalNPC<DebuffHandlerGlobalNPC>();
 
         public static CascadeGlobalProjectile Cascade(this Projectile projectile) => projectile.GetGlobalProjectile<CascadeGlobalProjectile>();
 
