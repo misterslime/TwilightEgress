@@ -92,7 +92,7 @@
             {
                 int goreType = 388 + i;
                 Vector2 goreSpawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
-                Gore.NewGore(Projectile.GetSource_Death(), goreSpawnPosition, Projectile.velocity, goreType, Projectile.scale);
+                Gore.NewGore(Projectile.GetSource_Death(), goreSpawnPosition, Projectile.velocity * 0.1f, goreType, Projectile.scale);
             }    
         }
 

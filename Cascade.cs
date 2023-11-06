@@ -18,8 +18,6 @@ namespace Cascade
 
             if (Main.netMode != NetmodeID.Server)
             {
-                CascadeEffectRegistry.LoadAllShaders();
-
                 var calamityMod = ModLoader.GetMod("CalamityMod");
                 Main.QueueMainThreadAction(() =>
                 {

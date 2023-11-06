@@ -1,11 +1,38 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-
-namespace Cascade
+﻿namespace Cascade
 {
     public static partial class Utilities
     {
         public static SpriteEffects DirectionBasedSpriteEffects(this Entity entity)
             => entity.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+
+        /// <summary>
+        /// Sets <see cref="Main.graphics"/>' GraphicsDevice to the specified <see cref="RenderTarget2D"/> 
+        /// and clears the device with a specified color.
+        /// </summary>
+        /// <param name="flushColor">The color to clear the <see cref="GraphicsDevice"/> with. 
+        /// Defaults to <see cref="Color.Transparent"/> if no value is manually given. 
+        /// In most cases, you will want this to stay as the mentioned default value.</param>
+        public static void SwapToTarget(this RenderTarget2D renderTarget, Color? flushColor = null)
+        {
+            GraphicsDevice graphicsDevice = Main.graphics.GraphicsDevice;
+
+            // Do nothing if we are in the menu, on a server or if any of the following variables are null.
+            if (Main.gameMenu || Main.dedServ || graphicsDevice is null || renderTarget is null)
+                return;
+
+            graphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.Clear(flushColor ?? Color.Transparent);
+        }
+
+        /// <summary>
+        /// The same as <see cref="SwapToTarget(RenderTarget2D, Color?)"/>, though accepts a <see cref="SmartRenderTarget"/> instance
+        /// instead of just a <see cref="RenderTarget2D"/> instance.
+        /// </summary>
+        /// <param name="flushColor">The color to clear the <see cref="GraphicsDevice"/> with. 
+        /// Defaults to <see cref="Color.Transparent"/> if no value is manually given. 
+        /// In most cases, you will want this to stay as the mentioned default value.</param>
+        public static void SwapToTarget(this SmartRenderTarget smartRenderTarget, Color? flushColor = null)
+            => SwapToTarget(smartRenderTarget.RenderTarget, flushColor ?? Color.Transparent);
 
         public static void DrawTextureOnProjectile(this Projectile projectile, Color lightColor, float rotation, float scale, SpriteEffects spriteEffects = SpriteEffects.None, bool animated = false, Texture2D texture = null)
         {

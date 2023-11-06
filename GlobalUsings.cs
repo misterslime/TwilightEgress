@@ -25,10 +25,7 @@ global using Terraria.Localization;
 global using ReLogic.Content;
 
 global using CalamityMod;
-global using CalamityMod.NPCs;
 global using CalamityMod.Particles;
-global using CalamityMod.CalPlayer;
-global using CalamityMod.Systems;
 global using CalamityMod.Sounds;
 global using static CalamityMod.CalamityUtils;
 
