@@ -4,7 +4,7 @@
     {
         public new string LocalizationCategory => "Buffs.Debuffs";
 
-        public override string Texture => "Terraria/Images/Buff";
+        public override string Texture => "Terraria/Images/Buff_160";
 
         public override void SetStaticDefaults()
         {
