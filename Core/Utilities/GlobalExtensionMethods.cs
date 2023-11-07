@@ -15,7 +15,7 @@ namespace Cascade
 
         public static DebuffHandlerPlayer Cascade_Debuff(this Player player) => player.GetModPlayer<DebuffHandlerPlayer>();
 
-        public static MinionBuffHandler CascadePlayer_Minions(this Player player) => player.GetModPlayer<MinionBuffHandler>();
+        public static MinionBuffHandlerPlayer CascadePlayer_Minions(this Player player) => player.GetModPlayer<MinionBuffHandlerPlayer>();
 
         public static ResplendentRoarPlayer CascadePlayer_ResplendantRoar(this Player player) => player.GetModPlayer<ResplendentRoarPlayer>();
 

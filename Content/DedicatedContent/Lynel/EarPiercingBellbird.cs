@@ -70,7 +70,7 @@ namespace Cascade.Content.DedicatedContent.Lynel
                 Projectile.UpdateProjectileAnimationFrames(0, 4, 4);
 
                 // Try to run the bellbird scream at the respective random chance every 12 seconds.
-                if (gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(2))
+                if (gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(screamChance))
                 {
                     AIState = 1f;
                     Timer = 0f;

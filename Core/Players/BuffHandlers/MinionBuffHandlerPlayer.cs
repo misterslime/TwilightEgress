@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Core.Players.BuffHandlers
 {
-    public class MinionBuffHandler : ModPlayer
+    public class MinionBuffHandlerPlayer : ModPlayer
     {
         public bool MoonSpiritLantern;
 
