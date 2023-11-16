@@ -13,12 +13,16 @@ namespace Cascade
 
         public static CascadeGlobalProjectile Cascade(this Projectile projectile) => projectile.GetGlobalProjectile<CascadeGlobalProjectile>();
 
-        public static DebuffHandlerPlayer Cascade_Debuff(this Player player) => player.GetModPlayer<DebuffHandlerPlayer>();
+        #region ModPlayers
+        public static BuffHandler Cascade_Buffs(this Player player) => player.GetModPlayer<BuffHandler>();
 
-        public static MinionBuffHandlerPlayer CascadePlayer_Minions(this Player player) => player.GetModPlayer<MinionBuffHandlerPlayer>();
+        public static DebuffHandler Cascade_Debuff(this Player player) => player.GetModPlayer<DebuffHandler>();
+
+        public static MinionBuffHandler CascadePlayer_Minions(this Player player) => player.GetModPlayer<MinionBuffHandler>();
 
         public static ResplendentRoarPlayer CascadePlayer_ResplendantRoar(this Player player) => player.GetModPlayer<ResplendentRoarPlayer>();
 
         public static HoneyCombPlayer CascadePlayer_HoneyComb(this Player player) => player.GetModPlayer<HoneyCombPlayer>();
+        #endregion
     }
 }

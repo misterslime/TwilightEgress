@@ -15,11 +15,17 @@ Mods: {
 				DisplayName: Burning Quasar
 				Tooltip: ""
 			}
+
+			MechonSlayer: {
+				DisplayName: Mechon Slayer
+				Tooltip: ""
+			}
 		}
 
 		Projectiles: {
 			HolidayHalberdIceShockSnowflake.DisplayName: Holiday Halberd Ice Shock Snowflake
 			FlytrapMaw.DisplayName: Flytrap Maw
+			MechonSlayerHoldout.DisplayName: Mechon Slayer Holdout
 		}
 	}
 }
