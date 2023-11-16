@@ -46,7 +46,7 @@
 
             bool manaIsAvailable = Owner.CheckMana(Owner.HeldItem.mana);
             bool weaponIsInUse = manaIsAvailable && Owner.PlayerIsChannelingWithItem(ModContent.ItemType<DroseraeDictionary>());
-            bool shouldDespawn = Owner.ShouldDespawnHeldProj() || !weaponIsInUse;
+            bool shouldDespawn = Owner.ShouldDespawnHeldProj(ModContent.ItemType<DroseraeDictionary>()) || !weaponIsInUse;
 
             if (shouldDespawn)
             {

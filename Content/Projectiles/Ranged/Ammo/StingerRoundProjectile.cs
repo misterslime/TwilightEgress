@@ -1,8 +1,12 @@
-﻿namespace Cascade.Content.Projectiles.Ranged.Ammo
+﻿using CalamityMod.Projectiles;
+
+namespace Cascade.Content.Projectiles.Ranged.Ammo
 {
     public class StingerRoundProjectile : ModProjectile, ILocalizedModType
     {
         public new string LocalizationCategory => "Projectiles.Ranged";
+
+        private Player Owner => Main.player[Projectile.owner];
 
         public override void SetDefaults()
         {
@@ -16,7 +20,7 @@
             Projectile.DamageType = DamageClass.Ranged;
             Projectile.extraUpdates = 2;
             Projectile.timeLeft = 600;
-            Projectile.Calamity().pointBlankShotDuration = 18;
+            Projectile.Calamity().pointBlankShotDuration = CalamityGlobalProjectile.DefaultPointBlankDuration;
         }
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
@@ -25,7 +29,8 @@
             for (int i = 0; i < stingerAmount; i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * 7f;
-                Projectile.SpawnProjectile(Projectile.Center, velocity, ModContent.ProjectileType<StingerRoundStinger>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack * 0.45f);
+                int damage = (int)Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(3f);
+                Projectile.SpawnProjectile(Projectile.Center, velocity, ModContent.ProjectileType<StingerRoundStinger>(), damage, Projectile.knockBack * 0.45f);
             }
         }
 

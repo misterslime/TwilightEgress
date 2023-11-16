@@ -22,7 +22,7 @@
         }
     }
 
-    public class PrimitiveDrawingSystem
+    public class PrimitiveDrawer
     {
         public delegate float VertexWidthFunction(float completionRatio);
 
@@ -39,16 +39,16 @@
         public bool UseSmoothening;
 
         /// <summary>
-        /// The constructor. Call this to initialize a new instance of a <see cref="PrimitiveDrawingSystem"/>. Cache this as a field.
+        /// The constructor. Call this to initialize a new instance of a <see cref="PrimitiveDrawer"/>. Cache this as a field.
         /// </summary>
         /// <param name="widthFunction">The delegate method for setting the width of a primitive.</param>
         /// <param name="colorFunction">The delegate method for setting the color of a primitive.</param>
         /// <param name="useeSmoothening">Whether or not vertex points should be smoothly connected or not. Typically you'd always want this enabled.</param>
         /// <param name="shader">A special shader that will be drawn on top of the Primitive being drawn.</param>
-        public PrimitiveDrawingSystem(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, bool useeSmoothening = false, MiscShaderData shader = null)
+        public PrimitiveDrawer(VertexWidthFunction widthFunction, VertexColorFunction colorFunction, bool useeSmoothening = false, MiscShaderData shader = null)
         {
             if (widthFunction is null || colorFunction is null)
-                throw new NullReferenceException($"In order to create a new instance of the Primitive Drawing System, a non-null {(widthFunction is null ? "width" : "color")} must be given.");
+                throw new NullReferenceException($"In order to create a new instance of a Primitive Drawer, a non-null {(widthFunction is null ? "width" : "color")} must be given.");
 
             WidthFunction = widthFunction;
             ColorFunction = colorFunction;
@@ -66,7 +66,7 @@
 
         private void UpdateBasicEffect(out Matrix effectProjection, out Matrix effectView)
         {
-            // Screeen bounds.
+            // Screen bounds.
             int height = Main.instance.GraphicsDevice.Viewport.Height;
 
             Vector2 zoom = Main.GameViewMatrix.Zoom;
@@ -166,48 +166,50 @@
             return indices;
         }
 
-        private List<Vector2> CorrectlyOffsetPoints(List<Vector2> basePoints, Vector2 baseOffset, int totalPoints)
+        private List<Vector2> CorrectlyOffsetPoints(List<Vector2> originalPoints, Vector2 specifiedOffset, int totalTrailPoints)
         {
             // If smoothening isn't being used...
             if (!UseSmoothening)
             {
-                List<Vector2> points = new List<Vector2>();
-                if (basePoints.Count > 0)
+                // Get all of the specified points that aren't zeroed out.
+                List<Vector2> basePoints = originalPoints.Where(originalPoints => originalPoints != Vector2.Zero).ToList();
+                List<Vector2> endPoints = new();
+                if (basePoints.Count > 2)
                 {
                     // Only try to if there's any in the given list.
                     for (int i = 0; i < basePoints.Count; i++)
                     {
-                        // Get the current point, add the offset to it and add it to the current list.
-                        points.Add(basePoints[i] + baseOffset);
+                        // Get the current point, add the offset to it and add it to our list of end points.
+                        endPoints.Add(basePoints[i] + specifiedOffset);
                     }
                 }
 
-                return points;
+                return endPoints;
             }
             else
             {
-                List<Vector2> newList = new List<Vector2>();
-                for (int i = 0; i < basePoints.Count; i++)
+                List<Vector2> controlPoints = new();
+                for (int i = 0; i < originalPoints.Count; i++)
                 {
                     // Do not incorperate points that are zeroed out.
                     // They are almost certainly a result of incomplete oldPos arrays.
-                    if (basePoints.ElementAt(i) == Vector2.Zero)
+                    if (originalPoints.ElementAt(i) == Vector2.Zero)
                         continue;
 
-                    newList.Add(basePoints.ElementAt(i) + baseOffset);
+                    controlPoints.Add(originalPoints.ElementAt(i) + specifiedOffset);
                 }
 
                 // Avoding any index errors.
-                if (newList.Count <= 1)
-                    return newList;
+                if (controlPoints.Count <= 1)
+                    return controlPoints;
 
                 List<Vector2> points = new();
 
                 // Round up the point count to the nearest multiple of the position count, to ensure that the interpolant works.
-                int splineIterations = (int)Math.Ceiling(totalPoints / (double)newList.Count);
-                totalPoints = splineIterations * totalPoints;
+                float splineIterations = Ceiling(totalTrailPoints / (float)controlPoints.Count);
+                totalTrailPoints = (int)(splineIterations * totalTrailPoints);
 
-                for (int i = 1; i < newList.Count - 2; i++)
+                for (int i = 1; i < controlPoints.Count - 2; i++)
                 {
                     for (int j = 0; j < splineIterations; j++)
                     {
@@ -215,13 +217,13 @@
                         if (splineIterations <= 1f)
                             splineInterpolant = 0.5f;
 
-                        points.Add(Vector2.CatmullRom(newList[i - 1], newList[i], newList[i + 1], newList[i + 2], splineInterpolant));
+                        points.Add(Vector2.CatmullRom(controlPoints[i - 1], controlPoints[i], controlPoints[i + 1], controlPoints[i + 2], splineInterpolant));
                     }
                 }
 
                 // Manually insert the front and end points.
-                points.Insert(0, newList.First());
-                points.Add(newList.Last());
+                points.Insert(0, controlPoints.First());
+                points.Add(controlPoints.Last());
 
                 return points;
             }
@@ -233,13 +235,13 @@
         /// <param name="basePoints">The base positions.</param>
         /// <param name="baseOffset">The base offset. Should commonly be set to -<see cref="Main.screenPosition"/>.</param>
         /// <param name="totalPoints">The total number of points in the primitive. Should only be used if smoothening is.</param>
-        public void DrawPrimitives(List<Vector2> basePoints, Vector2 baseOffset, int totalPoints)
+        public void DrawPrimitives(List<Vector2> originalPoints, Vector2 specifiedOffset, int totalTrailPoints)
         {
             // Set the corrct Rasterizer State.
             Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             // First, we offfset the points by the base offset. This is almost always going to be -Main.screenPosition, but it is changeable for flexability.
-            List<Vector2> drawPoints = CorrectlyOffsetPoints(basePoints, baseOffset, totalPoints);
+            List<Vector2> drawPoints = CorrectlyOffsetPoints(originalPoints, specifiedOffset, totalTrailPoints);
 
             // If the list is too short, any points in it are NaNs, or they are all the same point, return.
             if (drawPoints.Count < 2f || drawPoints.Any((drawPoint) => drawPoint.HasNaNs()) || drawPoints.All(point => point == drawPoints[0]))

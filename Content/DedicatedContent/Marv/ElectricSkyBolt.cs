@@ -9,7 +9,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public List<Vector2> StrikePositions = new List<Vector2>();
 
-        public PrimitiveDrawingSystem TrailDrawer { get; set; }
+        public PrimitiveDrawer TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
@@ -91,7 +91,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override bool PreDraw(ref Color lightColor)
         {
-            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");

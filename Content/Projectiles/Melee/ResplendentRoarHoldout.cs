@@ -61,7 +61,7 @@ namespace Cascade.Content.Projectiles.Melee
 
         private const int YharonDrawImageRadiusIndex = 5;
 
-        private PrimitiveDrawingSystem TrailDrawer { get; set; }
+        private PrimitiveDrawer TrailDrawer { get; set; }
 
         public float SmallSwingRatio() => PiecewiseAnimation(Timer / SmallSwingMaxTime, Anticipation, Thrust);
 

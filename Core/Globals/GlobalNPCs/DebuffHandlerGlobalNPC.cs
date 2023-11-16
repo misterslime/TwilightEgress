@@ -6,7 +6,7 @@
 
         public bool BellbirdStun { get; set; }
 
-        private int BellbirdStunTime;
+        private int BellbirdStunTime { get; set; }
 
         private const int BellbirdStunMaxTime = 240;
 
@@ -19,16 +19,18 @@
                 BellbirdStunTime = 0;
         }
 
-        public override bool PreAI(NPC npc)
+        public override void PostAI(NPC npc)
         {
             if (BellbirdStun)
             {
                 float statFuckeryInterpolant = Lerp(1f, 0.08f, BellbirdStunTimeRatio);
-                // Slow down the affected NPC.
-                npc.velocity.X *= 0.8f * statFuckeryInterpolant;          
+                float fallSpeedMultiplierInterpolant = Lerp(1f, 5f, BellbirdStunTimeRatio);
+
+                npc.velocity.X *= 0.8f * statFuckeryInterpolant;
+                npc.MaxFallSpeedMultiplier *= 1f * fallSpeedMultiplierInterpolant;
             }
 
-            return base.PreAI(npc);
+            base.PostAI(npc);
         }
     }
 }

@@ -8,7 +8,7 @@
 
         private Player Owner => Main.player[Projectile.owner];
 
-        private PrimitiveDrawingSystem TrailDrawer { get; set; }
+        private PrimitiveDrawer TrailDrawer { get; set; }
 
         public override void SetStaticDefaults()
         {
@@ -133,7 +133,7 @@
         public void DrawPrims()
         {
             Asset<Texture2D> trailTexture = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Raesh/FlytrapMaw_Chain");
-            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(trailTexture, 1);

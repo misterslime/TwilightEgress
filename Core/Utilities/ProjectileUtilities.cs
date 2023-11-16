@@ -129,6 +129,21 @@ namespace Cascade
             }
         }
 
+        public static void UpdatePlayerVariablesForHeldProjectile(this Projectile projectile, Player owner, bool updateDirectionByRotation = false)
+        {
+            owner.heldProj = projectile.whoAmI;
+            if (updateDirectionByRotation)
+                owner.direction = Sign(projectile.rotation.ToRotationVector2().X);
+            else
+                owner.direction = Sign(projectile.velocity.X);
+            owner.itemRotation = projectile.rotation;
+            if (owner.direction != 1)
+            {
+                owner.itemRotation -= Pi;
+            }
+            owner.itemRotation = WrapAngle(projectile.rotation);
+        }   
+
         public static NPC FindClosestNPCToProjectile(this Projectile projectile, float maxDetectionRadius)
         {
             NPC closestNPC = null;

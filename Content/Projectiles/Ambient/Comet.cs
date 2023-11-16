@@ -2,7 +2,7 @@
 {
     public class Comet : ModProjectile, ILocalizedModType
     {
-        private PrimitiveDrawingSystem TrailDrawer { get; set; }
+        private PrimitiveDrawer TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Ambient";
 
@@ -72,7 +72,7 @@
 
         public void DrawPrims()
         {
-            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");

@@ -1,5 +1,6 @@
-using Cascade.Assets.Effects;
+using CalamityMod.Cooldowns;
 using Cascade.Core.Balancing;
+using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade
 {
@@ -24,12 +25,15 @@ namespace Cascade
                     calamityMod.Call("LoadParticleInstances", this);
                 });
             }
+
+            CooldownRegistry.RegisterModCooldowns(this);
         }
 
         public override void Unload()
         {
             Instance = null;
             CascadeBalancingChangesManager.Unload();
+            BuffHandler.StuffToUnload();
         }
     }
 }

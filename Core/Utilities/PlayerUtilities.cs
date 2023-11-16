@@ -16,7 +16,7 @@ namespace Cascade
         /// <summary>
         /// Compiles a few commonly used checks to determine whether a player's held projectile should be despawned or not.
         /// </summary>
-        public static bool ShouldDespawnHeldProj(this Player player) => player.dead || player.CCed || player.noItems || !player.active;
+        public static bool ShouldDespawnHeldProj(this Player player, int heldItemType) => player.dead || player.CCed || player.noItems || !player.active || player.HeldItem.type != heldItemType;
 
         /// <summary>
         /// A copy of Calamity's ConsumeRogueStealth method. This is only to be used if your Rogue Weapon functions under a held projectile or some other mean

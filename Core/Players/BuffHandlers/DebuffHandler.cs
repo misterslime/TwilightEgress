@@ -2,7 +2,7 @@
 
 namespace Cascade.Core.Players.BuffHandlers
 {
-    public class DebuffHandlerPlayer : ModPlayer
+    public class DebuffHandler : ModPlayer
     {
         public bool CerebralMindtrick { get; set; }
 

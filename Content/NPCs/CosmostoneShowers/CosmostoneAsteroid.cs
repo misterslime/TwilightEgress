@@ -4,7 +4,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 {
     public class CosmostoneAsteroid : BaseAsteroid, ILocalizedModType
     {
-        private PrimitiveDrawingSystem TrailDrawer { get; set; }
+        private PrimitiveDrawer TrailDrawer { get; set; }
 
         private List<int> ViableCollisionTypes = new List<int>()
         {
@@ -23,7 +23,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.CannotDropSouls[Type] = true;
-            NPCID.Sets.CountsAsCritter[Type] = true;
         }
 
         public override void SetDefaults()
@@ -183,7 +182,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public void DrawTrail()
         {
-            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
