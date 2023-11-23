@@ -2,11 +2,6 @@
 using Cascade.Content.Skies.SkyEntities;
 using Cascade.Core.Systems.SkyEntitySystem;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Threading;
-using Terraria;
-
 namespace Cascade.Content.Skies
 {
     public class CometNightSkyScene : ModSceneEffect
@@ -22,7 +17,7 @@ namespace Cascade.Content.Skies
 
         public override void SpecialVisuals(Player player, bool isActive)
         {
-            player.ManageSpecialBiomeVisuals("CalamityReworks:CometNight", isActive);
+            player.ManageSpecialBiomeVisuals("Cascade:CometNight", isActive);
         }
     }
 

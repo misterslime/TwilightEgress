@@ -129,6 +129,21 @@ namespace Cascade
             }
         }
 
+        public static void UpdatePlayerVariablesForHeldProjectile(this Projectile projectile, Player owner, bool updateDirectionByRotation = false)
+        {
+            owner.heldProj = projectile.whoAmI;
+            if (updateDirectionByRotation)
+                owner.direction = Sign(projectile.rotation.ToRotationVector2().X);
+            else
+                owner.direction = Sign(projectile.velocity.X);
+            owner.itemRotation = projectile.rotation;
+            if (owner.direction != 1)
+            {
+                owner.itemRotation -= Pi;
+            }
+            owner.itemRotation = WrapAngle(projectile.rotation);
+        }   
+
         public static NPC FindClosestNPCToProjectile(this Projectile projectile, float maxDetectionRadius)
         {
             NPC closestNPC = null;
@@ -195,7 +210,51 @@ namespace Cascade
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Gets the closest targettable NPC to a projectile.
+        /// </summary>
+        /// <param name="maxSearchDistance">The maximum distance around projectile to allow searching for viable targets.</param>
+        /// <param name="maxSearchDistanceThroughWalls">The maximum distance through walls around a projectile to allow searching for viable targets.</param>
+        /// <param name="foundTarget">Whether or not a target has been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
+        /// <param name="target">The target that's been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
+        public static void GetNearestTarget(this Projectile projectile, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
+        {
+            foundTarget = false;
+            target = null;
+
+            if (!foundTarget)
+            {
+                for (int i = 0; i < Main.maxNPCs; i++)
+                {
+                    NPC npc = Main.npc[i];
+                    if (npc.CanBeChasedBy())
+                    {
+                        float distanceBetween = Vector2.Distance(npc.Center, projectile.Center);
+                        bool closestToProjectile = Vector2.Distance(projectile.Center, npc.Center) > distanceBetween;
+                        bool inRangeOfProjectile = distanceBetween < maxSearchDistance;
+                        bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
+                        bool closestTargetThroughWalls = distanceBetween < maxSearchDistanceThroughWalls;
+
+                        if (((closestToProjectile && inRangeOfProjectile) || !foundTarget) || (lineOfSight || closestTargetThroughWalls))
+                        {
+                            target = npc;
+                            foundTarget = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Has the same purpose as the <see cref="GetNearestTarget(Projectile, float, float, out bool, out NPC)"/> method, though this method has 
+        /// additional code specifically tailored to minion projectiles. Therefore, it should only be used for those.
+        /// </summary>
+        /// <param name="owner">The player who spawned this projectile.</param>
+        /// <param name="maxSearchDistance">The maximum distance around projectile to allow searching for viable targets.</param>
+        /// <param name="maxSearchDistanceThroughWalls">The maximum distance through walls around a projectile to allow searching for viable targets.</param>
+        /// <param name="foundTarget">Whether or not a target has been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
+        /// <param name="target">The target that's been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
         public static void GetMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
         {
             target = null;

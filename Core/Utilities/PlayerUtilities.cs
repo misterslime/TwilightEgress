@@ -14,6 +14,11 @@ namespace Cascade
             => player.active && (rightClick ? player.Calamity().mouseRight : player.channel) && player.HeldItem.type == specificItemType;
 
         /// <summary>
+        /// Compiles a few commonly used checks to determine whether a player's held projectile should be despawned or not.
+        /// </summary>
+        public static bool ShouldDespawnHeldProj(this Player player, int heldItemType) => player.dead || player.CCed || player.noItems || !player.active || player.HeldItem.type != heldItemType;
+
+        /// <summary>
         /// A copy of Calamity's ConsumeRogueStealth method. This is only to be used if your Rogue Weapon functions under a held projectile or some other mean
         /// that isn't taken into consideration during manual stealth updating. This was made because the original method is internal.
         /// </summary>
@@ -65,9 +70,11 @@ namespace Cascade
         /// <param name="maxDelay">The maximum amount of downtime before mana begins to regenerate. Defaults to <see cref="Player.maxRegenDelay"/> if no value is input.</param>
         public static void ConsumeManaManually(this Player player, int manaAmount, float? maxDelay = null)
         {
-            maxDelay ??= player.maxRegenDelay;
-            player.statMana -= manaAmount;
-            player.manaRegenDelay = maxDelay.Value;
-        }
+            if (player.CheckMana(manaAmount, true, false))
+            {
+                maxDelay ??= player.maxRegenDelay;
+                player.manaRegenDelay = maxDelay.Value;
+            }
+        }   
     }
 }

@@ -33,32 +33,24 @@ namespace Cascade.Core.Systems.CameraSystem
 
         public override void PostUpdateEverything()
         {
+            // Update nothing if a player has Calamity's screenshake configuration disabled.
+            if (!CalamityConfig.Instance.Screenshake)
+                return;
+
             // Clamp the shake power to ensure that thing's don't get too crazy.
-            if (Shake > MaximumShakePower)
-            {
-                Shake = MaximumShakePower;
-            }
+            Shake = Utils.Clamp(Shake, Shake, MaximumShakePower);
 
             if (ShakeIsActive)
             {
+                ShakeTime++;
+                // Slowly decay over time.
+                Shake = (int)Lerp(Shake, 0, ShakeTime / ShakeLifespan);
                 if (ShakeTime >= ShakeLifespan)
                 {
-                    // Begin to decay once a criteria is met.
-                    if (Shake > 0)
-                    {
-                        Shake--;
-                    }
-
                     // Reset variables once the shake has fully decayed.
-                    if (Shake <= 0)
-                    {
-                        ShakeIsActive = false;
-                        ShakeTime = 0;
-                    }
-                }
-                else
-                {
-                    ShakeTime++;
+                    ShakeIsActive = false;
+                    Shake = 0;
+                    ShakeTime = 0;
                 }
             }
         }

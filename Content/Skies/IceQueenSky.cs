@@ -1,7 +1,4 @@
-﻿using Cascade.Assets.Effects;
-using Cascade.Assets.ExtraTextures;
-using System.Collections.Generic;
-using Terraria.Graphics.Effects;
+﻿using Cascade.Core.Graphics.SpecificEffectManagers;
 
 namespace Cascade.Content.Skies
 {
@@ -13,7 +10,7 @@ namespace Cascade.Content.Skies
 
         public override void SpecialVisuals(Player player, bool isActive)
         {
-            player.ManageSpecialBiomeVisuals("CalamityReworks:IceQueen", isActive); 
+            player.ManageSpecialBiomeVisuals("Cascade:IceQueen", isActive); 
         }
     }
 
@@ -131,23 +128,30 @@ namespace Cascade.Content.Skies
                     star.Opacity -= 0.025f;
                 star.Color *= star.Opacity;
             }
-            GlowStars.RemoveAll((GlowStar star) => star.Opacity <= 0f);
+            GlowStars.RemoveAll(star => star.Opacity <= 0f);
         }
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            if (maxDepth >= 1f && minDepth < 1f)
-            {
-                CalamityUtils.EnterShaderRegion(Main.spriteBatch);
-                Vector2 scale = new Vector2(Main.screenWidth, Main.screenWidth) / TextureAssets.MagicPixel.Value.Size() * Main.GameViewMatrix.Zoom;
+            /*Asset<Texture2D> noiseTexture = CascadeTextureRegistry.GreyscaleSeemlessNoise;
+            Asset<Texture2D> noiseTexture2 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Cracks");
+            CalamityUtils.EnterShaderRegion(Main.spriteBatch, BlendState.Additive);
 
-                CascadeEffectRegistry.IceQueenScrollingBackgroundShader.SetShaderTexture(CascadeTextureRegistry.GreyscaleSeemlessNoise, 1);
-                CascadeEffectRegistry.IceQueenScrollingBackgroundShader.UseColor(Color.DarkGray);
-                CascadeEffectRegistry.IceQueenScrollingBackgroundShader.Apply();
+            var shader = Utilities.TryGetShader("NoisyVignetteShader");
+            shader.SetShaderTexture(noiseTexture, 1);
+            shader.SetShaderTexture(noiseTexture2, 2);
+            shader.TrySetParameterValue("time", Main.GlobalTimeWrappedHourly / 10f);
+            shader.TrySetParameterValue("scrollSpeed", 0.2f);
+            shader.TrySetParameterValue("vignettePower", 1.65f);
+            shader.TrySetParameterValue("vignetteBrightness", 1.25f);
+            shader.TrySetParameterValue("primaryColor", Color.DarkGray.ToVector4());
+            shader.TrySetParameterValue("secondaryColor", Color.DarkGray.ToVector4());
+            shader.Apply();
 
-                spriteBatch.Draw(TextureAssets.MagicPixel.Value, Vector2.Zero, null, Color.Lerp(Color.White, Color.Transparent, 0.35f) * FadeOpacity, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-                CalamityUtils.ExitShaderRegion(Main.spriteBatch);
-            }
+            Vector2 screenArea = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
+            Vector2 textureScale = screenArea / TextureAssets.BlackTile.Value.Size();
+            spriteBatch.Draw(TextureAssets.BlackTile.Value, screenArea * 0.5f, null, Color.Lerp(Color.White, Color.DarkGray, 1f) * FadeOpacity, 0f, TextureAssets.BlackTile.Value.Size() * 0.5f, textureScale, SpriteEffects.None, 0f);
+            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
 
             for (int i = 0; i < GlowStars.Count; i++)
             {
@@ -156,7 +160,7 @@ namespace Cascade.Content.Skies
                 spriteBatch.Draw(TextureAssets.Extra[49].Value, drawPosition, null, GlowStars[i].Color * FadeOpacity, 0f, GlowStarTexture.Size() / 2f, GlowStars[i].Scale / 2f, SpriteEffects.None, 0f);
                 spriteBatch.Draw(CascadeTextureRegistry.GreyscaleStar.Value, drawPosition, null, GlowStars[i].Color * FadeOpacity, 0f, GlowStarTexture.Size() / 2f, GlowStars[i].Scale / 12f, SpriteEffects.None, GlowStars[i].Depth);
                 CalamityUtils.SetBlendState(spriteBatch, BlendState.AlphaBlend);
-            }
+            }*/
         }
 
         public override float GetCloudAlpha()

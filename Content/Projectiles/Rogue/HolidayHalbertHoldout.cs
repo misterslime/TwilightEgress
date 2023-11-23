@@ -14,7 +14,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         private const int RotationSpeedIndex = 0;
 
-        private PrimitiveDrawingSystem TrailDrawer { get; set; }
+        private PrimitiveDrawer TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Rogue";
 
@@ -185,7 +185,7 @@ namespace Cascade.Content.Projectiles.Rogue
 
         public void DrawPrimTrail()
         {
-            TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));

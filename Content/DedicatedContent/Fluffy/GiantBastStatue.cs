@@ -116,7 +116,6 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-
             CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Gold * 0.45f), 2f);
             DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Gold));
