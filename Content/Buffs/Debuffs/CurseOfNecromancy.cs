@@ -16,8 +16,7 @@
 
         public override void Update(Player Player, ref int buffIndex)
         {
-            Player.Cascade_Debuff().CurseOfNecromancy = true;
-
+            Player.Cascade_Buffs().CurseOfNecromancy = true;
             if (Main.CurrentFrameFlags.AnyActiveBossNPC)
                 Player.buffTime[buffIndex] = 18000;
 

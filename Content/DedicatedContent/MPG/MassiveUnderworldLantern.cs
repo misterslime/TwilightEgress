@@ -1,9 +1,9 @@
-﻿namespace Cascade.Content.DedicatedContent.MPG
+﻿using Terraria;
+
+namespace Cascade.Content.DedicatedContent.MPG
 {
     public class MassiveUnderworldLantern : ModProjectile, ILocalizedModType
     {
-        private Player Owner => Main.player[Projectile.owner];
-
         private ref float Timer => ref Projectile.ai[0];
 
         private ref float AIState => ref Projectile.ai[1];
@@ -42,21 +42,21 @@
 
         public override void AI()
         {
-
-            NPC closestTarget = Projectile.FindClosestNPCToProjectile(3500f);
-            if (closestTarget == null)
+            Projectile.GetNearestTarget(3500f, 1750f, out bool foundTarget, out NPC closestTarget);
+            if (!foundTarget || closestTarget is null)
             {
                 // Just rapidly speed up in the direction its facing if there are no enemies.
                 // Fade out after the usual charging time.
-                Projectile.velocity *= 1.023f;
+                Projectile.velocity *= 1.09f;
                 Projectile.rotation = Projectile.velocity.ToRotation();
+                Projectile.spriteDirection = Projectile.direction;
 
                 if (Timer >= MaxChargingTime)
                 {
                     Projectile.Opacity = Lerp(Projectile.Opacity, 0f, 0.03f);
                     Projectile.damage = 0;
                     Projectile.velocity *= 0.9f;
-                    if (Timer >= FadeoutTime)
+                    if (Timer >= MaxChargingTime + FadeoutTime)
                         Projectile.Kill();
                 }
 
@@ -70,13 +70,6 @@
                 Projectile.rotation = Projectile.AngleTo(closestTarget.Center);
                 Projectile.velocity *= 0.9f;
 
-                // Handle destroying a lantern and applying the debuff.
-                // If there are no nearby targets then everything is left the same.
-                if (Timer == 1)
-                {
-                    
-                }
-
                 if (Timer == TimeBeforeCharging)
                 {
                     Projectile.velocity = Projectile.SafeDirectionTo(closestTarget.Center) * 75f;
@@ -89,7 +82,6 @@
             if (AIState == 1f)
             {
                 Projectile.rotation = Projectile.velocity.ToRotation();
-
                 if (Timer >= MaxChargingTime || HitCounter >= 1f)
                 {
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 8f;
@@ -132,6 +124,7 @@
             }
 
             Timer++;
+            Projectile.spriteDirection = Projectile.direction;
             Projectile.AdjustProjectileHitboxByScale(48f, 56f);
         }
 
@@ -150,14 +143,10 @@
             }
         }
 
-        public override void OnKill(int timeLeft)
-        {
-           
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D baseTexture = TextureAssets.Projectile[Type].Value;
+            SpriteEffects effects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipVertically : SpriteEffects.None;
 
             int frameHeight = baseTexture.Height / Main.projFrames[Type];
             int frameY = frameHeight * Projectile.frame;
@@ -166,7 +155,6 @@
             Main.spriteBatch.SetBlendState(BlendState.Additive);
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
             {
-                SpriteEffects effects = Projectile.direction < 0 ? SpriteEffects.FlipVertically : SpriteEffects.None;
                 Vector2 drawPosition = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
                 Color trailColor = Color.Cyan * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                 Main.EntitySpriteDraw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.rotation, projRec.Size() / 2f, Projectile.scale, effects, 0);

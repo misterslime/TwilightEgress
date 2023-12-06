@@ -1,7 +1,7 @@
 ﻿using Cascade.Content.Items.Weapons.Melee;
 using CalamityMod.Buffs.DamageOverTime;
-using Cascade.Core.Systems.CameraSystem;
 using Terraria.GameContent.Events;
+using Cascade.Core.Graphics.CameraManipulation;
 
 namespace Cascade.Content.Projectiles.Melee
 {

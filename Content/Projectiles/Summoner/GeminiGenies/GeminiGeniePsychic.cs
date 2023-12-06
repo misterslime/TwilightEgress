@@ -67,11 +67,11 @@
             HasSpawnedInWeaponsYet = reader.ReadBoolean();
         }
 
-        public override bool? CanDamage() => !Owner.CascadePlayer_Minions().GeminiGeniesVanity;
+        public override bool? CanDamage() => !Owner.Cascade_Buffs().GeminiGeniesVanity;
 
         public bool CheckActive()
         {
-            if (Owner.CascadePlayer_Minions().GeminiGenies || Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            if (Owner.Cascade_Buffs().GeminiGenies || Owner.Cascade_Buffs().GeminiGeniesVanity)
             {
                 Projectile.timeLeft = 2;
                 return true;
@@ -79,7 +79,7 @@
 
             if (Owner.dead || !Owner.active)
             {
-                Owner.CascadePlayer_Minions().GeminiGenies = false;
+                Owner.Cascade_Buffs().GeminiGenies = false;
                 Projectile.Kill();
                 return false;
             }
@@ -96,10 +96,10 @@
             Myself = Projectile;
 
             // Search for nearby targets.
-            Projectile.SearchForViableTargetsForMinion(Owner, 1750f, 100f, out bool _, out float _, out Vector2 _);
+            //Projectile.GetNearestMinionTarget(Owner, 1750f, 500f, out bool foundTarget, out NPC target);
 
             // If the vanity bool is enabled, stick to the idle movement and do not spawn anything.
-            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            if (Owner.Cascade_Buffs().GeminiGeniesVanity)
             {
                 AttackState = 0f;
             }
@@ -160,7 +160,7 @@
         public void SpawnInWeapons()
         {
             // Spawn nothing if the player has them equipped as vanity.
-            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            if (Owner.Cascade_Buffs().GeminiGeniesVanity)
             {
                 HasSpawnedInWeaponsYet = true;
                 return;

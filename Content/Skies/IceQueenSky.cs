@@ -1,6 +1,4 @@
-﻿using Cascade.Core.Graphics.SpecificEffectManagers;
-
-namespace Cascade.Content.Skies
+﻿namespace Cascade.Content.Skies
 {
     public class IceQueenSceneEffect : ModSceneEffect
     {

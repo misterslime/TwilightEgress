@@ -100,8 +100,8 @@
 
             if (Timer >= MaxChargeTime)
             {
-                NPC target = Projectile.FindClosestNPCToProjectile(3000f);
-                if (target == null)
+                Projectile.GetNearestTarget(1500f, 500f, out bool foundTarget, out NPC target);
+                if (!foundTarget)
                 {
                     Projectile.Kill();
                     return;

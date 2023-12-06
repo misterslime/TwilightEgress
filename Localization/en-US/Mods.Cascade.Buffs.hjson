@@ -3,6 +3,11 @@ GeminiGeniesBuff: {
 	Description: You beat us, so now we'll help ya out!
 }
 
+GeminiGenies: {
+	DisplayName: Gemini Genies
+	Description: Mods.Cascade.Buffs.GeminiGenies.Description
+}
+
 MoonSpiritLanternBuff: {
 	DisplayName: Lanterns of the Undead
 	Description: The power of the undead protects you.
@@ -16,4 +21,14 @@ BellbirdCry: {
 BellbirdBuff: {
 	DisplayName: Bellbird Buff
 	Description: Mods.Cascade.Buffs.BellbirdBuff.Description
+}
+
+OctoKibby: {
+	DisplayName: Octo Kibby
+	Description: Mods.Cascade.Buffs.OctoKibby.Description
+}
+
+UnderworldLanterns: {
+	DisplayName: Underworld Lanterns
+	Description: Mods.Cascade.Buffs.UnderworldLanterns.Description
 }

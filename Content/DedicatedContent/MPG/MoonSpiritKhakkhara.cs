@@ -64,12 +64,11 @@ namespace Cascade.Content.DedicatedContent.MPG
                     lanterns.Add(p);
             }
 
-            int count = lanterns.Count;
             Projectile lantern = lanterns.FirstOrDefault();
-            if (player.altFunctionUse == 2 && count > 0)
+            if (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<UnderworldLantern>()] > 0)
             {
-                player.Cascade_Debuff().CurseOfNecromancyMinionSlotStack++;
-                player.AddBuff(ModContent.BuffType<CurseOfNecromancy>(), 3600);
+                player.Cascade_Buffs().CurseOfNecromancyMinionSlotStack++;
+                player.AddBuff(ModContent.BuffType<CurseOfNecromancy>(), 3600);       
                 lantern.Kill();
             }
 

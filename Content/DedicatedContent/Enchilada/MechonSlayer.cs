@@ -7,8 +7,6 @@ namespace Cascade.Content.DedicatedContent.Enchilada
     {
         public static int WeaponState { get; set; }
 
-        private int SwingDirection { get; set; }
-
         public override void SetStaticDefaults() => Item.ResearchUnlockCount = 1;
 
         public override void SetDefaults()
