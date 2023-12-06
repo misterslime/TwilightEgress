@@ -90,22 +90,14 @@ namespace Cascade
         /// <param name="frameSpeed">How many frames it takes for <see cref="Projectile.frame"/> to increment.</param>
         public static void UpdateProjectileAnimationFrames(this Projectile projectile, int startFrame, int endFrame, int frameSpeed)
         {
-            // Initialize the current frame to ensure it's on the starting frame.
-            if (projectile.frameCounter == 0 && projectile.frame != startFrame)
-                projectile.frame = startFrame;
-
-            // This esseentially operates the same way as if I were to set frameCounter to 0 after
-            // hvaing it reach the max frameSpeed, we just use 0 to initialize the starting frame.
-            if (projectile.frameCounter >= frameSpeed + 1)
-            {
-                projectile.frameCounter = 1;
-                if (++projectile.frame >= endFrame)
-                {
-                    projectile.frame = startFrame;
-                }
-            }
-
             projectile.frameCounter++;
+            if (projectile.frameCounter >= frameSpeed)
+            {
+                projectile.frame++;
+                if (projectile.frame > endFrame)
+                    projectile.frame = startFrame;
+                projectile.frameCounter = 0;
+            }
         }
 
         /// <summary>
@@ -143,28 +135,6 @@ namespace Cascade
             }
             owner.itemRotation = WrapAngle(projectile.rotation);
         }   
-
-        public static NPC FindClosestNPCToProjectile(this Projectile projectile, float maxDetectionRadius)
-        {
-            NPC closestNPC = null;
-
-            float squaredMaxDetectionRadius = maxDetectionRadius * maxDetectionRadius;
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC target = Main.npc[i];
-                if (target.CanBeChasedBy())
-                {
-                    float squaredDistanceToTarget = Vector2.DistanceSquared(target.Center, projectile.Center);
-                    if (squaredDistanceToTarget < squaredMaxDetectionRadius)
-                    {
-                        squaredMaxDetectionRadius = squaredDistanceToTarget;
-                        closestNPC = target;
-                    }
-                }
-            }
-
-            return closestNPC;
-        }
 
         public static void SearchForViableTargetsForMinion(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter) 
         {
@@ -255,7 +225,7 @@ namespace Cascade
         /// <param name="maxSearchDistanceThroughWalls">The maximum distance through walls around a projectile to allow searching for viable targets.</param>
         /// <param name="foundTarget">Whether or not a target has been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
         /// <param name="target">The target that's been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
-        public static void GetMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
+        public static void GetNearestMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
         {
             target = null;
             foundTarget = false;

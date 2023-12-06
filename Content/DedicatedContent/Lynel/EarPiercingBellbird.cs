@@ -1,17 +1,27 @@
 ﻿using Cascade.Content.Buffs.Debuffs;
 using Cascade.Content.Buffs.Pets;
 using Cascade.Content.Particles;
-using Cascade.Core.Systems.CameraSystem;
+using Cascade.Core.Graphics.CameraManipulation;
+using Microsoft.Xna.Framework;
 
 namespace Cascade.Content.DedicatedContent.Lynel
 {
     public class EarPiercingBellbird : ModProjectile, ILocalizedModType
     {
-        private Player Owner => Main.player[Projectile.owner];
+        public enum BellbirdStates
+        {
+            Flying,
+            Perching,
+            CryOfGod
+        }
 
-        private ref float Timer => ref Projectile.ai[0];
+        public Player Owner => Main.player[Projectile.owner];
 
-        private ref float AIState => ref Projectile.ai[1];
+        public ref float Timer => ref Projectile.ai[0];
+
+        public ref float AIState => ref Projectile.ai[1];
+
+        public ref float LocalAIState => ref Projectile.ai[2];
 
         private const int ScreamChanceRegular = 1000000000;
 
@@ -20,6 +30,8 @@ namespace Cascade.Content.DedicatedContent.Lynel
         private const int ScreamChargeTime = 120;
 
         private const int ScreamTime = 360;
+
+        private const int TimeToPerch = 360;
 
         private const int ScreamChargeVisualScaleIndex = 0;
 
@@ -35,8 +47,8 @@ namespace Cascade.Content.DedicatedContent.Lynel
 
         public override void SetDefaults()
         {
-            Projectile.width = 16;
-            Projectile.height = 16;
+            Projectile.width = 32;
+            Projectile.height = 32;
             Projectile.aiStyle = -1;
             Projectile.penetrate = -1;
             Projectile.friendly = true;
@@ -46,11 +58,60 @@ namespace Cascade.Content.DedicatedContent.Lynel
 
         public override void AI()
         {
-            ref float screamChargeVisualScale = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualScaleIndex];
-            ref float screamChargeVisualOpacity = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualOpacityIndex];
-
             if (Owner.active && Owner.HasBuff(ModContent.BuffType<BellbirdBuff>()))
                 Projectile.timeLeft = 2;
+
+            switch ((BellbirdStates)AIState)
+            {
+                case BellbirdStates.Flying:
+                    DoBehavior_Flying();
+                    break;
+
+                case BellbirdStates.Perching:
+                    DoBehavior_Perching();
+                    break;
+
+                case BellbirdStates.CryOfGod:
+                    DoBehavior_CryOfGod();
+                    break;
+            }
+
+            GameTime gameTime = Main.gameTimeCache;
+            int screamChance = Main.zenithWorld ? ScreamChanceGFB : ScreamChanceRegular;
+
+            // Try to run the bellbird scream at the respective random chance every 12 seconds.
+            bool canScream = AIState != (float)BellbirdStates.CryOfGod && gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(screamChance);
+            if (canScream)
+            {
+                AIState = (float)BellbirdStates.CryOfGod;
+                Timer = 0f;
+                LocalAIState = 0f;
+                Projectile.netUpdate = true;
+            }
+
+            // Stop perching if the player inverts their gravity.
+            if (Owner.gravDir == -1 && AIState == (float)BellbirdStates.Perching)
+            {
+                AIState = (float)BellbirdStates.Flying;
+                Timer = 0f;
+                LocalAIState = 0f;
+                Projectile.netUpdate = true;
+            }
+        }
+
+        public void DoBehavior_Flying()
+        {
+            // Float around the player.
+            Projectile.FloatingPetAI(true, 0.03f);
+
+            // After some time has passed, return to perching.
+            if (Timer >= TimeToPerch)
+            {
+                AIState = (float)BellbirdStates.Perching;
+                Timer = 0f;
+                LocalAIState = 0f;
+                Projectile.netUpdate = true;
+            }
 
             // Teleport if too far away.
             float distanceFromOwner = Vector2.Distance(Owner.Center, Projectile.Center);
@@ -60,75 +121,97 @@ namespace Cascade.Content.DedicatedContent.Lynel
                 Projectile.netUpdate = true;
             }
 
-            if (AIState == 0f)
-            {
-                GameTime gameTime = Main.gameTimeCache;
-                int screamChance = Main.zenithWorld ? ScreamChanceGFB : ScreamChanceRegular;
-                
-                // Float around the player.
-                Projectile.FloatingPetAI(true, 0.03f);
-                Projectile.UpdateProjectileAnimationFrames(0, 4, 4);
-
-                // Try to run the bellbird scream at the respective random chance every 12 seconds.
-                if (gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(screamChance))
-                {
-                    AIState = 1f;
-                    Timer = 0f;
-                    Projectile.netUpdate = true;
-                }
-            }
-
-            if (AIState == 1f)
-            {
-                // Slow down and play a small visual effect.
-                if (Timer <= ScreamChargeTime)
-                {
-                    Projectile.velocity *= 0.9f;
-                    Projectile.UpdateProjectileAnimationFrames(3, 3, 1);
-
-                    float screamChargeInterpolant = Utils.GetLerpValue(0f, ScreamChargeTime - 39, Timer, true);
-
-                    // Fade in then quickly fade out.
-                    if (Timer <= ScreamChargeTime - 30)
-                    {
-                        screamChargeVisualScale = Lerp(5f, 1f, screamChargeInterpolant);
-                        screamChargeVisualOpacity = Lerp(0f, 1f, screamChargeInterpolant);
-                    }
-                    
-                    if (Timer >= ScreamChargeTime - 15 && Timer <= ScreamChargeTime)
-                        screamChargeVisualOpacity = Clamp(screamChargeVisualOpacity - 0.1f, 0f, 1f);
-                }
-
-                // Cry of God.
-                if (Timer is >= ScreamChargeTime and <= ScreamChargeTime + ScreamTime)
-                {
-                    // Make the player's ears bleed.
-                    if (Timer is ScreamChargeTime)
-                        SoundEngine.PlaySound(CascadeSoundRegistry.BellbirdStunningScream with { Volume = 30f }, Projectile.Center);
-
-                    // Visual effects.
-                    CascadeCameraSystem.Screenshake(8, 30, Projectile.Center);
-                    Projectile.UpdateProjectileAnimationFrames(0, 0, 1);
-                    if (Timer % 10 == 0)
-                    {
-                        RoaringShockwaveParticle shockwave = new(45, Projectile.Center, Vector2.Zero, Color.White, 0.1f, Main.rand.NextFloat(TwoPi));
-                        GeneralParticleHandler.SpawnParticle(shockwave);
-                    }
-
-                    // Stun any nearby NPCs or Players.
-                    StunPlayersAndNPCs();
-                }
-
-                if (Timer is >= ScreamChargeTime + ScreamTime)
-                {
-                    AIState = 0f;
-                    Timer = 0f;
-                    Projectile.netUpdate = true;
-                }
-
+            // Only incremenet if gravity is normal.
+            if (Owner.gravDir != -1f)
                 Timer++;
+            Projectile.UpdateProjectileAnimationFrames(0, 3, 4);
+        }
+
+        public void DoBehavior_Perching()
+        {
+            Vector2 perchPosition = Owner.RotatedRelativePoint(Owner.MountedCenter) + new Vector2(Owner.direction < 0 ? -6f : 6f, -2f);
+            if (LocalAIState == 0f)
+            {
+                if (Projectile.Distance(perchPosition) <= 10f)
+                {
+                    LocalAIState = 1f;
+                    Projectile.netUpdate = true;
+                }
+
+                Projectile.SimpleMove(perchPosition, 15f, 20f);
+                Projectile.UpdateProjectileAnimationFrames(0, 3, 4);
                 Projectile.rotation = Projectile.velocity.X * 0.03f;
             }
+
+            if (LocalAIState == 1f)
+            {
+                Projectile.velocity *= 0f;
+                Projectile.Center = perchPosition.Floor();
+                Projectile.rotation = Owner.fullRotation;
+                Projectile.direction = Owner.direction;
+                Projectile.UpdateProjectileAnimationFrames(4, 4, 1);
+            }
+        }
+
+        public void DoBehavior_CryOfGod()
+        {
+            ref float screamChargeVisualScale = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualScaleIndex];
+            ref float screamChargeVisualOpacity = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualOpacityIndex];
+
+            // Launch away from the player quickly.
+            if (Timer == 0f)
+            {
+                float xVel = Main.rand.NextFloat(-10f, 10f);
+                float yVel = Main.rand.NextFloat(-6f, -4f);
+                Projectile.velocity = Main.rand.NextVector2CircularEdge(xVel, yVel);
+            }
+
+            // Slow down and play a small visual effect.
+            if (Timer <= ScreamChargeTime)
+            {
+                Projectile.UpdateProjectileAnimationFrames(2, 2, 1);
+                float screamChargeInterpolant = Utils.GetLerpValue(0f, ScreamChargeTime - 39, Timer, true);
+
+                // Fade in then quickly fade out.
+                if (Timer <= ScreamChargeTime - 30)
+                {
+                    screamChargeVisualScale = Lerp(5f, 1f, screamChargeInterpolant);
+                    screamChargeVisualOpacity = Lerp(0f, 1f, screamChargeInterpolant);
+                }
+
+                if (Timer >= ScreamChargeTime - 15 && Timer <= ScreamChargeTime)
+                    screamChargeVisualOpacity = Clamp(screamChargeVisualOpacity - 0.1f, 0f, 1f);
+            }
+
+            // Cry of God.
+            if (Timer is >= ScreamChargeTime and <= ScreamChargeTime + ScreamTime)
+            {
+                // Make the player's ears bleed.
+                if (Timer is ScreamChargeTime)
+                    SoundEngine.PlaySound(CascadeSoundRegistry.BellbirdStunningScream with { Volume = 30f }, Projectile.Center);
+
+                // Visual effects.
+                CascadeCameraSystem.Screenshake(8, 30, Projectile.Center);
+                Projectile.UpdateProjectileAnimationFrames(0, 0, 1);
+                if (Timer % 10 == 0)
+                {
+                    RoaringShockwaveParticle shockwave = new(45, Projectile.Center, Vector2.Zero, Color.White, 0.1f, Main.rand.NextFloat(TwoPi));
+                    GeneralParticleHandler.SpawnParticle(shockwave);
+                }
+
+                // Stun any nearby NPCs or Players.
+                StunPlayersAndNPCs();
+            }
+
+            if (Timer is >= ScreamChargeTime + ScreamTime)
+            {
+                AIState = (float)BellbirdStates.Flying;
+                Timer = 0f;
+                Projectile.netUpdate = true;
+            }
+
+            Timer++;
+            Projectile.velocity *= 0.98f;
         }
 
         public void StunPlayersAndNPCs()
@@ -154,6 +237,9 @@ namespace Cascade.Content.DedicatedContent.Lynel
             Texture2D texture = ModContent.Request<Texture2D>(Texture).Value;
             Texture2D chargeVisualTexture = ModContent.Request<Texture2D>(GlowTexture).Value;
 
+            SpriteEffects effects = AIState == 1f && LocalAIState == 1f ? Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None
+                : Projectile.DirectionBasedSpriteEffects();
+
             ref float screamChargeVisualScale = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualScaleIndex];
             ref float screamChargeVisualOpacity = ref Projectile.Cascade().ExtraAI[ScreamChargeVisualOpacityIndex];
 
@@ -161,9 +247,9 @@ namespace Cascade.Content.DedicatedContent.Lynel
             int currentYFrame = individualFrameHeight * Projectile.frame;
             Rectangle rectangle = new(0, currentYFrame, texture.Width, individualFrameHeight);
             Vector2 origin = rectangle.Size() / 2f;
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(0, Projectile.gfxOffY);
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
 
-            Main.EntitySpriteDraw(texture, drawPosition, rectangle, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, Projectile.DirectionBasedSpriteEffects());
+            Main.EntitySpriteDraw(texture, drawPosition, rectangle, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, effects);
             Main.EntitySpriteDraw(chargeVisualTexture, drawPosition, rectangle, Color.White * screamChargeVisualOpacity, Projectile.rotation, origin, screamChargeVisualScale, Projectile.DirectionBasedSpriteEffects());
             return false;
         }

@@ -1,6 +1,6 @@
 ﻿using Cascade.Assets.Effects;
 using Cascade.Content.Skies.SkyEntities;
-using Cascade.Core.Systems.SkyEntitySystem;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Microsoft.CodeAnalysis.CSharp;
 namespace Cascade.Content.Skies
 {

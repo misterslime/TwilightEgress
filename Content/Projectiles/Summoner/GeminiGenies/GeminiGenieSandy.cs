@@ -65,11 +65,11 @@
             Projectile.idStaticNPCHitCooldown = 15;
         }
 
-        public override bool? CanDamage() => !Owner.CascadePlayer_Minions().GeminiGeniesVanity;
+        public override bool? CanDamage() => !Owner.Cascade_Buffs().GeminiGeniesVanity;
 
         public bool CheckActive()
         {
-            if (Owner.CascadePlayer_Minions().GeminiGenies || Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            if (Owner.Cascade_Buffs().GeminiGenies || Owner.Cascade_Buffs().GeminiGeniesVanity)
             {
                 Projectile.timeLeft = 2;
                 return true;
@@ -77,7 +77,7 @@
 
             if (Owner.dead || !Owner.active)
             {
-                Owner.CascadePlayer_Minions().GeminiGenies = false;
+                Owner.Cascade_Buffs().GeminiGenies = false;
                 Projectile.Kill();
                 return false;
             }
@@ -96,9 +96,10 @@
             Myself = Projectile;
 
             // Search for nearby targets.
-            Projectile.SearchForViableTargetsForMinion(Owner, 1750f, 100f, out bool foundTarget, out float _, out Vector2 targetCenter);
+            Projectile.GetNearestMinionTarget(Owner, 1750f, 500f, out bool foundTarget, out NPC target);
+
             // If the player is using the acceessory as vanity, make sure to always set this to false so no attacks are done.
-            if (Owner.CascadePlayer_Minions().GeminiGeniesVanity)
+            if (Owner.Cascade_Buffs().GeminiGeniesVanity)
                 foundTarget = false;
 
             switch ((AIStates)AttackState)
@@ -108,7 +109,7 @@
                     break;
 
                 case AIStates.Attacking:
-                    DoBehavior_Attacking(foundTarget, targetCenter, ref attackCounter);
+                    DoBehavior_Attacking(foundTarget, target.Center, ref attackCounter);
                     break;
             }
 

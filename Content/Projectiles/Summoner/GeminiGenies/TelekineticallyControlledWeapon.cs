@@ -68,7 +68,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
         public override void AI()
         {
             Projectile Owner = GeminiGeniePsychic.Myself;
-            NPC closestTarget = Projectile.FindClosestNPCToProjectile(1500f);
+            Projectile.GetNearestTarget(1500f, 500f, out bool foundTarget, out NPC closestTarget);
 
             ref float rotationSpeed = ref Projectile.Cascade().ExtraAI[RotationSpeedIndex];
             ref float rotationDirection = ref Projectile.Cascade().ExtraAI[RotationDirectionIndex];
@@ -99,7 +99,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 
             if (AIState == 1f)
             {
-                if (closestTarget == null)
+                if (!foundTarget)
                 {
                     Timer = 0f;
                     AIState = 0f;

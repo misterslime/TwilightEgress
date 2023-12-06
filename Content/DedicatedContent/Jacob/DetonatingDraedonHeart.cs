@@ -108,8 +108,9 @@
                     Projectile.frame = 0;
                 }
             }
+
             // In the chance that there is an enemy near, move REALLY slowly towards them.
-            NPC target = Projectile.FindClosestNPCToProjectile(1000f);
+            Projectile.GetNearestTarget(1000f, 500f, out _, out NPC target);
             if (target != null && Timer >= MaxChargeTime)
                 Projectile.SimpleMove(target.Center, 10f, 200f);
         }

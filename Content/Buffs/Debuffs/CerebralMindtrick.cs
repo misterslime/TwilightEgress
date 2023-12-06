@@ -15,6 +15,6 @@
             Main.buffNoSave[Type] = true;
         }
 
-        public override void Update(Player Player, ref int buffIndex) => Player.Cascade_Debuff().CerebralMindtrick = true;
+        public override void Update(Player Player, ref int buffIndex) => Player.Cascade_Buffs().CerebralMindtrick = true;
     }
 }

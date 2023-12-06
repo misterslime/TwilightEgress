@@ -7,18 +7,18 @@ namespace Cascade
 {
     public static class GlobalExtensionMethods
     {
+        #region GlobalNPCs
         public static CascadeGlobalNPC Cascade(this NPC npc) => npc.GetGlobalNPC<CascadeGlobalNPC>();
 
-        public static DebuffHandlerGlobalNPC Cascade_Debuff(this NPC npc) => npc.GetGlobalNPC<DebuffHandlerGlobalNPC>();
+        public static DebuffHandlerGlobalNPC Cascade_Buffs(this NPC npc) => npc.GetGlobalNPC<DebuffHandlerGlobalNPC>();
+        #endregion
 
+        #region GlobalProjectiles
         public static CascadeGlobalProjectile Cascade(this Projectile projectile) => projectile.GetGlobalProjectile<CascadeGlobalProjectile>();
+        #endregion
 
         #region ModPlayers
         public static BuffHandler Cascade_Buffs(this Player player) => player.GetModPlayer<BuffHandler>();
-
-        public static DebuffHandler Cascade_Debuff(this Player player) => player.GetModPlayer<DebuffHandler>();
-
-        public static MinionBuffHandler CascadePlayer_Minions(this Player player) => player.GetModPlayer<MinionBuffHandler>();
 
         public static ResplendentRoarPlayer CascadePlayer_ResplendantRoar(this Player player) => player.GetModPlayer<ResplendentRoarPlayer>();
 

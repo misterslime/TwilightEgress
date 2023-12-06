@@ -120,7 +120,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             // Spawn in the lanterns.
             if (Timer >= MaxChargeTime && Timer % 30 == 0)
             {
-                Owner.AddBuff(ModContent.BuffType<MoonSpiritLanternBuff>(), 180000);
+                Owner.AddBuff(ModContent.BuffType<UnderworldLanterns>(), 180000);
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 85f;
                 Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<UnderworldLantern>(), Projectile.damage, 0f, true, SoundID.DD2_BetsyFireballShot, Projectile.owner);
 

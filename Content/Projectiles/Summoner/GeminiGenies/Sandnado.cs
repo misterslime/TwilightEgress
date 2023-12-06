@@ -41,8 +41,8 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
             float lifespan = 360f;
             SlotId loopingTwisterSound;
 
-            NPC closestTarget = Projectile.FindClosestNPCToProjectile(1500f);
-            if (closestTarget is null || GeminiGenieSandy.Myself is null)
+            Projectile.GetNearestTarget(1000f, 500f, out bool foundTarget, out NPC closestTarget);
+            if (!foundTarget || GeminiGenieSandy.Myself is null)
             {
                 Projectile.velocity *= 0.98f;
                 Projectile.Opacity -= 0.01f;
