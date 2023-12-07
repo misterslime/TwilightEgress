@@ -14,6 +14,7 @@
     <None Remove="Localization\en-US\Mods.Cascade.Items.Accessories.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Items.Ammo.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Items.Materials.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Items.Support.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Items.Weapons.Rogue.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.NPCs.CosmostoneShowers.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.NPCs.Misc.hjson" />
@@ -25,6 +26,7 @@
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Ranged.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Rogue.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Summon.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Status.DeathReasons.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.UI.hjson" />
   </ItemGroup>
   <ItemGroup>

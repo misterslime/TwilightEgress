@@ -68,7 +68,7 @@
 
             // Automatically dispose of targets that go unused for a period of time (5 seconds in our case).
             // This is done so that unused targets do not linger and take up unnecessary memeory in the GPU.
-            foreach (SmartRenderTarget target in SmartTargets)
+            foreach (SmartRenderTarget target in SmartTargets.ToList())
             {
                 if (target is null || target.IsDisposed)
                     continue;

@@ -1,9 +1,10 @@
 ﻿using Cascade.Core.Configs;
 using System.Collections.Generic;
+using Terraria.GameContent.Skies;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
-    public class SkyEntityHandler : ModSystem
+    public class SkyEntityManager : ModSystem
     {
         private static List<SkyEntity> SkyEntities;
 

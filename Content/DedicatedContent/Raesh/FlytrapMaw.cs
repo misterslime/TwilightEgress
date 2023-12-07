@@ -1,14 +1,16 @@
 ﻿namespace Cascade.Content.DedicatedContent.Raesh
 {
-    public class FlytrapMaw : ModProjectile
+    public class FlytrapMaw : ModProjectile, ILocalizedModType
     {
-        private List<NPC> NPCsWhoHaveBeenHit { get; set; }
-
         private ref float ViableTargetIndex => ref Projectile.ai[0];
 
         private Player Owner => Main.player[Projectile.owner];
 
+        private List<NPC> NPCsWhoHaveBeenHit { get; set; }
+
         private PrimitiveDrawer TrailDrawer { get; set; }
+
+        public new string LocalizationCategory => "Projectiles.Magic";
 
         public override void SetStaticDefaults()
         {
@@ -60,7 +62,7 @@
                 /* Add the whoAmI indexes of each hit NPC to the list. 
                  * This is how we'll keep track of which NPCs we shouldn't target. */
                 NPCsWhoHaveBeenHit.Add(target);
-                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 10 }, Projectile.Center);
+                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 1 }, Projectile.Center);
             }
 
             // Find the closest target in range and bounce to them from the last enemy.
@@ -107,7 +109,7 @@
             else
             {
                 Collision.HitTiles(Projectile.position, Projectile.velocity, Projectile.width, Projectile.height);
-                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 10 }, Projectile.Center);
+                SoundEngine.PlaySound(CascadeSoundRegistry.FlytrapMawBounce with { MaxInstances = 1 }, Projectile.Center);
 
                 if (Math.Abs(Projectile.velocity.X - oldVelocity.X) > float.Epsilon)
                     Projectile.velocity.X = -oldVelocity.X;

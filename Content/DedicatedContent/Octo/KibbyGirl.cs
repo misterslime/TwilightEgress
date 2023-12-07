@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.DedicatedContent.Octo
 {
-    public class KibbyGirl : ModProjectile
+    public class KibbyGirl : ModProjectile, ILocalizedModType
     {
         public enum BehaviorState
         {
@@ -32,6 +32,8 @@
         public ref float LocalAIState => ref Projectile.ai[1];
 
         public ref float AIState => ref Projectile.ai[2];
+
+        public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {

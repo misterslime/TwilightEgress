@@ -61,6 +61,11 @@ namespace Cascade.Content.DedicatedContent.Lynel
             if (Owner.active && Owner.HasBuff(ModContent.BuffType<BellbirdBuff>()))
                 Projectile.timeLeft = 2;
 
+            GameTime gameTime = Main.gameTimeCache;
+            int screamChance = Main.zenithWorld ? ScreamChanceGFB : ScreamChanceRegular;
+            bool canChirp = AIState != (float)BellbirdStates.CryOfGod && gameTime.TotalGameTime.Ticks % 60 == 0 && Main.rand.NextBool(100);
+            bool canScream = AIState != (float)BellbirdStates.CryOfGod && gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(screamChance);
+
             switch ((BellbirdStates)AIState)
             {
                 case BellbirdStates.Flying:
@@ -76,17 +81,23 @@ namespace Cascade.Content.DedicatedContent.Lynel
                     break;
             }
 
-            GameTime gameTime = Main.gameTimeCache;
-            int screamChance = Main.zenithWorld ? ScreamChanceGFB : ScreamChanceRegular;
-
             // Try to run the bellbird scream at the respective random chance every 12 seconds.
-            bool canScream = AIState != (float)BellbirdStates.CryOfGod && gameTime.TotalGameTime.Ticks % 720 == 0f && Main.rand.NextBool(screamChance);
             if (canScream)
             {
                 AIState = (float)BellbirdStates.CryOfGod;
                 Timer = 0f;
                 LocalAIState = 0f;
                 Projectile.netUpdate = true;
+            }
+
+            // Chirp occasionally.
+            if (canChirp)
+            {
+                SoundEngine.PlaySound(CascadeSoundRegistry.BellbirdChirp, Projectile.Center);
+
+                Vector2 velocity = new(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-4f, -2f));
+                MusicNoteParticle chirpNote = new(Projectile.Center, velocity);
+                GeneralParticleHandler.SpawnParticle(chirpNote);
             }
 
             // Stop perching if the player inverts their gravity.
@@ -96,7 +107,7 @@ namespace Cascade.Content.DedicatedContent.Lynel
                 Timer = 0f;
                 LocalAIState = 0f;
                 Projectile.netUpdate = true;
-            }
+            }    
         }
 
         public void DoBehavior_Flying()
@@ -124,7 +135,7 @@ namespace Cascade.Content.DedicatedContent.Lynel
             // Only incremenet if gravity is normal.
             if (Owner.gravDir != -1f)
                 Timer++;
-            Projectile.UpdateProjectileAnimationFrames(0, 3, 4);
+            Projectile.UpdateProjectileAnimationFrames(0, 3, 4);      
         }
 
         public void DoBehavior_Perching()

@@ -1,7 +1,9 @@
 ﻿namespace Cascade.Content.Projectiles.Rogue
 {
-    public class HolidayHalberdIceShockSnowflake : ModProjectile
+    public class HolidayHalberdIceShockSnowflake : ModProjectile, ILocalizedModType
     {
+        public new string LocalizationCategory => "Projectiles.Rogue";
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Type] = 3;

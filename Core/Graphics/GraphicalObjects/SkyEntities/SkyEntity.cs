@@ -40,7 +40,7 @@
 
         public virtual void Kill()
         {
-            SkyEntityHandler.RemoveSkyEntity(this);
+            SkyEntityManager.RemoveSkyEntity(this);
         }
     }
 }

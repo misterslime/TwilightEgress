@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Buffs.Debuffs
 {
-    public class BellbirdCry : ModBuff
+    public class BellbirdCry : ModBuff, ILocalizedModType
     {
         public new string LocalizationCategory => "Buffs.Debuffs";
 

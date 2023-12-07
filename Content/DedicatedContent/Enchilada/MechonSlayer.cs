@@ -3,9 +3,11 @@ using CalamityMod.Rarities;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
 {
-    public class MechonSlayer : ModItem
+    public class MechonSlayer : ModItem, ILocalizedModType
     {
         public static int WeaponState { get; set; }
+
+        public new string LocalizationCategory => "Items.Support";
 
         public override void SetStaticDefaults() => Item.ResearchUnlockCount = 1;
 

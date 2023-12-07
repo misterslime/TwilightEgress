@@ -142,7 +142,7 @@ namespace Cascade.Content.Skies
                     float depth = Main.rand.NextFloat() * 8f + 1.5f;
                     int lifespan = Main.rand.Next(180, 200);
                     FadingGlowStar glowStar = new FadingGlowStar(position, GetGlowStarColor(), scale, depth, lifespan);
-                    SkyEntityHandler.SpawnSkyEntity(glowStar);
+                    SkyEntityManager.SpawnSkyEntity(glowStar);
                     GlowStars.Add(glowStar);
                 }
 
@@ -154,7 +154,7 @@ namespace Cascade.Content.Skies
                     float depth = Main.rand.NextFloat() * 5f + 1.5f;
                     int lifespan = Main.rand.Next(240, 300);
                     FadingGlowBall glowBall = new FadingGlowBall(position, velocity, GetGlowStarColor(), scale, depth, lifespan);
-                    SkyEntityHandler.SpawnSkyEntity(glowBall);
+                    SkyEntityManager.SpawnSkyEntity(glowBall);
                     GlowBalls.Add(glowBall);
                 }
 
