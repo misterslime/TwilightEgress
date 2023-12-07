@@ -31,11 +31,21 @@ namespace Cascade.Core.Players.BuffHandlers
             if (CurseOfNecromancy)
             {
                 Player.maxMinions -= CurseOfNecromancyMinionSlotStack;
-
-                // Some light dust visuals.
-                Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
-                Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.PurpleTorch);
+                
+                // Particle visuals.
+                if (Main.rand.NextBool(8))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 spawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
+                        Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(-5f, -2f);
+                        Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
+                        float scale = Main.rand.NextFloat(0.65f, 1.75f);
+                        float opacity = Main.rand.NextFloat(180f, 240f);
+                        MediumMistParticle mist = new(spawnPosition, velocity, color, color, scale, opacity, 0.03f);
+                        GeneralParticleHandler.SpawnParticle(mist);
+                    }
+                }
             }
 
             if (!CurseOfNecromancy)

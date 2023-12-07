@@ -1,4 +1,5 @@
 ﻿using Cascade.Content.Buffs.Minions;
+using Cascade.Content.Particles;
 using System.Runtime;
 
 namespace Cascade.Content.DedicatedContent.MPG
@@ -257,7 +258,15 @@ namespace Cascade.Content.DedicatedContent.MPG
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target.type == Projectile.Cascade().SpecificNPCTypeToCheckOnHit.Value)
+            {
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh);
+
+                Vector2 stretchFactor = new(1f, 3f);
+                Color slashColor = Color.Lerp(Color.Cyan, Color.LightSkyBlue, Main.rand.NextFloat());
+                Color bloomColor = Color.Lerp(slashColor, Color.Transparent, 0.15f);
+                SwordSlashParticle swordSlashParticle = new(target.Center, slashColor, bloomColor, Main.rand.NextFloat(Tau), stretchFactor, 2f, 20);
+                GeneralParticleHandler.SpawnParticle(swordSlashParticle);
+            }
         }
 
         public override void OnKill(int timeLeft)
