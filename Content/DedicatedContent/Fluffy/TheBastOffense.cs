@@ -30,7 +30,6 @@ namespace Cascade.Content.DedicatedContent.Fluffy
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.value = CalamityGlobalItem.Rarity8BuyPrice;
             Item.rare = ItemRarityID.Yellow;
-            Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<TheBastOffenseHoldout>();
         }
 

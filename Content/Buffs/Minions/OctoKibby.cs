@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Buffs.Minions
 {
-    public class OctoKibby : ModBuff
+    public class OctoKibby : ModBuff, ILocalizedModType
     {
         public new string LocalizationCategory => "Buffs";
 

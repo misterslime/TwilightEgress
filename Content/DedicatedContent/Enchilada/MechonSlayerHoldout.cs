@@ -3,7 +3,7 @@ using Cascade.Core.Graphics.CameraManipulation;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
 {
-    public class MechonSlayerHoldout : ModProjectile
+    public class MechonSlayerHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -20,6 +20,8 @@ namespace Cascade.Content.DedicatedContent.Enchilada
         public float SwordOverheadThrust() => PiecewiseAnimation(Timer / SwingTime, Anticipation, Thrust);
 
         private bool Initialized { get; set; } = false;
+
+        public new string LocalizationCategory => "Projectiles.Misc";
 
         public override void SetDefaults()
         {
