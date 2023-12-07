@@ -1,11 +1,11 @@
 ﻿using CalamityMod.Items;
-using CalamityMod.Items.Accessories;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Magic;
 using CalamityMod.Items.Weapons.Summon;
 using CalamityMod.Rarities;
 using CalamityMod.Tiles.Furniture.CraftingStations;
 using Cascade.Content.Buffs.Debuffs;
+using Cascade.Content.Projectiles.Misc;
 
 namespace Cascade.Content.DedicatedContent.MPG
 {
@@ -66,7 +66,8 @@ namespace Cascade.Content.DedicatedContent.MPG
 
             Projectile lantern = lanterns.FirstOrDefault();
             if (player.altFunctionUse == 2 && player.ownedProjectileCounts[ModContent.ProjectileType<UnderworldLantern>()] > 0)
-            {
+            {              
+                SpawnSkulls(player);
                 player.Cascade_Buffs().CurseOfNecromancyMinionSlotStack++;
                 player.AddBuff(ModContent.BuffType<CurseOfNecromancy>(), 3600);       
                 lantern.Kill();
@@ -75,6 +76,25 @@ namespace Cascade.Content.DedicatedContent.MPG
             return true;
         }
 
+        public void SpawnSkulls(Player player)
+        {
+            int type = ModContent.ProjectileType<CurseOfNecromancySkull>();
+            int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), player.Center, Vector2.Zero, type, 0, 0f, player.whoAmI);
+            if (Main.projectile.IndexInRange(p))
+                Main.projectile[p].ModProjectile<CurseOfNecromancySkull>().SkullIndex = player.ownedProjectileCounts[type];
+            SoundEngine.PlaySound(SoundID.DD2_BetsysWrathShot, player.Center);
+
+            int skullIndex = 0;
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                if (Main.projectile[i].type == type && Main.projectile[i].active && Main.projectile[i].owner == player.whoAmI)
+                {
+                    Main.projectile[i].ModProjectile<CurseOfNecromancySkull>().SkullIndex = skullIndex++;
+                    Main.projectile[i].ModProjectile<CurseOfNecromancySkull>().Timer = 0f;
+                    Main.projectile[i].netUpdate = true;
+                }
+            }
+        }
         public override void AddRecipes()
         {
             CreateRecipe()
