@@ -16,8 +16,6 @@ namespace Cascade.Content.DedicatedContent.MPG
 
         public bool ShouldDrawUndeadSpirit = false;
 
-        public bool FoundATarget;
-
         public NPC TargetToChase;
 
         public Player Owner => Main.player[Projectile.owner];
