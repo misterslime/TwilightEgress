@@ -70,10 +70,6 @@ namespace Cascade.Content.Projectiles.Misc
                 Projectile.netUpdate = true;
             }
 
-            // Light dust visuals.
-            if (Main.rand.NextBool(15))
-                Utilities.CreateRandomizedDustExplosion(2, Projectile.Center, DustID.PurpleTorch);
-
             Projectile.scale = Clamp(Projectile.scale + 0.03f, 0f, 1f);
             Timer++;
         }
@@ -120,7 +116,7 @@ namespace Cascade.Content.Projectiles.Misc
             float rotationTowardsPlayer = directionToPlayer.ToRotation() - PiOver2;
             float distanceFromPlayer = directionToPlayer.Length();
 
-            while (distanceFromPlayer > 20f && !float.IsNaN(distanceFromPlayer))
+            while (distanceFromPlayer > 16f && !float.IsNaN(distanceFromPlayer))
             {
                 directionToPlayer /= distanceFromPlayer;
                 directionToPlayer *= chainTexture.Height;
