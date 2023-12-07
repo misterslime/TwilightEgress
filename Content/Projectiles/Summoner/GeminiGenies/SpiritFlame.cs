@@ -35,8 +35,8 @@
 
         public override void AI()
         {
-            NPC closestTarget = Projectile.FindClosestNPCToProjectile(1500f);
-            if (closestTarget is null || GeminiGeniePsychic.Myself is null)
+            Projectile.GetNearestTarget(1500f, 500f, out bool foundTarget, out NPC closestTarget);
+            if (!foundTarget || GeminiGeniePsychic.Myself is null)
             {
                 Projectile.Kill();
                 return;

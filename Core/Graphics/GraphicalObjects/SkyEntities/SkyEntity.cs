@@ -1,4 +1,4 @@
-﻿namespace Cascade.Core.Systems.SkyEntitySystem
+﻿namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
     /// <summary>
     /// A class used to create the various other entities that can randonly be seen in the sky.
@@ -40,7 +40,7 @@
 
         public virtual void Kill()
         {
-            SkyEntityHandler.RemoveSkyEntity(this);
+            SkyEntityManager.RemoveSkyEntity(this);
         }
     }
 }

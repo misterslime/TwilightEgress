@@ -1,13 +1,12 @@
 ﻿namespace Cascade.Content.Items.Weapons.Melee
 {
-    public class TestSword : ModItem
+    public class TestSword : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Weapons.Melee";
+
         public override string Texture => "Terraria/Images/Item_" + ItemID.FirstFractal;
 
-        public override void SetStaticDefaults()
-        {
-            ItemID.Sets.BonusAttackSpeedMultiplier[Type] = 1f;
-        }
+        public override void SetStaticDefaults() => ItemID.Sets.BonusAttackSpeedMultiplier[Type] = 1f;
 
         public override void SetDefaults()
         {

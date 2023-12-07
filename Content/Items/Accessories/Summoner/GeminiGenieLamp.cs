@@ -21,9 +21,8 @@ namespace Cascade.Content.Items.Accessories.Summoner
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.CascadePlayer_Minions().GeminiGenies = true;
-            if (player.FindBuffIndex(ModContent.BuffType<GeminiGeniesBuff>()) == -1)
-                player.AddBuff(ModContent.BuffType<GeminiGeniesBuff>(), 2);
+            if (player.FindBuffIndex(ModContent.BuffType<GeminiGenies>()) == -1)
+                player.AddBuff(ModContent.BuffType<GeminiGenies>(), 2);
 
             int damage = (int)player.GetTotalDamage<SummonDamageClass>().ApplyTo(75);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GeminiGenieSandy>()] < 1)
@@ -43,7 +42,7 @@ namespace Cascade.Content.Items.Accessories.Summoner
 
         public override void UpdateVanity(Player player)
         {
-            player.CascadePlayer_Minions().GeminiGeniesVanity = true;
+            player.Cascade_Buffs().GeminiGeniesVanity = true;
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GeminiGenieSandy>()] < 1)
                 Projectile.NewProjectile(player.GetSource_Accessory(Item), player.Center, Vector2.Zero, ModContent.ProjectileType<GeminiGenieSandy>(), 0, 0f, player.whoAmI);
             if (player.ownedProjectileCounts[ModContent.ProjectileType<GeminiGeniePsychic>()] < 1)

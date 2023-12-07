@@ -1,58 +1,55 @@
-﻿using Cascade.Core.Graphics.SpecificEffectManagers;
+﻿using CalamityMod.Items.Pets;
+using Cascade.Core.Graphics.Renderers.ScreenRenderers;
 
 namespace Cascade.Core.Players.BuffHandlers
 {
-    public class DebuffHandler : ModPlayer
+    public partial class BuffHandler
     {
+        #region Misc Debuffs
         public bool CerebralMindtrick { get; set; }
 
         public bool CurseOfNecromancy { get; set; }
 
         public bool BellbirdStun { get; set; }
+        #endregion
 
-        public int CurseOfNecromancyMinionSlotStack { get; set; }
+        #region Other Fields and Properties
+        public int CurseOfNecromancyMinionSlotStack;
 
         private int BellbirdStunTime;
 
         private const int BellbirdStunMaxTime = 240;
 
         private float BellbirdStunTimeRatio => BellbirdStunTime / (float)BellbirdStunMaxTime;
+        #endregion
 
-        public override void ResetEffects()
+        #region Methods
+        private void HandlePlayerDebuffs()
         {
-            CerebralMindtrick = false;
-            CurseOfNecromancy = false;
-            BellbirdStun = false;
-        }
-
-        public override void UpdateDead()
-        {
-            CerebralMindtrick = false;
-            CurseOfNecromancy = false;
-            BellbirdStun = false;
-
-            CurseOfNecromancyMinionSlotStack = 0;
-            BellbirdStunTime = 0;
-        }
-
-        public override void PostUpdateBuffs()
-        {
-            if (CerebralMindtrick)
-            {
-
-            }
-
             // Everytime the right click ability is used with the debuff applied, the 
             // effects of the curse stack.
             if (CurseOfNecromancy)
             {
                 Player.maxMinions -= CurseOfNecromancyMinionSlotStack;
-
-                // Some light dust visuals.
-                Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
-                Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.PurpleTorch);
+                
+                // Particle visuals.
+                if (Main.rand.NextBool(8))
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Vector2 spawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
+                        Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(-5f, -2f);
+                        Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
+                        float scale = Main.rand.NextFloat(0.65f, 1.75f);
+                        float opacity = Main.rand.NextFloat(180f, 240f);
+                        MediumMistParticle mist = new(spawnPosition, velocity, color, color, scale, opacity, 0.03f);
+                        GeneralParticleHandler.SpawnParticle(mist);
+                    }
+                }
             }
+
+            if (!CurseOfNecromancy)
+                CurseOfNecromancyMinionSlotStack = 0;
 
             if (BellbirdStun)
             {
@@ -70,26 +67,20 @@ namespace Cascade.Core.Players.BuffHandlers
                 // Visual effects.
                 if (BellbirdStunTime <= BellbirdStunMaxTime)
                 {
-                    float abberationInterpolant = Lerp(0f, 35f, BellbirdStunTimeRatio);
-                    SpecialScreenEffectSystem.ApplyChromaticAbberation(Main.LocalPlayer.Center, abberationInterpolant, 240);
+                    float abberationInterpolant = Lerp(0f, 25f, BellbirdStunTimeRatio);
+                    ChromaticAbberationRenderer.ApplyChromaticAbberation(Main.LocalPlayer.Center, abberationInterpolant, 240);
 
                     float vignettePowerInterpolant = Lerp(20f, 2f, SineInOutEasing(BellbirdStunTimeRatio, 0));
                     float vignetteBrightnessInterpolant = Lerp(0f, 3f, SineInOutEasing(BellbirdStunTimeRatio, 0));
-                    SpecialScreenEffectSystem.ApplyDarkVignette(Main.LocalPlayer.Center, vignettePowerInterpolant, vignetteBrightnessInterpolant, 180);
+                    DarkVignetteRenderer.ApplyDarkVignette(Main.LocalPlayer.Center, vignettePowerInterpolant, vignetteBrightnessInterpolant, 180);
                 }
 
                 BellbirdStunTime++;
             }
-        }
-
-        public override void PostUpdate()
-        {
-            // Reset the stack count to zero.
-            if (!CurseOfNecromancy)
-                CurseOfNecromancyMinionSlotStack = 0;
 
             if (!BellbirdStun)
                 BellbirdStunTime = 0;
         }
+        #endregion
     }
 }

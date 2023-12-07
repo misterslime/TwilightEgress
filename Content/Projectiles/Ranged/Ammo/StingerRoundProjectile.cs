@@ -25,7 +25,7 @@ namespace Cascade.Content.Projectiles.Ranged.Ammo
 
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            int stingerAmount = Main.rand.Next(3, 7);
+            int stingerAmount = Main.rand.Next(2, 5);
             for (int i = 0; i < stingerAmount; i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * 7f;

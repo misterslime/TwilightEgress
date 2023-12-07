@@ -46,6 +46,8 @@
             Projectile.timeLeft = 3600;
         }
 
+        public override bool? CanDamage() => false;
+
         public override void AI()
         {
             ref float bastIncreaseDelay = ref Projectile.Cascade().ExtraAI[BastIncreaseDelayIndex];
@@ -60,7 +62,6 @@
                 Projectile.Kill();
                 return;
             }
-
 
             switch ((AttackState)AttackType)
             {
@@ -81,9 +82,7 @@
         {
             Projectile.Center = Owner.RotatedRelativePoint(Owner.MountedCenter, true);
             if (Projectile.spriteDirection == -1)
-            {
                 Projectile.rotation += Pi;
-            }
         }
 
         public void DoBehavior_BastBarrage(ref float bastIncreaseDelay, ref float bastCatCount, ref float weaponShakeAngle, ref float oldRotation, ref float recoilStrength)
@@ -94,6 +93,7 @@
                 if (ChargeTimer >= 1200f)
                 {
                     Projectile.Kill();
+                    FuckingExplode();
                     return;
                 }
 
@@ -189,7 +189,7 @@
                     {
                         Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedByRandom(ToRadians(25f)) * Main.rand.NextFloat(13f, 19f);
                         Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f;
-                        Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                        Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
                     }
 
                     ChargeTimer = 0f;
@@ -234,7 +234,7 @@
                     AIState = 1f;
                     ChargeTimer = 0f;
                     Vector2 bastStatueMegaVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 10f;
-                    Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.damage.GetPercentageOfInteger(4f), Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                    Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.originalDamage.GetPercentageOfInteger(4f), Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
                 }
                 ChargeTimer++;
             }
@@ -252,15 +252,54 @@
                 if (ResetAnimationTimer <= 45f)
                     Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-135f) * Owner.direction, ExpOutEasing(ResetAnimationTimer / 35f, 0));
 
-
                 if (ResetAnimationTimer >= 45f)
                     Projectile.Kill();
             }
         }
 
-        public void KibbyKaboom()
+        public void FuckingExplode()
         {
+            ref float bastCatCount = ref Projectile.Cascade().ExtraAI[BastCatCountIndex];
 
+            // Hurt the player in the explosion.       
+            Player.HurtInfo hurtInfo = new()
+            {
+                DamageSource = PlayerDeathReason.ByCustomReason(Language.GetTextValue("Mods.Cascade.Status.DeathReasons.BastOffenseExplosion")),
+                Dodgeable = false,
+                Damage = Main.zenithWorld ? 9000 : 150
+            };
+            Owner.Hurt(hurtInfo);
+            Projectile.netUpdate = true;
+
+            // Release the cats that built up.
+            for (int i = 0; i < bastCatCount; i++)
+            {
+                Vector2 velocity = Vector2.UnitX.RotatedByRandom(Tau) * Main.rand.NextFloat(10f, 15f);
+                Projectile.SpawnProjectile(Projectile.Center, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, true, CascadeSoundRegistry.KibbyExplosion, Projectile.owner);
+            }
+
+            // Particle effects.
+            for (int i = 0; i < 25; i++)
+            {
+                Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(10f, 15f);
+                Color initialColor = Color.Lerp(Color.WhiteSmoke, Color.Orange, Main.rand.NextFloat());
+                Color fadeColor = Color.DarkGray;
+                float scale = Main.rand.NextFloat(6f, 8f);
+                float opacity = Main.rand.NextFloat(180f, 240f);
+                MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
+                GeneralParticleHandler.SpawnParticle(deathSmoke);
+            }
+
+            for (int i = 0; i < 15; i++)
+            {
+                Color fireColor = Color.Lerp(Color.Yellow, Color.Red, Main.rand.NextFloat(0.2f, 0.8f));
+                Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(7f, 15f);
+                float scale = Main.rand.NextFloat(5f, 7f);
+                HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, fireColor, Main.rand.Next(120, 150), scale, Main.rand.NextFloat(0.7f, 1.75f), 0.06f, true, 0);
+                GeneralParticleHandler.SpawnParticle(heavySmoke);
+            }
+
+            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.White, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 8f, 75));
         }
 
         public void Reset()
@@ -280,14 +319,6 @@
                 Owner.ChangeDir(Math.Sign(Projectile.rotation.ToRotationVector2().X));
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
             Owner.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
-        }
-
-        public override bool PreKill(int timeLeft)
-        {
-            // Blow the player to smithereenes if they decide not too fire for the entire duration.
-            if (Owner.channel)
-                KibbyKaboom();
-            return true;
         }
 
         public override bool PreDraw(ref Color lightColor)

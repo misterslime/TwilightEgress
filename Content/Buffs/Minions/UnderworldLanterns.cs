@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Buffs.Minions
 {
-    public class MoonSpiritLanternBuff : ModBuff, ILocalizedModType
+    public class UnderworldLanterns : ModBuff, ILocalizedModType
     {
         public new string LocalizationCategory => "Buffs";
 
@@ -16,7 +16,7 @@ namespace Cascade.Content.Buffs.Minions
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.CascadePlayer_Minions().MoonSpiritLantern = true;
+            player.Cascade_Buffs().MoonSpiritLantern = true;
             if (player.ownedProjectileCounts[ModContent.ProjectileType<UnderworldLantern>()] < 1)
             {
                 player.DelBuff(buffIndex);

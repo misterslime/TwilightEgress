@@ -1,4 +1,4 @@
-﻿using Cascade.Core.Systems.SkyEntitySystem;
+﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using System.Collections.Generic;
 
 namespace Cascade.Content.Skies.SkyEntities

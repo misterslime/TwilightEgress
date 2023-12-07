@@ -21,6 +21,13 @@ namespace Cascade
             throw ShaderNotFoundException;
         }
 
+        /// <summary>
+        /// Tries to obtain a shader from Cascade's shader dictionary using the given key.
+        /// The given key MUST match the internal key which a shader is registered under in
+        /// the aforementioned shader dictionary, which can be found in <see cref="ScreenShaders"/>.
+        /// </summary>
+        /// <returns>The shader as <see cref="Filter"/>.</returns>
+        /// <exception cref="NullReferenceException"></exception>
         public static Filter TryGetScreenShader(string shaderKey)
         {
             if (ScreenShaders.ContainsKey(shaderKey))
@@ -28,7 +35,22 @@ namespace Cascade
             throw ShaderNotFoundException;
         }
 
+        /// <summary>
+        /// Converts a <see cref="MiscShaderData"/> instance to an <see cref="Effect"/>.
+        /// </summary>
+        /// <param name="shaderData"></param>
+        /// <returns></returns>
+        public static Effect ShaderDataToEffect(this MiscShaderData shaderData) => shaderData.Shader;
+
+        /// <summary>
+        /// Converts a <see cref="Filter"/> instance to an <see cref="Effect"/>.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public static Effect FilterToEffect(this Filter filter) => filter.GetShader().Shader;
+
         // This is quite a crude way of doing things, but it's what works. Can't think of a better way to this at the moment, but if I do this'll definitely be changed.
+        // - fryzahh.
 
         // Texture Shaders.
         public static void TrySetParameterValue(this MiscShaderData shader, string parameterKey, float value) => shader.Shader.Parameters[parameterKey].SetValue(value);

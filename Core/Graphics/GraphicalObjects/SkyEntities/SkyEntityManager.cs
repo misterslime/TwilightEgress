@@ -1,9 +1,10 @@
 ﻿using Cascade.Core.Configs;
 using System.Collections.Generic;
+using Terraria.GameContent.Skies;
 
-namespace Cascade.Core.Systems.SkyEntitySystem
+namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
-    public class SkyEntityHandler : ModSystem
+    public class SkyEntityManager : ModSystem
     {
         private static List<SkyEntity> SkyEntities;
 
@@ -33,7 +34,7 @@ namespace Cascade.Core.Systems.SkyEntitySystem
                 skyEntity.Update();
             }
 
-            SkyEntities.RemoveAll(skyEntity => (skyEntity.Time >= skyEntity.Lifespan && skyEntity.DieWithLifespan) || SkyEntitiesToBeKilled.Contains(skyEntity));
+            SkyEntities.RemoveAll(skyEntity => skyEntity.Time >= skyEntity.Lifespan && skyEntity.DieWithLifespan || SkyEntitiesToBeKilled.Contains(skyEntity));
             SkyEntitiesToBeKilled.Clear();
         }
 

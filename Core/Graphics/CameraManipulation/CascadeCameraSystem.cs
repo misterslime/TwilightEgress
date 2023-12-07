@@ -1,7 +1,7 @@
 ﻿using Cascade.Core.Configs;
 using Terraria.Graphics.CameraModifiers;
 
-namespace Cascade.Core.Systems.CameraSystem
+namespace Cascade.Core.Graphics.CameraManipulation
 {
     public class CascadeCameraSystem : ModSystem
     {

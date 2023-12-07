@@ -48,6 +48,8 @@
 
         public static readonly SoundStyle FlytrapMawBounce = new SoundStyle("Cascade/Assets/Sounds/Items/RaeshWeapon/FlytrapMawBounce");
 
+        public static readonly SoundStyle KibbyExplosion = new SoundStyle("Cascade/Assets/Sounds/Items/KibbyExplosion");
+
         #endregion
 
         #region Vanilla Calamity Custom Sounds

@@ -1,39 +1,41 @@
 ﻿using Cascade.Content.Buffs.Minions;
-using Terraria.GameContent.UI.Elements;
+using Cascade.Content.Particles;
+using System.Runtime;
 
 namespace Cascade.Content.DedicatedContent.MPG
 {
     public class UnderworldLantern : ModProjectile, ILocalizedModType
     {
-        private enum AttackState
+        public enum AttackState
         {
             Idling,
             UndeadSpiritTransformation
         }
 
-        private bool ShouldDealContactDamage = false;
+        public bool ShouldDealContactDamage = false;
 
-        private bool ShouldDrawUndeadSpirit = false;
+        public bool ShouldDrawUndeadSpirit = false;
 
-        private Player Owner => Main.player[Projectile.owner];
+        public NPC TargetToChase;
 
-        private ref float Timer => ref Projectile.ai[0];
+        public Player Owner => Main.player[Projectile.owner];
 
-        private ref float AIState => ref Projectile.ai[1];
+        public ref float Timer => ref Projectile.ai[0];
 
-        private ref float LocalAIState => ref Projectile.ai[2]; 
+        public ref float AIState => ref Projectile.ai[1];
 
-        private const int IdleAngleIndex = 0;
+        public ref float LocalAIState => ref Projectile.ai[2];
 
-        private const int UndeadSpiritFrameIndex = 1;
+        public const int IdleAngleIndex = 0;
 
-        private const int UndeadSpiritFrameCounterIndex = 2;
+        public const int UndeadSpiritFrameIndex = 1;
+
+        public const int UndeadSpiritFrameCounterIndex = 2;
 
         public new string LocalizationCategory => "Projectiles.Summon";
 
         public override void SetStaticDefaults()
         {
-            // Designates the projectile as a pet/minion. Leaving this here as a reminder incase I forget it again.
             Main.projPet[Type] = true;
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
@@ -58,6 +60,10 @@ namespace Cascade.Content.DedicatedContent.MPG
             Projectile.minionSlots = 1;
         }
 
+        public override bool? CanCutTiles() => false;
+
+        public override bool MinionContactDamage() => ShouldDealContactDamage;
+
         public override void SendExtraAI(BinaryWriter writer)
         {
             writer.Write(ShouldDealContactDamage);
@@ -70,29 +76,20 @@ namespace Cascade.Content.DedicatedContent.MPG
             ShouldDrawUndeadSpirit = reader.ReadBoolean();
         }
 
-        public override bool? CanCutTiles() => false;
-
-        public override bool MinionContactDamage() => ShouldDealContactDamage;
-
         public override void AI()
         {
             if (!CheckActive(Owner))
                 return;
 
-            // Search for any nearby targets.
-            Projectile.GetMinionTarget(Owner, 2500f, 300f, out bool foundTarget, out NPC target);
-            if (foundTarget)
-                Projectile.Cascade().SpecificNPCTypeToCheckOnHit = target.type;
-
             // AI methods.
             switch ((AttackState)AIState)
             {
                 case AttackState.Idling:
-                    DoBehavior_Idle(foundTarget);
+                    DoBehavior_Idle();
                     break;
 
                 case AttackState.UndeadSpiritTransformation:
-                    DoBehavior_UndeadSpiritTransformation(foundTarget, target);
+                    DoBehavior_UndeadSpiritTransformation();
                     break;
             }
 
@@ -100,7 +97,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             Projectile.AdjustProjectileHitboxByScale(24f, 40f);
         }
 
-        public void DoBehavior_Idle(bool foundTarget)
+        public void DoBehavior_Idle()
         {
             int timeBeforeSwitchingAI = 30;
             ref float idleAngle = ref Projectile.Cascade().ExtraAI[IdleAngleIndex];
@@ -136,22 +133,33 @@ namespace Cascade.Content.DedicatedContent.MPG
             Projectile.rotation *= 0.9f;
             ShouldDrawUndeadSpirit = false;
 
+            // Search for any nearby targets.
+            Projectile.GetNearestMinionTarget(Owner, 2500f, 300f, out bool foundTarget, out NPC target);
+            if (foundTarget)
+            {
+                TargetToChase = target;
+                Projectile.Cascade().SpecificNPCTypeToCheckOnHit = target.type;
+            }
+
+            if (Timer >= timeBeforeSwitchingAI && !foundTarget)
+                Timer = timeBeforeSwitchingAI - 1;
+
             // Switch to attack mode after some time.
             if (Timer >= timeBeforeSwitchingAI && foundTarget)
                 SwitchAIStates(1);
         }
 
-        public void DoBehavior_UndeadSpiritTransformation(bool foundTarget, NPC target)
+        public void DoBehavior_UndeadSpiritTransformation()
         {
             int floatTime = 45;
             int chaseTime = 720;
-            int returnTime = 60;
+            int returnTime = 30;
             int cooldownTime = 15;
-            float maxChaseSpeed = 55f;
-            float maxTurnResistance = 40f;
+            float maxChaseSpeed = 75f;
+            float maxTurnResistance = 15f;
 
             // Immediately move into the return phase if there is nothing to target.
-            if ((!foundTarget || target == null) && LocalAIState != 2f)
+            if ((TargetToChase is null || !TargetToChase.active) && LocalAIState != 2f)
             {
                 LocalAIState = 2f;
                 Timer = 0f;
@@ -189,14 +197,14 @@ namespace Cascade.Content.DedicatedContent.MPG
                     // Fade back in and chase the enemy.
                     Projectile.Opacity = Clamp(Projectile.Opacity + 0.1f, 0f, 1f);
                     Projectile.scale = Clamp(Projectile.scale + 0.1f, 0f, 1.75f);
-                    Projectile.SimpleMove(target.Center, maxChaseSpeed, maxTurnResistance);
+                    Projectile.SimpleMove(TargetToChase.Center, maxChaseSpeed, maxTurnResistance);
                     Projectile.rotation = Projectile.velocity.X * 0.03f;
 
                     // Adjust the hitbox to accommodate for the new sprite.
                     Projectile.AdjustProjectileHitboxByScale(42f, 50f);
 
                     // Switch if time is up or the Lantern has hit the target.
-                    if (Timer == chaseTime || Projectile.Cascade().HasStruckSpecificNPC)
+                    if (Timer == chaseTime || !TargetToChase.active || Projectile.Cascade().HasStruckSpecificNPC)
                     {
                         LocalAIState = 2f;
                         Timer = 0f;
@@ -231,7 +239,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                 ShouldDealContactDamage = false;
             }
 
-            Projectile.spriteDirection = target != null ? (target.Center.X < Projectile.Center.X).ToDirectionInt() : Projectile.direction;
+            Projectile.spriteDirection = TargetToChase is not null ? (TargetToChase.Center.X < Projectile.Center.X).ToDirectionInt() : Projectile.direction;
             AnimateSpirit();
         }
 
@@ -248,7 +256,15 @@ namespace Cascade.Content.DedicatedContent.MPG
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (target.type == Projectile.Cascade().SpecificNPCTypeToCheckOnHit.Value)
+            {
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh);
+
+                Vector2 stretchFactor = new(1f, 3f);
+                Color slashColor = Color.Lerp(Color.Cyan, Color.LightSkyBlue, Main.rand.NextFloat());
+                Color bloomColor = Color.Lerp(slashColor, Color.Transparent, 0.15f);
+                SwordSlashParticle swordSlashParticle = new(target.Center, slashColor, bloomColor, Main.rand.NextFloat(Tau), stretchFactor, 2f, 20);
+                GeneralParticleHandler.SpawnParticle(swordSlashParticle);
+            }
         }
 
         public override void OnKill(int timeLeft)
@@ -312,7 +328,7 @@ namespace Cascade.Content.DedicatedContent.MPG
 
         private bool CheckActive(Player owner)
         {
-            if (owner.HasBuff(ModContent.BuffType<MoonSpiritLanternBuff>()))
+            if (owner.HasBuff(ModContent.BuffType<UnderworldLanterns>()))
             {
                 Projectile.timeLeft = 2;
                 return true;

@@ -1,13 +1,16 @@
 ﻿using CalamityMod.Items;
+using CalamityMod.Items.Materials;
+using CalamityMod.Items.Weapons.Melee;
+using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
 {
-    public class MechonSlayer : ModItem
+    public class MechonSlayer : ModItem, ILocalizedModType
     {
         public static int WeaponState { get; set; }
 
-        private int SwingDirection { get; set; }
+        public new string LocalizationCategory => "Items.Support";
 
         public override void SetStaticDefaults() => Item.ResearchUnlockCount = 1;
 
@@ -43,6 +46,20 @@ namespace Cascade.Content.DedicatedContent.Enchilada
                 WeaponState = -1;
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, WeaponState);
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe()
+                .AddIngredient(ModContent.ItemType<AegisBlade>())
+                .AddIngredient(ItemID.Ruby)
+                .AddIngredient(ItemID.AdamantiteBar, 15)
+                .AddIngredient(ItemID.FragmentStardust, 15)
+                .AddIngredient(ItemID.LunarBar, 10)
+                .AddIngredient(ModContent.ItemType<DivineGeode>(), 10)
+                .AddTile(TileID.LunarCraftingStation)
+                .Register();
+            
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using Cascade.Content.Projectiles.Summoner.GeminiGenies;
+﻿using Cascade.Content.DedicatedContent.Octo;
 
 namespace Cascade.Content.Buffs.Minions
 {
-    public class GeminiGeniesBuff : ModBuff, ILocalizedModType
+    public class OctoKibby : ModBuff, ILocalizedModType
     {
         public new string LocalizationCategory => "Buffs";
 
-        public override string Texture => "CalamityMod/Buffs/Summon/SandyHealingWaifu";
+        public override string Texture => "Terraria/Images/Buff";
 
         public override void SetStaticDefaults()
         {
@@ -16,8 +16,8 @@ namespace Cascade.Content.Buffs.Minions
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.CascadePlayer_Minions().GeminiGenies = true;
-            if (player.ownedProjectileCounts[ModContent.ProjectileType<GeminiGenieSandy>()] < 0)
+            player.Cascade_Buffs().OctoKibby = true;
+            if (player.ownedProjectileCounts[ModContent.ProjectileType<KibbyGirl>()] < 1)
             {
                 player.DelBuff(buffIndex);
                 buffIndex--;

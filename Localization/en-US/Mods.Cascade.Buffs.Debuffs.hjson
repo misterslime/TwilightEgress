@@ -7,3 +7,8 @@ CurseOfNecromancy: {
 	DisplayName: Curse Of Necromancy
 	Description: Your minion slots are being taken away!
 }
+
+BellbirdCry: {
+	DisplayName: Bellbird Cry
+	Description: Mods.Cascade.Buffs.Debuffs.BellbirdCry.Description
+}

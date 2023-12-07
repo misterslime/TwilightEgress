@@ -1,10 +1,9 @@
-﻿using Cascade.Content.Cooldowns;
-using Cascade.Core.Systems.CameraSystem;
-using Steamworks;
+﻿using Cascade.Content.Particles;
+using Cascade.Core.Graphics.CameraManipulation;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
 {
-    public class MechonSlayerHoldout : ModProjectile
+    public class MechonSlayerHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -21,6 +20,8 @@ namespace Cascade.Content.DedicatedContent.Enchilada
         public float SwordOverheadThrust() => PiecewiseAnimation(Timer / SwingTime, Anticipation, Thrust);
 
         private bool Initialized { get; set; } = false;
+
+        public new string LocalizationCategory => "Projectiles.Misc";
 
         public override void SetDefaults()
         {
@@ -54,15 +55,30 @@ namespace Cascade.Content.DedicatedContent.Enchilada
                 Owner.Cascade_Buffs().ApplyMechonSlayerArt((int)WeaponState);
 
                 // Visuals.
-                CascadeCameraSystem.Screenshake(3, 10, Owner.Center);
-                SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
                 for (int i = 0; i < 15; i++)
                 {
-                    Vector2 spawnPosition = Owner.MountedCenter;
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 8f);
-                    GenericSparkle sparkle = new(spawnPosition, velocity, GetArtColor(Color.Cyan), GetArtColor(Color.Cyan) * 0.75f, Main.rand.NextFloat(0.65f, 1.25f), Main.rand.Next(30, 45), 0.03f);
+                    GenericSparkle sparkle = new(Owner.RotatedRelativePoint(Owner.MountedCenter), velocity, GetArtColor(Color.Cyan), GetArtColor(Color.Cyan) * 0.75f, Main.rand.NextFloat(0.65f, 1.25f), Main.rand.Next(30, 45), 0.03f);
                     GeneralParticleHandler.SpawnParticle(sparkle);
                 }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    Vector2 basePosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
+                    Vector2 endPosition = basePosition + Main.rand.NextVector2CircularEdge(200f, 200f);
+                    float scale = Main.rand.NextFloat(15f, 20f);
+                    LightningArcParticle lightningArcParticle = new(basePosition, endPosition, 80f, 1f, scale, GetArtColor(Color.Cyan), 25, true, true);
+                    GeneralParticleHandler.SpawnParticle(lightningArcParticle);
+                }
+
+                MechonSlayerArtParticle artParticle = new(Owner.RotatedRelativePoint(Owner.MountedCenter), 0.65f, 3f, (int)WeaponState, 60);
+                GeneralParticleHandler.SpawnParticle(artParticle);
+
+                PulseRing pulseRing = new(Owner.RotatedRelativePoint(Owner.MountedCenter), Vector2.Zero, GetArtColor(Color.Cyan), 0f, 2f, 45);
+                GeneralParticleHandler.SpawnParticle(pulseRing);
+
+                CascadeCameraSystem.Screenshake(3, 10, Owner.Center);
+                SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
 
             if (Timer >= (SwingTime / 2))
@@ -74,7 +90,8 @@ namespace Cascade.Content.DedicatedContent.Enchilada
                     Projectile.Opacity = Utils.GetLerpValue(1f, 0f, (Timer - 30f) / 30f, true);
             }
 
-            Projectile.UpdatePlayerVariablesForHeldProjectile(Owner);
+            // Set the owner's held projectile index as our projectile's index.
+            Owner.heldProj = Projectile.whoAmI;
         }
 
         public void InitializeFields(int timeLeft, float rotation, SoundStyle? soundToPlay = null)
@@ -93,7 +110,6 @@ namespace Cascade.Content.DedicatedContent.Enchilada
         public override bool PreDraw(ref Color lightColor)
         {
             DrawBlade();
-            DrawArtSpecificVisualEffects();
             return false;
         }
 
@@ -134,6 +150,7 @@ namespace Cascade.Content.DedicatedContent.Enchilada
         public void DrawBlade()
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
+            Texture2D baseMechonSlayerSprite = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Enchilada/MechonSlayer").Value;
 
             float baseDrawAngle = Projectile.rotation;
             float drawRotation = baseDrawAngle + PiOver4;
@@ -142,22 +159,7 @@ namespace Cascade.Content.DedicatedContent.Enchilada
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw the main sprite.
-            Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, 0);
-        }
-
-        public void DrawArtSpecificVisualEffects()
-        {
-            Texture2D glowMaskTexture = ModContent.Request<Texture2D>(GlowTexture).Value;            
-            if (WeaponState > -1)
-            {
-                float baseDrawAngle = Projectile.rotation;
-                float drawRotation = baseDrawAngle + PiOver4;
-
-                Vector2 origin = new(0f, glowMaskTexture.Height);
-                Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
-
-                Main.EntitySpriteDraw(glowMaskTexture, drawPosition, null, Projectile.GetAlpha(GetArtColor()), drawRotation, origin, Projectile.scale, 0);
-            }
+            Main.EntitySpriteDraw(WeaponState == -1 ? baseMechonSlayerSprite : texture, drawPosition, null, Projectile.GetAlpha(GetArtColor(Color.White)), drawRotation, origin, Projectile.scale, 0);
         }
     }
 }
