@@ -14,9 +14,9 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
             player.CascadePlayer_HoneyComb().BeeFlightBoost = 2; 
         }
 
-        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips){
-            int index = tooltips.FindIndex(line => line.Name == "JourneyResearch");
-            tooltips.InsertNewTooltipLine(index, "BeeFlightEffect", "12% increased flight time");
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            item.InsertNewTooltipLine(tooltips, "Tooltip0", "BeeFlightEffect", "12% increased flight time");
         }
     }
 }

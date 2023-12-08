@@ -10,5 +10,9 @@ PoisonRound: {
 
 StingerRound: {
 	DisplayName: Stinger Round
-	Tooltip: Creates stinger explosions on impact
+	Tooltip:
+		'''
+		Explodes into stingers on enemy hits
+		Has 10 armor penetration
+		'''
 }

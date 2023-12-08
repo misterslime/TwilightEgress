@@ -24,7 +24,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             Item.width = 64;
             Item.height = 64;
             Item.mana = 25;
-            Item.damage = 200;
+            Item.damage = 310;
             Item.knockBack = 3f;
             Item.useTime = 15;
             Item.useAnimation = 15;
