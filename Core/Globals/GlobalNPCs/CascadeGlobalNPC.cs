@@ -1,4 +1,4 @@
-﻿namespace Cascade.Core.Globals
+﻿namespace Cascade.Core.Globals.GlobalNPCs
 {
     public partial class CascadeGlobalNPC : GlobalNPC
     {

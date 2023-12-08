@@ -15,8 +15,6 @@ namespace Cascade.Content.EntityOverrides.Items.DepthCrusher
             item.noUseGraphic = true;
             item.useTurn = false;
             item.useStyle = ItemUseStyleID.Swing;
-            item.shoot = ProjectileID.WoodenArrowFriendly;
-            item.shootSpeed = 10f;
         }
 
         public override bool AltFunctionUse(Item item, Player player) => true;
@@ -34,7 +32,6 @@ namespace Cascade.Content.EntityOverrides.Items.DepthCrusher
             {
                 item.hammer = 0;
                 item.noUseGraphic = true;
-                item.shoot = ProjectileID.WoodenArrowFriendly;
                 item.useTurn = false;
             }
 
