@@ -11,5 +11,7 @@ Mods: {
 				Tooltip: ""
 			}
 		}
+
+		NPCs.GravityPlanetoid.DisplayName: Gravity Planetoid
 	}
 }
