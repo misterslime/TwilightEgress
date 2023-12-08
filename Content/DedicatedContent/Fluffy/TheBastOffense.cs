@@ -40,7 +40,9 @@ namespace Cascade.Content.DedicatedContent.Fluffy
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float attackType = player.altFunctionUse == 2 ? 1 : 0;
-            Projectile.NewProjectile(source, position, velocity, type, damage + (int)(player.Calamity().GetAdrenalineDamage() * 1.5f), knockback, player.whoAmI, ai2: attackType);
+            // Adrenaline on this weapon is simply meant to boost its attack by +50%.
+            int newDamage = player.Calamity().AdrenalineEnabled ? damage + damage.GetPercentageOfInteger(0.5f) : damage;
+            Projectile.NewProjectile(source, position, velocity, type, newDamage, knockback, player.whoAmI, ai2: attackType);
             return false;
         }
 
