@@ -18,7 +18,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
         {
             Item.width = 72;
             Item.height = 36;
-            Item.damage = 50;
+            Item.damage = 200;
             Item.knockBack = 3f;
             Item.useTime = 15;
             Item.useAnimation = 15;
@@ -40,7 +40,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             float attackType = player.altFunctionUse == 2 ? 1 : 0;
-            Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, ai2: attackType);
+            Projectile.NewProjectile(source, position, velocity, type, damage + (int)(player.Calamity().GetAdrenalineDamage() * 1.5f), knockback, player.whoAmI, ai2: attackType);
             return false;
         }
 

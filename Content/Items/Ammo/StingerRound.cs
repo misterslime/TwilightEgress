@@ -12,7 +12,8 @@ namespace Cascade.Content.Items.Ammo
         {
             Item.width = 10;
             Item.height = 14;
-            Item.damage = 6;
+            Item.damage = 7;
+            Item.ArmorPenetration = 10;
             Item.knockBack = 1f;
             Item.DamageType = DamageClass.Ranged;
             Item.maxStack = Item.CommonMaxStack;

@@ -3,14 +3,30 @@
     public static partial class Utilities
     {
         /// <summary>
-        /// Adds a new tooltip line to an already existing item's description by inserting at a specified index point.
+        /// Inserts a new tooltip line one index under the specified line's <see cref="TooltipLine.Name"/> index. 
         /// </summary>
-        /// <param name="indexToInsertAt">The index in the tooltip where this should be inserted at.</param>
-        /// <param name="tooltipLineName">The name of your new tooltip line.</param>
-        /// <param name="tooltipLineDescription">the description of your new tooltip line.</param>
-        public static void InsertNewTooltipLine(this List<TooltipLine> tooltipLines, int indexToInsertAt, string tooltipLineName, string tooltipLineDescription)
+        /// <param name="lineToInsertAt"></param>
+        /// <param name="customTooltipLineName"></param>
+        /// <param name="customTooltipLineDescription"></param>
+        public static void InsertNewTooltipLine(this Item item, List<TooltipLine> tooltipLines, string lineToInsertAt, string customTooltipLineName, string customTooltipLineDescription)
         {
-            tooltipLines.Insert(indexToInsertAt, new(Cascade.Instance, tooltipLineName, tooltipLineDescription));
+            // Do nothing if the item is in social slots.
+            if (item.social)
+                return;
+
+            // Find the index of the line which we want to insert at.
+            int insertionIndex = -1;
+            for (int i = 0; i < tooltipLines.Count; i++)
+            {
+                if (tooltipLines[i].Name == lineToInsertAt)
+                {
+                    insertionIndex = i;
+                    break;
+                }
+            }
+
+            // Insert the new line.
+            tooltipLines.Insert(insertionIndex + 1, new(Cascade.Instance, customTooltipLineName, customTooltipLineDescription));
         }
 
         /// <summary>

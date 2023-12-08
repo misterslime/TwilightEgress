@@ -66,13 +66,10 @@
             }
 
             // Find the closest target in range and bounce to them from the last enemy.
-            // If there are no targets, die.
+            // If there are no targets, carry on as usual.
             NPC viableBounceTarget = Projectile.FindTargetWithinRange(1000f);
             if (viableBounceTarget == null)
-            {
-                Projectile.Kill();
                 return;
-            }
 
             if (viableBounceTarget.CanBeChasedBy() && !NPCsWhoHaveBeenHit.Contains(viableBounceTarget))
             {

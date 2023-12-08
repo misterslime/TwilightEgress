@@ -12,7 +12,7 @@ namespace Cascade.Content.Skies
 
         public override bool IsSceneEffectActive(Player player)
         {
-            return player.ZoneCometNight();
+            return player.ZoneCosmostoneShowers();
         }
 
         public override void SpecialVisuals(Player player, bool isActive)

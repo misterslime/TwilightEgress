@@ -1,10 +1,11 @@
-﻿using static Cascade.Core.Systems.WorldSavingSystem;
+﻿using Cascade.Content.Events;
+using Cascade.Content.Events.CosmostoneShowers;
 
 namespace Cascade
 {
     public static partial class Utilities
     {
-        public static bool ZoneCometNight(this Player player) => CosmostoneShower && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
+        public static bool ZoneCosmostoneShowers(this Player player) => EventHandlerManager.SpecificEventIsActive<CosmostoneShowerEvent>() && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
 
         /// <summary>
         /// Checks if a player is alive and is channeling while holding a specific item.

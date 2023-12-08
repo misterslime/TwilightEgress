@@ -3,7 +3,7 @@ DroseraeDictionary: {
 	Tooltip:
 		'''
 		Fires a flytrap maw that bounces between enemies
-		Deals more damage aas your healt decreases
+		Deals more damage as your health decreases
 		[c/750c0c:It needs water. It needs to be fed your blood.]
 		'''
 }

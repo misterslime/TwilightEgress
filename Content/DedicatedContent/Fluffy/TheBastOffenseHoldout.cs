@@ -192,6 +192,8 @@
                         Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
                     }
 
+                    Owner.velocity = -Owner.SafeDirectionTo(Main.MouseWorld) * Lerp(2f, 12f, bastCatCount / 200f);
+
                     ChargeTimer = 0f;
                     bastCatCount = 0f;
                     GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
@@ -233,6 +235,10 @@
                 {
                     AIState = 1f;
                     ChargeTimer = 0f;
+
+                    // Apply some recoil to the player.
+                    Owner.velocity = -Owner.SafeDirectionTo(Main.MouseWorld) * 15f;
+
                     Vector2 bastStatueMegaVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 10f;
                     Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.originalDamage.GetPercentageOfInteger(4f), Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
                 }
