@@ -2,6 +2,8 @@
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
+    // TO-DO:
+    // This needs to be expanded into its own Base Class for easy use and replication.
     public class GravityPlanetoid : ModNPC
     {
         public float MaximumAttractionRadius = 200f;
