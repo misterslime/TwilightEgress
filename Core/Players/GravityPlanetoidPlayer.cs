@@ -27,9 +27,9 @@ namespace Cascade.Core.Players
 
         public float AngleSwitchTimer = 0f;
 
-        public float AttractionCooldown = 0f;
-
         public float AttractionSpeed = 0f;
+
+        public float AttractionCooldown = 0f;
 
         public override void PostUpdate()
         {
@@ -39,8 +39,14 @@ namespace Cascade.Core.Players
 
             if (Planetoid is not null && Planetoid.NPC.active)
             {
-                Player.MountedCenter = Planetoid.NPC.Center + Vector2.UnitX.RotatedBy(PlayerAngle) * (Planetoid.MaximumAttractionRadius - Player.height - (Planetoid.WalkableRadius * (AngleSwitchTimer / 60f)));
-                PlayerAngle += Player.velocity.X / (Planetoid.WalkableRadius);
+                float radiusBetweenSurfaceAndAtmosphere = Planetoid.MaximumAttractionRadius - Planetoid.WalkableRadius;
+                Vector2 maximumRadiusPosition = Planetoid.NPC.Center + Vector2.UnitX.RotatedBy(PlayerAngle) * (Planetoid.MaximumAttractionRadius + Planetoid.WalkableRadius);
+                Vector2 walkablePlanetoidArea = Planetoid.NPC.Center + Vector2.UnitX.RotatedBy(PlayerAngle) * (radiusBetweenSurfaceAndAtmosphere - Player.height);
+                Player.MountedCenter = Vector2.Lerp(maximumRadiusPosition, walkablePlanetoidArea, AngleSwitchTimer / 60f);
+
+                Utilities.CreateDustLoop(1, walkablePlanetoidArea, Vector2.Zero, DustID.Dirt);
+
+                PlayerAngle += Player.velocity.X / Planetoid.WalkableRadius;
                 PlayerAngle %= Tau;
 
                 // Eject the player from the Planetoid once they jump.
@@ -53,18 +59,16 @@ namespace Cascade.Core.Players
                 }
 
                 if (AngleSwitchTimer < 60f)
-                    AngleSwitchTimer += 3f;
+                    AngleSwitchTimer += 2f;
 
                 if (AngleSwitchTimer > 60f)
                     AngleSwitchTimer = 60f;
             }
             else
             {
-                if (AngleSwitchTimer > 0f)
-                    AngleSwitchTimer -= 3f;
-                if (AttractionCooldown > 0f)
-                    AttractionCooldown--;
-
+                // Reset any necessary variables when not in a zone of gravity.
+                AngleSwitchTimer = Clamp(AngleSwitchTimer - 3f, 0f, 60f);
+                AttractionCooldown = Clamp(AttractionCooldown - 1f, 0f, 60f);
                 Planetoid = null;
             }            
         }
