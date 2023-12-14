@@ -2,13 +2,13 @@
 {
     public partial class CascadeGlobalNPC : GlobalNPC
     {
-        public override bool InstancePerEntity => true;
-
         public float[] ExtraAI = new float[100];
 
         internal bool[] IsCustomAISlotBeingUsed = new bool[100];
 
         internal int TotalCustomAISlotsInUse => IsCustomAISlotBeingUsed.Count(slot => slot);
+
+        public override bool InstancePerEntity => true;
 
         public override void SetDefaults(NPC npc)
         {

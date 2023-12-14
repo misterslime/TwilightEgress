@@ -37,12 +37,12 @@ namespace Cascade.Content.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] < 1;
 
-        public override bool AltFunctionUse(Player player) => player.CascadePlayer_ResplendantRoar().ResplendentRazeCharge >= 10f;
+        public override bool AltFunctionUse(Player player) => player.Cascade_ResplendentRoar().ResplendentRazeCharge >= 10f;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             // Reset the resplendent raze update timer.
-            player.CascadePlayer_ResplendantRoar().ResplendentRazeUpdateTimer = 0;
+            player.Cascade_ResplendentRoar().ResplendentRazeUpdateTimer = 0;
 
             AttackCounter++;
             if (AttackCounter >= 4)

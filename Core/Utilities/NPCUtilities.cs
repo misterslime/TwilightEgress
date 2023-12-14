@@ -99,5 +99,14 @@
         {
             return npc.SpawnNPC(spawn.X, spawn.Y, type, Start, ai0, ai1, ai2, ai3, target, velocity);
         }
+
+        public static IEnumerable<NPC> GetSpecficActiveNPC(int typeToLocate)
+        {
+            foreach (NPC npc in Main.npc)
+            {
+                if (npc.active && npc.type == typeToLocate)
+                    yield return npc;
+            }
+        }
     }
 }

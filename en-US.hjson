@@ -12,6 +12,9 @@ Mods: {
 			}
 		}
 
-		NPCs.GravityPlanetoid.DisplayName: Gravity Planetoid
+		NPCs: {
+			GravityPlanetoid.DisplayName: Gravity Planetoid
+			GalileoPlanetoid.DisplayName: Galileo Planetoid
+		}
 	}
 }

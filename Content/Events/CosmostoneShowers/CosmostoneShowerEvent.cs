@@ -1,11 +1,15 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.World.Planets;
 using Cascade.Content.NPCs.CosmostoneShowers;
 using Cascade.Content.Particles.ScreenParticles;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Projectiles.Ambient;
+using Cascade.Core.BaseEntities.ModNPCs;
 using Cascade.Core.Globals.GlobalNPCs;
+using Cascade.Core.Systems;
+using System.Linq.Expressions;
 using Terraria.GameContent.Events;
 using Terraria.ModLoader.IO;
 
@@ -67,67 +71,67 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         public void HandleEventStuff()
         {
-            // Asteroid spawning.
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            SpawnSpaceEntities();
+        }
+
+        private void SpawnSpaceEntities()
+        {
+            int asteroidSpawnChance = 175;
+            int planetoidSpawnChance = 500;
+
+            List<NPC> activePlanetoids = OrbitalGravitySystem.PlanetoidNPCs.Where(p => p.active).ToList();
+            List<NPC> activePlanetoidsOnScreen = new();
+
+            // Get all active planetoids that are on-screen.
+            foreach (NPC planetoid in activePlanetoids)
             {
-                float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-                float yWorldPosition = (Main.maxTilesY * 0.05f);
-                Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
+                Rectangle planetoidBounds = new((int)planetoid.Center.X, (int)planetoid.Center.Y, (int)planetoid.localAI[0], (int)planetoid.localAI[1]);
+                Rectangle screenBounds = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth + 100, Main.screenHeight + 100);
+                if (planetoidBounds.Intersects(screenBounds))
+                    activePlanetoidsOnScreen.Add(planetoid);
+            }
 
-                int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
-                Player closestPlayer = Main.player[closestPlayerIndex];
+            float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
+            float yWorldPosition = (Main.maxTilesY + 135f) * 16f;
+            Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
 
-                int spawnChance = 250;
-                if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 135f && Main.rand.NextBool(spawnChance))
+            int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
+            Player closestPlayer = Main.player[closestPlayerIndex];
+
+            // Asteroids.
+            if (closestPlayer.active && !closestPlayer.dead && Main.rand.NextBool(asteroidSpawnChance))
+            {
+                // Default spawn position.
+                Vector2 asteroidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2Circular(1500f, 800f);
+
+                // Search for any activve Planetoids currently viewable on-screen.
+                // Change the spawn position of asteroids to a radius around the center of these Planetoids if there are any active at the time.
+                // This allows most asteroids to not just spawn directly inside of Planetoids or their radius (may be buggy if there are 
+                // multiple Planetoids close to each other).
+                foreach (NPC planetoid in activePlanetoidsOnScreen)
                 {
-                    Vector2 cometSpawnPosition = closestPlayer.Center + Main.rand.NextVector2Circular(1500f, 1000f);
-                    if (!Collision.SolidCollision(cometSpawnPosition, 160, 160))
-                    {
-                        int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), cometSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
-                        if (Main.projectile.IndexInRange(p))
-                            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
-                    }
+                    float radiusAroundPlanetoid = planetoid.localAI[0] + planetoid.localAI[1] + Main.rand.NextFloat(1000f, 200f);
+                    Vector2 planetoidPositionWithRadius = planetoid.Center + Vector2.UnitX.RotatedByRandom(Tau) * radiusAroundPlanetoid;
+                    asteroidSpawnPosition = planetoidPositionWithRadius;
+                }
+
+                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
+                {
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
+                    if (Main.projectile.IndexInRange(p))
+                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
 
-            // Handle projectile spawning.
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            // Planetoids.
+            if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 135f && Main.rand.NextBool(planetoidSpawnChance))
             {
-                // Some of this is derived from Vanilla's code to spawn fallen stars.
-                // Essentially we scan the entire world's surface and then find any players close enough
-                // to these boundraries.
-                float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-                float yWorldPosition = (Main.maxTilesY * 0.05f) * 16f;
-                Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
-
-                int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
-                Player closestPlayer = Main.player[closestPlayerIndex];
-
-                int spawnChanceFactor = (int)(float)(10f * ((float)(Main.maxTilesX / 4200f)) * Star.starfallBoost);
-                int timePassed = (int)Main.desiredWorldEventsUpdateRate;
-                for (int i = 0; i < timePassed; i++)
+                Vector2 planetoidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(2500f, 1500f), Main.rand.NextFloat(1600f, 800f));
+                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 300, 300) && activePlanetoids.Count < 5)
                 {
-                    int spawnChance = 80000;
-                    if (!(Main.rand.NextFloat(spawnChance) < 10f * spawnChanceFactor))
-                        continue;
-
-                    if (closestPlayer.active && !closestPlayer.dead && closestPlayer.ZoneCosmostoneShowers())
-                    {
-                        Vector2 cometSpawnPosition = closestPlayer.Center + new Vector2(Main.rand.NextFloat(-600f, 601f), -900f);
-                        Vector2 cometVelocity = new Vector2(Main.rand.NextFloat(-8f, 9f), 10f);
-                        // We do a little trolling :)))
-                        int damage = Main.zenithWorld ? 900 : 300;
-                        // Check to ensure collision with floating islands or anything in the sky doesn't occur.
-                        if (!Collision.SolidCollision(playerPositionInBounds, 36, 36))
-                        {
-                            int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), cometSpawnPosition, cometVelocity, ModContent.ProjectileType<Comet>(), damage, 0f, Main.myPlayer);
-                            if (Main.projectile.IndexInRange(p))
-                            {
-                                // Forcefully sync the projectile to hopefully prevent any Multiplayer desync shenanigans.
-                                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
-                            }
-                        }
-                    }
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
+                    if (Main.projectile.IndexInRange(p))
+                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
         }

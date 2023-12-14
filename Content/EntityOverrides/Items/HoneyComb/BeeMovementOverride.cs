@@ -11,7 +11,7 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
 
         public override void UpdateAccessory(Item item, Player player, bool hideVisual)
 	    {
-            player.CascadePlayer_HoneyComb().BeeFlightBoost = 2; 
+            player.Cascade_BeeFlightTimeBoost().BeeFlightBoost = 2; 
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
