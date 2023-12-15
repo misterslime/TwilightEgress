@@ -84,8 +84,8 @@ namespace Cascade.Core.BaseEntities.ModNPCs
             }
 
             // Add to the global list of Planetoid NPC instances.
-            if (!OrbitalGravitySystem.PlanetoidNPCs.Contains(NPC))
-                OrbitalGravitySystem.PlanetoidNPCs.Add(NPC);
+            if (!Cascade.BasePlanetoidInheriters.Contains(NPC))
+                Cascade.BasePlanetoidInheriters.Add(NPC);
 
             // Store these values for access outside of this Base class.
             StoredMaximumAttractionRadius = MaximumAttractionRadius;

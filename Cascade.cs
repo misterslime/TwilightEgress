@@ -4,7 +4,7 @@ using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade
 {
-    public class Cascade : Mod
+    public partial class Cascade : Mod
 	{
         public Mod CalamityMod;
 
@@ -15,8 +15,11 @@ namespace Cascade
             Instance = this;
             CalamityMod = ModLoader.GetMod("CalamityMod");
 
+            // Cascade-specific loading.
+            LoadLists();
             CascadeBalancingChangesManager.Load();
 
+            // Mod Calls.
             if (Main.netMode != NetmodeID.Server)
             {
                 var calamityMod = ModLoader.GetMod("CalamityMod");
@@ -26,12 +29,14 @@ namespace Cascade
                 });
             }
 
+            // Calamity-specific loading.
             CooldownRegistry.RegisterModCooldowns(this);
         }
 
         public override void Unload()
         {
             Instance = null;
+            UnloadLists();
             CascadeBalancingChangesManager.Unload();
             BuffHandler.StuffToUnload();
         }

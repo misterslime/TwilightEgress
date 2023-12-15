@@ -4,19 +4,8 @@ namespace Cascade.Core.Systems
 {
     public class OrbitalGravitySystem : ModSystem
     {
-        public static List<NPC> PlanetoidNPCs;
-
-        public override void OnModLoad()
-        {
-            PlanetoidNPCs = new();
-            On_Player.DryCollision += UpdateVelocityNearPlanetoidEntities;
-        }
-
-        public override void OnModUnload()
-        {
-            PlanetoidNPCs = null;
-            On_Player.DryCollision -= UpdateVelocityNearPlanetoidEntities;
-        }
+        public override void OnModLoad() => On_Player.DryCollision += UpdateVelocityNearPlanetoidEntities;
+        public override void OnModUnload() => On_Player.DryCollision -= UpdateVelocityNearPlanetoidEntities;
 
         private void UpdateVelocityNearPlanetoidEntities(On_Player.orig_DryCollision orig, Player self, bool fallThrough, bool ignorePlats)
         {

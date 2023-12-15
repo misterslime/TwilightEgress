@@ -76,10 +76,10 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private void SpawnSpaceEntities()
         {
-            int asteroidSpawnChance = 175;
+            int asteroidSpawnChance = 125;
             int planetoidSpawnChance = 500;
 
-            List<NPC> activePlanetoids = OrbitalGravitySystem.PlanetoidNPCs.Where(p => p.active).ToList();
+            List<NPC> activePlanetoids = Cascade.BasePlanetoidInheriters.Where(p => p.active).ToList();
             List<NPC> activePlanetoidsOnScreen = new();
 
             // Get all active planetoids that are on-screen.
@@ -92,7 +92,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             }
 
             float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-            float yWorldPosition = (Main.maxTilesY + 135f) * 16f;
+            float yWorldPosition = (Main.maxTilesY * 0.057f);
             Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
 
             int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
@@ -127,7 +127,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 135f && Main.rand.NextBool(planetoidSpawnChance))
             {
                 Vector2 planetoidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(2500f, 1500f), Main.rand.NextFloat(1600f, 800f));
-                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 300, 300) && activePlanetoids.Count < 5)
+                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 5)
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
                     if (Main.projectile.IndexInRange(p))

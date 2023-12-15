@@ -1,5 +1,4 @@
-﻿using Cascade.Content.NPCs.CosmostoneShowers;
-using Cascade.Core.BaseEntities.ModNPCs;
+﻿using Cascade.Core.BaseEntities.ModNPCs;
 
 namespace Cascade.Core.Players
 {
@@ -27,6 +26,9 @@ namespace Cascade.Core.Players
 
             if (Planetoid is not null && Planetoid.NPC.active)
             {
+                // Disable mounts upon entering.
+                Player.mount.Dismount(Player);
+
                 // Calculations for the gravity of a planetoid. the GravitationalVariable variable is incremented in BasePlanetoid 
                 // using BasePlanetoid.GravitationalIncrease, and clamps at BasePlanetoid.MaxGravitationalIncrease.
                 // In this file, we then divide this by the player's center's distance from the Planetoid's center, and use this
@@ -50,21 +52,21 @@ namespace Cascade.Core.Players
                 bool canEjectPlayer = Player.justJumped || Vector2.Distance(Planetoid.NPC.Center, Player.Center) > totalAttractionRadius;
                 if (canEjectPlayer && AngleSwitchTimer >= MaxAngleSwitchTimer)
                 {
+                    Player.jump = 0;
                     Player.velocity = Vector2.One.RotatedBy(PlayerAngle) * Planetoid.PlanetoidEjectionSpeed;
                     AttractionCooldown = MaxAttractionCooldown;
                     Planetoid = null;
                 }
 
                 AngleSwitchTimer = Clamp(AngleSwitchTimer + 4f, 0f, MaxAngleSwitchTimer);
-            }
+            }  
             else
             {
-                // Reset any necessary variables when not in a zone of gravity.
                 AngleSwitchTimer = Clamp(AngleSwitchTimer - 4f, 0f, MaxAngleSwitchTimer);
                 AttractionCooldown = Clamp(AttractionCooldown - 1f, 0f, MaxAttractionCooldown);
                 GravitationalForce = 0f;
                 Planetoid = null;
-            }            
+            }
         }
 
         public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)

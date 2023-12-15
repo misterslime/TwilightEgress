@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Cascade.Content.Items.Materials;
+using System.Collections.Generic;
+using Terraria.GameContent.ItemDropRules;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
@@ -30,7 +32,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             NPC.width = 36;
             NPC.height = 36;
             NPC.damage = 0;
-            NPC.defense = 40;
+            NPC.defense = 20;
             NPC.lifeMax = 150;
             NPC.aiStyle = -1;
             NPC.dontCountMe = true;
@@ -39,7 +41,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             NPC.noGravity = true;
             NPC.dontTakeDamageFromHostiles = true;
             NPC.chaseable = false;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0.4f;
             NPC.Opacity = 0f;
 
             NPC.HitSound = SoundID.Tink;
@@ -91,13 +93,48 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 {
                     if (NPC.Hitbox.Intersects(asteroid.Hitbox))
                     {
-                        NPC.velocity = -NPC.DirectionTo(asteroid.Center) * (1f + NPC.velocity.Length() + asteroid.scale) * 0.45f;
-                        asteroid.velocity = -asteroid.DirectionTo(NPC.Center) * (1f + NPC.velocity.Length() + NPC.scale) * 0.45f;
+                        NPC.velocity = -NPC.DirectionTo(asteroid.Center) * (1f + NPC.velocity.Length() + asteroid.scale) * 0.15f;
+                        asteroid.velocity = -asteroid.DirectionTo(NPC.Center) * (1f + NPC.velocity.Length() + NPC.scale) * 0.15f;
                     }
                 }
             }
+        }
 
-            Lighting.AddLight(NPC.Center, Color.SkyBlue.ToVector3());
+
+        public void HandleOnHitDrops(Player player, Item item)
+        {
+            // Also, drop pieces of Cosmostone and Cometstone at a 1/10 chance.
+            int chance = (int)(12 * Lerp(1f, 0.3f, NPC.scale / 2f) * Lerp(1f, 0.2f, item.pick / 250f));
+            if (Main.rand.NextBool(chance))
+            {
+                int itemType = ModContent.ItemType<Cosmostone>();
+                int itemStack = (int)Round(1 * Lerp(1f, 3f, NPC.scale / 2f));
+                int i = Item.NewItem(NPC.GetSource_OnHurt(player), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), itemType, itemStack);
+                if (Main.item.IndexInRange(i))
+                    Main.item[i].velocity = Main.rand.NextVector2Circular(4f, 4f);
+            }
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            // If the player is using any pickaxe to hit the Asteroids...
+            if (item.pick > 0)
+                HandleOnHitDrops(player, item);
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            // If the player is using some sort of drill or other mining tool which utilizes a held projectile...
+            Player player = Main.player[projectile.owner];
+            if (player.ActiveItem().pick > 0 && projectile.owner == player.whoAmI)
+                HandleOnHitDrops(player, player.ActiveItem());
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            int minimumStack = (int)Round((3 * Lerp(1f, 3f, NPC.scale / 2f)));
+            int maximumStack = (int)Round((5 * Lerp(1f, 3f, NPC.scale / 2f)));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cosmostone>(), default, minimumStack, maximumStack));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
