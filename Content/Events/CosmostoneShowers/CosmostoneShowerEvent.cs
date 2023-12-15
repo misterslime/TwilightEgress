@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Events;
+using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
 using CalamityMod.World.Planets;
@@ -126,7 +127,18 @@ namespace Cascade.Content.Events.CosmostoneShowers
             // Planetoids.
             if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 135f && Main.rand.NextBool(planetoidSpawnChance))
             {
+                // This is similar code as seen above in how Cosmostone Asteroids adjust their spawning position.
                 Vector2 planetoidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(2500f, 1500f), Main.rand.NextFloat(1600f, 800f));
+
+                // If there is a Planetoid on-scren, adjust the spawn position of other Planetoids as to not cause conflict between each other, such has 
+                // intertwining radii.
+                foreach (NPC planetoid in activePlanetoidsOnScreen)
+                {
+                    float radiusAroundPlanetoid = planetoid.localAI[0] + planetoid.localAI[1] + Main.rand.NextFloat(500f, 250f);
+                    Vector2 planetoidPositionWithRadius = planetoid.Center + Vector2.UnitX.RotatedByRandom(Tau) * radiusAroundPlanetoid;
+                    planetoidSpawnPosition = planetoidPositionWithRadius;
+                }
+
                 if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 5)
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
@@ -143,10 +155,29 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
             pool.Add(NPCID.EnchantedNightcrawler, 0.75f);
             pool.Add(NPCID.LightningBug, 0.75f);
-            if (spawnInfo.Player.Center.Y <= Main.maxTilesY + 135f)
+            if (spawnInfo.Player.ZoneSkyHeight)
             {
-                pool.Add(ModContent.NPCType<Twinkler>(), 0.95f);
-                pool.Add(ModContent.NPCType<DwarfJellyfish>(), 0.7f);
+                // If the player is actually in Space.
+                if (spawnInfo.Player.Center.Y <= Main.maxTilesY + 135f)
+                {
+                    pool.Add(ModContent.NPCType<Twinkler>(), 0.95f);
+                }
+
+                // Remove regular sky biome enemies from the spawn pool.
+                List<int> enemiesToRemove = new()
+                {
+                    NPCID.Harpy,
+                    NPCID.WyvernHead,
+                    ModContent.NPCType<AeroSlime>(),
+                    ModContent.NPCType<Sunskater>(),
+                    ModContent.NPCType<ThiccWaifu>()
+                };
+
+                for (int i = 0; i < enemiesToRemove.Count; i++)
+                {
+                    if (pool.ContainsKey(enemiesToRemove[i]))
+                        pool.Remove(enemiesToRemove[i]);
+                }
             }
 
             // FUCK YOU
