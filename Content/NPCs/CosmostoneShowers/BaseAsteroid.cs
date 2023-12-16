@@ -41,7 +41,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             // begins to be pulled in by the planet's gravity.
 
             // In simple terms, the Y-velocity is increased once the asteroid is pushed low enough.
-            if (NPC.Bottom.Y >= Main.maxTilesY + 135f)
+            if (NPC.Bottom.Y >= Main.maxTilesY + 1000f)
             {
                 // Increase damage as Y-velocity begins to increase.
                 NPC.damage = 150 * (int)Utils.GetLerpValue(0f, 1f, NPC.velocity.Y / 12f, true);
@@ -83,6 +83,20 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 SafeAI();
         }
 
+        public sealed override bool? CanBeHitByItem(Player player, Item item)
+        {
+            if (item.pick <= 0)
+                return false;
+            return null;
+        }
+
+        public sealed override bool? CanBeHitByProjectile(Projectile projectile)
+        {
+            if (!Cascade.PickaxeProjectileIDs.Contains(projectile.type))
+                return false;
+            return null;
+        }
+
         public sealed override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             if (item.pick > 0)
@@ -90,6 +104,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 modifiers.Knockback *= 0f;
                 modifiers.FinalDamage *= 2f * Lerp(1f, 0.2f, item.pick / 250f);
             }
+
             SafeModifyHitByItem(player, item, ref modifiers);
         }
 
@@ -102,6 +117,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 modifiers.Knockback *= 0f;
                 modifiers.FinalDamage *= 2f * Lerp(1f, 0.2f, item.pick / 250f);
             }
+
             SafeModifyHitByProjectile(projectile, ref modifiers);
         }
 

@@ -66,6 +66,7 @@ namespace Cascade.Core.BaseEntities.ModNPCs
 
                 float totalAttractionRadius = MaximumAttractionRadius + WalkableRadius;
                 float distanceBetweenBodies = Vector2.Distance(player.Center, NPC.Center);
+
                 if (distanceBetweenBodies < totalAttractionRadius && ModPlayer.AttractionCooldown <= 0 && ModPlayer.Planetoid is null)
                 {
                     // Set the planetoid index and player angle.

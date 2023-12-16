@@ -49,11 +49,11 @@ namespace Cascade.Core.Players
 
                 // Eject the player from the Planetoid either once they jump or manage to leave a planetoid's attraction radius.
                 float totalAttractionRadius = Planetoid.MaximumAttractionRadius + Planetoid.WalkableRadius;
-                bool canEjectPlayer = Player.justJumped || Vector2.Distance(Planetoid.NPC.Center, Player.Center) > totalAttractionRadius;
-                if (canEjectPlayer && AngleSwitchTimer >= MaxAngleSwitchTimer)
+                bool canEjectPlayer = Player.justJumped || Player.pulley || Vector2.Distance(Planetoid.NPC.Center, Player.Center) > totalAttractionRadius;
+                if (canEjectPlayer)
                 {
                     Player.jump = 0;
-                    Player.velocity = Vector2.One.RotatedBy(PlayerAngle) * Planetoid.PlanetoidEjectionSpeed;
+                    Player.velocity = Vector2.UnitX.RotatedBy(PlayerAngle) * Planetoid.PlanetoidEjectionSpeed;
                     AttractionCooldown = MaxAttractionCooldown;
                     Planetoid = null;
                 }
