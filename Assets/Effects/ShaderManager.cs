@@ -105,8 +105,8 @@ namespace Cascade.Assets.Effects
             SkyManager.Instance["Cascade:IceQueen"] = new IceQueenSky();
 
             // Cosmostone Shower's screen shader.
-            Filters.Scene["Cascade:CometNight"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(Color.DeepSkyBlue).UseOpacity(0.15f), EffectPriority.VeryHigh);
-            SkyManager.Instance["Cascade:CometNight"] = new CometNightSky();
+            Filters.Scene["Cascade:CosmostoneShowers"] = new Filter(new ScreenShaderData("FilterMiniTower").UseColor(Color.Lerp(default, Color.DeepSkyBlue, 0.4f)).UseOpacity(0.2f), EffectPriority.VeryHigh);
+            SkyManager.Instance["Cascade:CosmostoneShowers"] = new CosmostoneShowersSky();
         }
     }
 }

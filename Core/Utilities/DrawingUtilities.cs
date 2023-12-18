@@ -2,6 +2,11 @@
 {
     public static partial class Utilities
     {
+        /// <summary>
+        /// Coordinates for the center of the screen.
+        /// </summary>
+        public static Vector2 ScreenCenter => Main.screenPosition + new Vector2(Main.screenWidth / 2f, Main.screenHeight / 2f);
+
         public static SpriteEffects DirectionBasedSpriteEffects(this Entity entity)
             => entity.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
@@ -33,6 +38,29 @@
         /// In most cases, you will want this to stay as the mentioned default value.</param>
         public static void SwapToTarget(this SmartRenderTarget smartRenderTarget, Color? flushColor = null)
             => SwapToTarget(smartRenderTarget.RenderTarget, flushColor ?? Color.Transparent);
+
+        /// <summary>
+        /// Resets the sprite batch to a state that is most commonly used for drawing effects in the vanilla game. Do not overuse this function
+        /// as such misuse can lead to serious performance drops on weaker devices.
+        /// </summary>
+        /// <param name="endSpritBatch">Whether or not the previous sprite batch should be ended and have it's contents flushed.</param>
+        public static void ResetToVanilla(this SpriteBatch spriteBatch, bool endSpritBatch = false)
+        {
+            if (endSpritBatch)
+                spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+
+        /// <summary>
+        /// Prepares a <see cref="RasterizerState"/> with screen culling enabled. This is mainly used for improving performance when drawing.
+        /// </summary>
+        /// <returns></returns>
+        public static RasterizerState PrepareScissorRectangleState()
+        {
+            Main.Rasterizer.ScissorTestEnable = true;
+            Main.instance.GraphicsDevice.ScissorRectangle = new(-5, -5, Main.screenWidth + 10, Main.screenHeight + 10);
+            return Main.Rasterizer;
+        }
 
         public static void DrawTextureOnProjectile(this Projectile projectile, Color lightColor, float rotation, float scale, SpriteEffects spriteEffects = SpriteEffects.None, bool animated = false, Texture2D texture = null)
         {
