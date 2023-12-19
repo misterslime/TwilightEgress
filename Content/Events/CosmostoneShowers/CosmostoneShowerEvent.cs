@@ -3,17 +3,12 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.World;
-using CalamityMod.World.Planets;
 using Cascade.Content.NPCs.CosmostoneShowers;
-using Cascade.Content.Particles.ScreenParticles;
 using Cascade.Content.Projectiles;
-using Cascade.Content.Projectiles.Ambient;
-using Cascade.Core.BaseEntities.ModNPCs;
+using Cascade.Content.Skies.SkyEntities;
 using Cascade.Core.Globals.GlobalNPCs;
-using Cascade.Core.Systems;
-using System.Linq.Expressions;
 using Terraria.GameContent.Events;
+using Terraria.Graphics;
 using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.Events.CosmostoneShowers
@@ -22,15 +17,84 @@ namespace Cascade.Content.Events.CosmostoneShowers
     {
         public static bool CosmostoneShower { get; set; }
 
+        public List<ShiningStar> ShiningStars;
+
+        public List<TravellingAsteroid> TravellingAsteroids;
+
+        public List<StationaryAsteroid> StationaryAsteroids;
+
+        private int ShiningStarSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 10;
+            }
+        }
+
+        private int TravellingAsteroidSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 45 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
+            }
+        }
+
+        private int StationaryAsteroidSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 30;
+            }
+        }
+
+        private Color ShiningStarColors
+        {
+            get
+            {
+                // Blues, reds and purples.
+                Color firstColor = Utils.SelectRandom(Main.rand, 
+                    Color.SkyBlue, Color.AliceBlue, Color.DeepSkyBlue, 
+                    Color.Purple, Color.MediumPurple, Color.BlueViolet, 
+                    Color.Violet, Color.PaleVioletRed, Color.MediumVioletRed);
+
+                // Yellows, oranges and whites.
+                Color secondColor = Utils.SelectRandom(Main.rand, 
+                    Color.Yellow, Color.Goldenrod, Color.LightGoldenrodYellow, Color.LightYellow, 
+                    Color.Orange, Color.OrangeRed, Color.White, Color.FloralWhite, Color.NavajoWhite);
+
+                return Color.Lerp(firstColor, secondColor, Main.rand.NextFloat(0.1f, 1f));
+            }
+        }
+
+        private const int MaxShiningStars = 150;
+
+        private const int MaxTravellingAsteroids = 50;
+
+        private const int MaxStationaryAsteroids = 25;
+
         public override bool EventIsActive => CosmostoneShower;
 
         public override void OnModLoad()
         {
+            ShiningStars = new(MaxShiningStars);
+            TravellingAsteroids = new(MaxTravellingAsteroids);
+            StationaryAsteroids = new(MaxStationaryAsteroids);
+
             CascadeGlobalNPC.EditSpawnPoolEvent += EditSpawnPool;
         }
 
         public override void OnModUnload()
         {
+            ShiningStars = null;
+            TravellingAsteroids = null;
+            StationaryAsteroids = null;
+
             CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
         }
 
@@ -53,8 +117,11 @@ namespace Cascade.Content.Events.CosmostoneShowers
             if (!EventHandlerManager.SpecificEventIsActive<CosmostoneShowerEvent>())
                 return;
 
-            HandleEventStuff();
-            ParticleVisuals();
+            // Important entities.
+            Entities_SpawnSpecialSpaceNPCs();
+            
+            // Visual objects.
+            Visuals_SpawnAmbientSkyEntities();
         }
 
         public override void ResetEventStuff()
@@ -72,12 +139,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             CosmostoneShower = tag.GetBool("CosmostoneShower");
         }
 
-        public void HandleEventStuff()
-        {
-            SpawnSpaceEntities();
-        }
-
-        private void SpawnSpaceEntities()
+        private void Entities_SpawnSpecialSpaceNPCs()
         {
             int asteroidSpawnChance = 125;
             int planetoidSpawnChance = 500;
@@ -209,19 +271,78 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 pool.Remove(ModContent.NPCType<ShockstormShuttle>());
         }
 
-        public static void ParticleVisuals()
+        private void Visuals_SpawnAmbientSkyEntities()
         {
-            // Particle spawning.
-            Vector2 spawnPosition = new Vector2(Main.rand.NextFloat(Main.screenWidth), Main.rand.NextFloat(Main.screenHeight));
-            Color color = Color.CornflowerBlue;
-            float scale = Main.rand.NextFloat(0.05f, 2f);
-            int lifetime = Main.rand.Next(120, 180);
-            CometNightStarParticle starParticle = new(spawnPosition, Main.screenPosition, scale * 0.1f, color, scale, lifetime);
+            int totalStarLayers = 7;
+            int totalAsteroidsLayers = 3;
+            VirtualCamera virtualCamera = new(Main.LocalPlayer);
 
-            if (Main.rand.NextBool(15) && Main.LocalPlayer.ZoneSkyHeight)
-                GeneralParticleHandler.SpawnParticle(starParticle);
-            if (Main.rand.NextBool(100) && Main.LocalPlayer.ZoneOverworldHeight)
-                GeneralParticleHandler.SpawnParticle(starParticle);
+            // Ensure lists are cleared properly.
+            ShiningStars.RemoveAll(s => !s.Active || s.Time >= s.Lifespan);
+            TravellingAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
+            StationaryAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
+
+            // Shining Stars.
+            if (ShiningStars.Count < ShiningStars.Capacity)
+            {
+                for (int i = 0; i < totalStarLayers; i++)
+                {
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
+                    Vector2 position = new(x, y);
+
+                    float maxScale = Main.rand.NextFloat(1f, 3f);
+                    int lifespan = Main.rand.Next(120, 240);
+
+                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 1.5f, new Vector2(1f, 1.5f), lifespan);
+                    if (Main.rand.NextBool(ShiningStarSpawnChance))
+                        shiningStar.Spawn();
+                    ShiningStars.Add(shiningStar);
+                }
+            }
+
+            // Horizontally-travelling Asteroids.
+            if (TravellingAsteroids.Count < TravellingAsteroids.Capacity)
+            {
+                for (int i = 0; i < totalAsteroidsLayers; i++)
+                {
+                    float x = virtualCamera.Center.X - virtualCamera.Size.X - 1280f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.2f, 0.3f);
+                    Vector2 position = new(x, y);
+
+                    float speed = Main.rand.NextFloat(3f, 15f);
+                    Vector2 velocity = Vector2.UnitX * speed;
+
+                    float maxScale = Main.rand.NextFloat(0.5f, 3f);
+                    float depth = i + 3f;
+                    int lifespan = Main.rand.Next(1200, 1800);
+
+                    TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
+                    if (Main.rand.NextBool(TravellingAsteroidSpawnChance))
+                        asteroid.Spawn();
+                    TravellingAsteroids.Add(asteroid);
+                }
+            }
+
+            // Stationary, floating asteroids.
+            if (StationaryAsteroids.Count < StationaryAsteroids.Capacity)
+            {
+                for (int i = 0; i < totalAsteroidsLayers; i++)
+                {
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
+                    Vector2 position = new(x, y);
+
+                    float maxScale = Main.rand.NextFloat(1f, 5f);
+                    int lifespan = Main.rand.Next(600, 1200);
+                    float depth = i + 3f;
+
+                    StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
+                    if (Main.rand.NextBool(StationaryAsteroidSpawnChance))
+                        stationaryAsteroid.Spawn();
+                    StationaryAsteroids.Add(stationaryAsteroid);
+                }
+            }
         }
     }
 }
