@@ -1,4 +1,5 @@
-﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
+﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Microsoft.Xna.Framework;
 
 namespace Cascade.Content.Skies.SkyEntities
@@ -14,6 +15,8 @@ namespace Cascade.Content.Skies.SkyEntities
         public float RotationDirection;
 
         public Vector2 StretchFactor;
+
+        private int TextureIndex;
 
         public const int BaseLifespan = 480;
 
@@ -37,7 +40,18 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override BlendState BlendState => BlendState.Additive;
 
-        public override bool DieWithLifespan => true;
+        public override SkyEntityDrawContext DrawContext => SkyEntityDrawContext.AfterBackgroundFog;
+
+        public override void OnSpawn()
+        {
+            // Pick a different texture depending on the max scale of the star.
+            if (MaxScale <= 1.5f)
+                TextureIndex = Main.rand.Next(2);
+            if (MaxScale is > 1.5f and <= 2f)
+                TextureIndex = Main.rand.Next(2, 4);
+            if (MaxScale is > 2f and <= 3f)
+                TextureIndex = Main.rand.Next(4, 6);
+        }
 
         public override void Update()
         {
@@ -59,16 +73,17 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            Texture2D starTextures = ModContent.Request<Texture2D>(CascadeTextureRegistry.FourPointedStars[TextureIndex]).Value;
             Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
 
-            Vector2 mainOrigin = StoredTexture.Size() / 2f;
+            Vector2 mainOrigin = starTextures.Size() / 2f;
             Vector2 bloomOrigin = bloomTexture.Size() / 2f;
 
             float scaleWithDepth = Scale / Depth;
             Color color = Color * Opacity;
 
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth / 3f, 0, 0f);
-            spriteBatch.Draw(StoredTexture, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.6f, 0, 0f);
+            spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
         }
     }
 }

@@ -43,7 +43,12 @@ namespace Cascade.Content.Skies
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue)
             {
                 Texture2D skyTexture = ModContent.Request<Texture2D>("Cascade/Content/Skies/CosmostoneShowersSky").Value;
-                spriteBatch.Draw(skyTexture, new Rectangle(0, Math.Max(0, (int)((Main.worldSurface * 16f - (Main.screenPosition.Y + 2400f * 400f)) * 0.1f)), Main.screenWidth, Main.screenHeight - 100), Color.White * FadeOpacity * 0.6f);
+
+                float gradientHeightInterpolant = Lerp(-0.006f, -0.02f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
+
+                spriteBatch.SetBlendState(BlendState.Additive);
+                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * 16f * gradientHeightInterpolant), Main.screenWidth, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
+                spriteBatch.ResetToVanilla(true);
             }
         }
     }

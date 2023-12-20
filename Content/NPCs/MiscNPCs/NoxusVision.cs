@@ -79,7 +79,7 @@
             ref float eyeGlareScale = ref NPC.Cascade().ExtraAI[EyeGlareScaleIndex];
 
             Texture2D Noxus = TextureAssets.Npc[NPC.type].Value;
-            Texture2D EyeGlare = CascadeTextureRegistry.GreyscaleStar.Value;
+            Texture2D EyeGlare = CascadeTextureRegistry.SoftStar.Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition + new Vector2(0f, NPC.gfxOffY);
 
             // Lerp between magenta and blue.

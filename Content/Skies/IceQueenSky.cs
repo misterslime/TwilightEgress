@@ -90,7 +90,7 @@
 
         public override void OnLoad()
         {
-            GlowStarTexture = CascadeTextureRegistry.GreyscaleStar.Value;
+            GlowStarTexture = CascadeTextureRegistry.SoftStar.Value;
         }
 
         public override void Update(GameTime gameTime)

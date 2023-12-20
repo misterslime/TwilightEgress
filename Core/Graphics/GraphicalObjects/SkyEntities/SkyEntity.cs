@@ -1,4 +1,5 @@
 ﻿using Cascade.Core.Configs;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
@@ -108,6 +109,11 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
         /// The blend state the sky entity shall use when being drawn. Defaults to <see cref="BlendState.AlphaBlend"/>.
         /// </summary>
         public virtual BlendState BlendState => BlendState.AlphaBlend;
+
+        /// <summary>
+        /// Affects when the sky entity is drawn, whether before vanilla's background fog or after it.
+        /// </summary>
+        public virtual SkyEntityDrawContext DrawContext => SkyEntityDrawContext.BeforeBackgroundFog;
 
         /// <summary>
         /// Allows you to run code only once this sky entity spawn.

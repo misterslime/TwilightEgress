@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
+using System.Runtime.Serialization;
 using Terraria.GameContent.Skies;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
@@ -50,7 +51,8 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
                 currentID++;
             }
 
-            On_SkyManager.DrawDepthRange += DrawAllSkyEntityInstances;
+            On_SkyManager.DrawDepthRange += DrawSkyEntities_BeforeBackgroundFog;
+            On_SkyManager.DrawDepthRange += DrawSkyEntities_AfterBackgroundFog;
         }
 
         public override void OnModUnload()
@@ -60,7 +62,8 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             SkyEntityTextures = null;
             ActiveSkyEntities = null;
 
-            On_SkyManager.DrawDepthRange -= DrawAllSkyEntityInstances;
+            On_SkyManager.DrawDepthRange -= DrawSkyEntities_BeforeBackgroundFog;
+            On_SkyManager.DrawDepthRange -= DrawSkyEntities_AfterBackgroundFog;
         }
         #endregion
 
@@ -114,30 +117,48 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
         #endregion
 
         #region Private Methods
-        private void DrawAllSkyEntityInstances(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        private void DrawAllSkyEntityInstances(SkyEntity skyEntity, SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             if (ActiveSkyEntities.Count <= 0)
                 return;
 
-            spriteBatch.End();
-
             // Prepare for screen culling.
             RasterizerState screenCullState = Utilities.PrepareScissorRectangleState();
 
-            // Start the sprite batch and draw.
+            spriteBatch.Begin(SpriteSortMode.Deferred, skyEntity.BlendState, Main.DefaultSamplerState, DepthStencilState.None, screenCullState, null, Main.GameViewMatrix.TransformationMatrix);
+
+            if (skyEntity.Depth > minDepth && skyEntity.Depth <= maxDepth)
+                skyEntity.Draw(spriteBatch);
+
+            spriteBatch.End();
+        }
+
+        private void DrawSkyEntities_BeforeBackgroundFog(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        {
+            spriteBatch.End();
             foreach (SkyEntity skyEntity in ActiveSkyEntities)
             {
-                spriteBatch.Begin(SpriteSortMode.Deferred, skyEntity.BlendState, Main.DefaultSamplerState, DepthStencilState.None, screenCullState, null, Main.GameViewMatrix.TransformationMatrix);
-
-                if (skyEntity.Depth > minDepth && skyEntity.Depth <= maxDepth)
-                    skyEntity.Draw(spriteBatch);
-
-                spriteBatch.End();
+                if (skyEntity.DrawContext != SkyEntityDrawContext.BeforeBackgroundFog)
+                    continue;
+                DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
             }
-
             spriteBatch.ResetToVanilla();
 
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
+        }
+
+        private void DrawSkyEntities_AfterBackgroundFog(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        {
+            orig.Invoke(self, spriteBatch, minDepth, maxDepth);
+
+            spriteBatch.End();
+            foreach (SkyEntity skyEntity in ActiveSkyEntities)
+            {
+                if (skyEntity.DrawContext != SkyEntityDrawContext.AfterBackgroundFog)
+                    continue;
+                DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
+            }
+            spriteBatch.ResetToVanilla();
         }
         #endregion
     }

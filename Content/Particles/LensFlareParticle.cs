@@ -12,7 +12,7 @@ namespace Cascade.Content.Particles
 
         private float Opacity;
 
-        public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/StarNonPixelated";
+        public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar";
 
         public override bool SetLifetime => true;
 

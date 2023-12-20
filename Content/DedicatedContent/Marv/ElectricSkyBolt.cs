@@ -13,7 +13,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/StarNonPixelated";
+        public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar";
 
         public override void SetStaticDefaults()
         {

@@ -9,7 +9,7 @@ namespace Cascade
             Type[] loadableTypes = AssemblyManager.GetLoadableTypes(modToSearch.Code);
             foreach (Type type in loadableTypes)
             {
-                if (!type.IsAbstract && type.IsSubclassOf(baseType))
+                if (!type.IsAbstract && type.IsSubclassOf(baseType) && type != baseType)
                     yield return type;
             }
         }

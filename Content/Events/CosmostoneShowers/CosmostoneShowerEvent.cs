@@ -23,13 +23,15 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         public List<StationaryAsteroid> StationaryAsteroids;
 
+        public List<CosmicGas> CosmicGases;
+
         private int ShiningStarSpawnChance
         {
             get
             {
                 if (!EventIsActive || !CosmostoneShower)
                     return 0;
-                return 10;
+                return 100;
             }
         }
 
@@ -39,7 +41,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive || !CosmostoneShower)
                     return 0;
-                return 45 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
+                return 70 * (int)Round(Lerp(1f, 0.6f, Star.starfallBoost / 3f), 0);
             }
         }
 
@@ -49,7 +51,17 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive || !CosmostoneShower)
                     return 0;
-                return 30;
+                return 55;
+            }
+        }
+
+        private int CosmicGasSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 35;
             }
         }
 
@@ -72,11 +84,13 @@ namespace Cascade.Content.Events.CosmostoneShowers
             }
         }
 
-        private const int MaxShiningStars = 150;
+        private const int MaxShiningStars = 75;
 
-        private const int MaxTravellingAsteroids = 50;
+        private const int MaxTravellingAsteroids = 100;
 
         private const int MaxStationaryAsteroids = 25;
+
+        private const int MaxCosmicGases = 10;
 
         public override bool EventIsActive => CosmostoneShower;
 
@@ -85,6 +99,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             ShiningStars = new(MaxShiningStars);
             TravellingAsteroids = new(MaxTravellingAsteroids);
             StationaryAsteroids = new(MaxStationaryAsteroids);
+            CosmicGases = new(MaxCosmicGases);
 
             CascadeGlobalNPC.EditSpawnPoolEvent += EditSpawnPool;
         }
@@ -94,8 +109,19 @@ namespace Cascade.Content.Events.CosmostoneShowers
             ShiningStars = null;
             TravellingAsteroids = null;
             StationaryAsteroids = null;
+            CosmicGases = null;
 
             CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
+        }
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            tag["CosmostoneShower"] = CosmostoneShower;
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            CosmostoneShower = tag.GetBool("CosmostoneShower");
         }
 
         public override void UpdateEvent()
@@ -127,16 +153,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
         public override void ResetEventStuff()
         {
             CosmostoneShower = false;
-        }
-
-        public override void SaveWorldData(TagCompound tag)
-        {
-            tag["CosmostoneShower"] = CosmostoneShower;
-        }
-
-        public override void LoadWorldData(TagCompound tag)
-        {
-            CosmostoneShower = tag.GetBool("CosmostoneShower");
         }
 
         private void Entities_SpawnSpecialSpaceNPCs()
@@ -221,7 +237,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 return;
 
             // Space additions.
-            if (spawnInfo.Player.ZoneSkyHeight)
+            if (spawnInfo.Player.Center.Y <= Main.maxTilesY * 0.4f)
             {
                 // Clear the original spawn pool, successfully getting rid of Vanilla NPCs since
                 // they can't be manually removed.
@@ -274,16 +290,17 @@ namespace Cascade.Content.Events.CosmostoneShowers
         private void Visuals_SpawnAmbientSkyEntities()
         {
             int totalStarLayers = 7;
-            int totalAsteroidsLayers = 3;
+            int totalAsteroidsLayers = 5;
             VirtualCamera virtualCamera = new(Main.LocalPlayer);
 
             // Ensure lists are cleared properly.
             ShiningStars.RemoveAll(s => !s.Active || s.Time >= s.Lifespan);
             TravellingAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
             StationaryAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
+            CosmicGases.RemoveAll(g => !g.Active || g.Time >= g.Lifespan);
 
             // Shining Stars.
-            if (ShiningStars.Count < ShiningStars.Capacity)
+            if (ShiningStars.Count < ShiningStars.Capacity && Main.rand.NextBool(ShiningStarSpawnChance))
             {
                 for (int i = 0; i < totalStarLayers; i++)
                 {
@@ -294,15 +311,16 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float maxScale = Main.rand.NextFloat(1f, 3f);
                     int lifespan = Main.rand.Next(120, 240);
 
-                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 1.5f, new Vector2(1f, 1.5f), lifespan);
-                    if (Main.rand.NextBool(ShiningStarSpawnChance))
-                        shiningStar.Spawn();
+                    float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
+                    float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
+                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan);
+                    shiningStar.Spawn();
                     ShiningStars.Add(shiningStar);
                 }
             }
 
             // Horizontally-travelling Asteroids.
-            if (TravellingAsteroids.Count < TravellingAsteroids.Capacity)
+            if (TravellingAsteroids.Count < TravellingAsteroids.Capacity && Main.rand.NextBool(TravellingAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
@@ -314,33 +332,51 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     Vector2 velocity = Vector2.UnitX * speed;
 
                     float maxScale = Main.rand.NextFloat(0.5f, 3f);
-                    float depth = i + 3f;
+                    float depth = i * 2f;
                     int lifespan = Main.rand.Next(1200, 1800);
 
                     TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
-                    if (Main.rand.NextBool(TravellingAsteroidSpawnChance))
-                        asteroid.Spawn();
+                    asteroid.Spawn();
                     TravellingAsteroids.Add(asteroid);
                 }
             }
 
             // Stationary, floating asteroids.
-            if (StationaryAsteroids.Count < StationaryAsteroids.Capacity)
+            if (StationaryAsteroids.Count < StationaryAsteroids.Capacity && Main.rand.NextBool(StationaryAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
                     float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.4f);
                     Vector2 position = new(x, y);
 
                     float maxScale = Main.rand.NextFloat(1f, 5f);
                     int lifespan = Main.rand.Next(600, 1200);
-                    float depth = i + 3f;
+                    float depth = i * 4f;
 
                     StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
-                    if (Main.rand.NextBool(StationaryAsteroidSpawnChance))
-                        stationaryAsteroid.Spawn();
+                    stationaryAsteroid.Spawn();
                     StationaryAsteroids.Add(stationaryAsteroid);
+                }
+            }
+
+            // Cosmic gases.
+            if (CosmicGases.Count < CosmicGases.Capacity && Main.rand.NextBool(CosmicGasSpawnChance))
+            {
+                int numGas = Main.rand.Next(4, 10);
+                for (int i = 0; i < numGas; i++)
+                {
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.1f);
+                    Vector2 position = new(x, y);
+
+                    float maxScale = Main.rand.NextFloat(12f, 16f);
+                    int lifespan = Main.rand.Next(600, 1200);
+                    float depth = Main.rand.NextFloat(10f, 12f);
+
+                    CosmicGas cosmicGas = new(position, ShiningStarColors, maxScale, depth, lifespan);
+                    cosmicGas.Spawn();
+                    CosmicGases.Add(cosmicGas);
                 }
             }
         }

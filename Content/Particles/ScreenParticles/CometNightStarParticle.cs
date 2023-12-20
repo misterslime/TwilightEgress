@@ -10,7 +10,7 @@
 
         private bool DynamicOpacityChange;
 
-        public override string Texture => Utilities.ExtraTexturesDirectory + "/GreyscaleObjects/Star";
+        public override string Texture => Utilities.ExtraTexturesDirectory + "/GreyscaleObjects/FourPointedStar_Small_2";
 
         public override bool UseAdditiveBlend => true;
 
