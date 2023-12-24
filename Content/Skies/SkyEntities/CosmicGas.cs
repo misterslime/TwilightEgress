@@ -53,10 +53,9 @@ namespace Cascade.Content.Skies.SkyEntities
             Texture2D smokeTexture = ModContent.Request<Texture2D>(CascadeTextureRegistry.Smokes[TextureIndex]).Value;
 
             Vector2 mainOrigin = smokeTexture.Size() / 2f;
-            Color color = Color * Opacity * 0.25f;
-            float scaleWithDepth = Scale / Depth;
+            Color color = Color * Opacity * 0.3f;
 
-            spriteBatch.Draw(smokeTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, mainOrigin, scaleWithDepth, 0, 0f);
+            spriteBatch.Draw(smokeTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, mainOrigin, Scale / 8f, 0, 0f);
         }
     }
 }

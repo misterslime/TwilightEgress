@@ -8,12 +8,6 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public float RotationDirection;
 
-        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
-
-        public override int MaxFrames => 3;
-
-        public override bool DieWithLifespan => true;
-
         public TravellingAsteroid(Vector2 position, Vector2 velocity, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
@@ -27,6 +21,14 @@ namespace Cascade.Content.Skies.SkyEntities
             Frame = Main.rand.Next(3);
             Rotation = Main.rand.NextFloat(TwoPi);
         }
+
+        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
+
+        public override int MaxFrames => 3;
+
+        public override bool DieWithLifespan => true;
+
+        public override BlendState BlendState => BlendState.AlphaBlend;
          
         public override void Update()
         {

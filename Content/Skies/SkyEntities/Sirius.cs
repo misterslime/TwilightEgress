@@ -3,7 +3,7 @@ using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 
 namespace Cascade.Content.Skies.SkyEntities
 {
-    public class ShiningStar : SkyEntity
+    public class Sirius : SkyEntity
     {
         public float MaxScale;
 
@@ -13,21 +13,16 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public float RotationDirection;
 
-        public Vector2 StretchFactor;
+        public const int BaseLifespan = 2400;
 
-        private int TextureIndex;
-
-        public const int BaseLifespan = 480;
-
-        public ShiningStar(Vector2 position, Color color, float maxScale, float depth, Vector2 stretchFactor, int lifespan)
+        public Sirius(Vector2 position, Color color, float maxScale, int lifespan)
         {
             Position = position;
             Color = color;
             MaxScale = maxScale;
-            MinScale = maxScale * 0.5f;
-            StretchFactor = stretchFactor;
+            MinScale = maxScale * 0.75f;
             Lifespan = lifespan + BaseLifespan;
-            Depth = depth;
+            Depth = 150f;
 
             Opacity = 0f;
             Rotation = Main.rand.NextFloat(TwoPi);
@@ -35,22 +30,11 @@ namespace Cascade.Content.Skies.SkyEntities
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "Terraria/Images/Projectile_79";
-
-        public override BlendState BlendState => BlendState.Additive;
+        public override string TexturePath => "CalamityMod/Projectiles/Summon/SiriusMinion";
 
         public override SkyEntityDrawContext DrawContext => SkyEntityDrawContext.AfterCustomSkies;
 
-        public override void OnSpawn()
-        {
-            // Pick a different texture depending on the max scale of the star.
-            if (MaxScale <= 1.5f)
-                TextureIndex = Main.rand.Next(2);
-            if (MaxScale is > 1.5f and <= 2f)
-                TextureIndex = Main.rand.Next(2, 4);
-            if (MaxScale is > 2f and <= 3f)
-                TextureIndex = Main.rand.Next(4, 6);
-        }
+        public override BlendState BlendState => BlendState.Additive;
 
         public override void Update()
         {
@@ -72,17 +56,17 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D starTextures = ModContent.Request<Texture2D>(CascadeTextureRegistry.FourPointedStars[TextureIndex]).Value;
             Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
 
-            Vector2 mainOrigin = starTextures.Size() / 2f;
+            Vector2 mainOrigin = StoredTexture.Size() / 2f;
             Vector2 bloomOrigin = bloomTexture.Size() / 2f;
 
-            float scaleWithDepth = Scale / Depth;
             Color color = Color * Opacity;
 
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.6f, 0, 0f);
-            spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.5f, Rotation, bloomOrigin, Scale * 0.8f, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.7f, -Rotation, bloomOrigin, Scale * 0.6f, 0, 0f);
+
+            spriteBatch.Draw(StoredTexture, GetDrawPositionBasedOnDepth(), null, Color.White * Opacity, 0f, mainOrigin, Scale, 0, 0f);
         }
     }
 }

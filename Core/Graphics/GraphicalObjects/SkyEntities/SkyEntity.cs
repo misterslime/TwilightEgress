@@ -113,7 +113,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
         /// <summary>
         /// Affects when the sky entity is drawn, whether before vanilla's background fog or after it.
         /// </summary>
-        public virtual SkyEntityDrawContext DrawContext => SkyEntityDrawContext.BeforeBackgroundFog;
+        public virtual SkyEntityDrawContext DrawContext => SkyEntityDrawContext.BeforeCustomSkies;
 
         /// <summary>
         /// Allows you to run code only once this sky entity spawn.

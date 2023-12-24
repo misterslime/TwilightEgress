@@ -8,12 +8,6 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public float RotationDirection;
 
-        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
-
-        public override int MaxFrames => 3;
-
-        public override bool DieWithLifespan => true;
-
         public StationaryAsteroid(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
@@ -27,6 +21,14 @@ namespace Cascade.Content.Skies.SkyEntities
             Rotation = Main.rand.NextFloat(TwoPi);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
+
+        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
+
+        public override int MaxFrames => 3;
+
+        public override bool DieWithLifespan => true;
+
+        public override BlendState BlendState => BlendState.AlphaBlend;
 
         public override void Update()
         {
@@ -46,7 +48,7 @@ namespace Cascade.Content.Skies.SkyEntities
             Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % 3);
             Vector2 mainOrigin = frameRectangle.Size() / 2f;
 
-            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + (Depth / 10f)), 0.15f + (Depth / 10f)) * Opacity;
+            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + (Depth / 15f)), 0.15f + (Depth / 15f)) * Opacity;
             spriteBatch.Draw(StoredTexture, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
         }
     }

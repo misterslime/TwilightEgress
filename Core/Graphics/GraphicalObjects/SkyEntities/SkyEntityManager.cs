@@ -29,9 +29,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             ActiveSkyEntities = new();
 
             // Always ensure that the current ID is set to the highest value in the dictionary.
-            int currentID = 0;
-            if (SkyEntityIDs?.Any() ?? false)
-                currentID = SkyEntityIDs.Values.Max();
+            int currentID = SkyEntityIDs.Any() ? SkyEntityIDs.Values.Max() : 0;
 
             IEnumerable<Type> skyEntitySubclasses = Utilities.GetAllSubclassesOfType(Cascade.Instance, typeof(SkyEntity));
             foreach (Type type in skyEntitySubclasses)
@@ -51,8 +49,8 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
                 currentID++;
             }
 
-            On_SkyManager.DrawDepthRange += DrawSkyEntities_BeforeBackgroundFog;
-            On_SkyManager.DrawDepthRange += DrawSkyEntities_AfterBackgroundFog;
+            On_SkyManager.DrawDepthRange += DrawSkyEntities_BeforeCustomSkies;
+            On_SkyManager.DrawDepthRange += DrawSkyEntities_AfterCustomSkies;
         }
 
         public override void OnModUnload()
@@ -62,9 +60,14 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             SkyEntityTextures = null;
             ActiveSkyEntities = null;
 
-            On_SkyManager.DrawDepthRange -= DrawSkyEntities_BeforeBackgroundFog;
-            On_SkyManager.DrawDepthRange -= DrawSkyEntities_AfterBackgroundFog;
+            On_SkyManager.DrawDepthRange -= DrawSkyEntities_BeforeCustomSkies;
+            On_SkyManager.DrawDepthRange -= DrawSkyEntities_AfterCustomSkies;
         }
+
+        public override void OnWorldLoad() => ActiveSkyEntities.Clear();
+
+        public override void OnWorldUnload() => ActiveSkyEntities.Clear();
+
         #endregion
 
         #region Updating
@@ -89,31 +92,18 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
         #region Static Methods
         public static bool IsSpecificSkyEntityActive<T>() where T : SkyEntity => SkyEntities[typeof(T)].Active;
 
-        public static bool IsSpecificSkyEntityActive(SkyEntity skyEntity) => skyEntity.Active;
-
-        public static int GetSkyEntityID<T>() where T : SkyEntity => SkyEntityIDs[typeof(T)];
-
-        public static IEnumerable<SkyEntity> GetSpecificSkyEntitiesByID(int desiredID)
+        public static int CountActiveSkyEntities<T>() where T : SkyEntity
         {
-            foreach (SkyEntity skyEntity in SkyEntities.Values)
+            int count = 0;
+            foreach (SkyEntity sky in ActiveSkyEntities)
             {
-                if (skyEntity.Active && SkyEntityIDs.ContainsValue(desiredID)) 
-                    yield return skyEntity;
+                if (sky.ID == SkyEntityIDs[typeof(T)])
+                    count++;
             }
+
+            return count;
         }
 
-        public static IEnumerable<SkyEntity> GetSpecificSkyEntityEnumerable(SkyEntity skyEntityToSearchFor)
-        {
-            if (ActiveSkyEntities.Count <= 0)
-                yield return null;
-
-            foreach (SkyEntity skyEntity in ActiveSkyEntities)
-            {
-                if (!skyEntity.Active || skyEntity != skyEntityToSearchFor)
-                    continue;
-                yield return skyEntity;
-            }
-        }
         #endregion
 
         #region Private Methods
@@ -133,12 +123,12 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             spriteBatch.End();
         }
 
-        private void DrawSkyEntities_BeforeBackgroundFog(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        private void DrawSkyEntities_BeforeCustomSkies(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             spriteBatch.End();
             foreach (SkyEntity skyEntity in ActiveSkyEntities)
             {
-                if (skyEntity.DrawContext != SkyEntityDrawContext.BeforeBackgroundFog)
+                if (skyEntity.DrawContext != SkyEntityDrawContext.BeforeCustomSkies)
                     continue;
                 DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
             }
@@ -147,14 +137,14 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
         }
 
-        private void DrawSkyEntities_AfterBackgroundFog(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        private void DrawSkyEntities_AfterCustomSkies(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
 
             spriteBatch.End();
             foreach (SkyEntity skyEntity in ActiveSkyEntities)
             {
-                if (skyEntity.DrawContext != SkyEntityDrawContext.AfterBackgroundFog)
+                if (skyEntity.DrawContext != SkyEntityDrawContext.AfterCustomSkies)
                     continue;
                 DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
             }

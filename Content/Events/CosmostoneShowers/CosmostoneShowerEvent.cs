@@ -3,10 +3,12 @@ using CalamityMod.Items.Placeables.Banners;
 using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Projectiles.Magic;
 using Cascade.Content.NPCs.CosmostoneShowers;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
 using Cascade.Core.Globals.GlobalNPCs;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Terraria.GameContent.Events;
 using Terraria.Graphics;
 using Terraria.ModLoader.IO;
@@ -17,21 +19,13 @@ namespace Cascade.Content.Events.CosmostoneShowers
     {
         public static bool CosmostoneShower { get; set; }
 
-        public List<ShiningStar> ShiningStars;
-
-        public List<TravellingAsteroid> TravellingAsteroids;
-
-        public List<StationaryAsteroid> StationaryAsteroids;
-
-        public List<CosmicGas> CosmicGases;
-
         private int ShiningStarSpawnChance
         {
             get
             {
                 if (!EventIsActive || !CosmostoneShower)
                     return 0;
-                return 100;
+                return 100 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
             }
         }
 
@@ -61,7 +55,19 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive || !CosmostoneShower)
                     return 0;
-                return 35;
+                return 10;
+            }
+        }
+
+        private int SiriusSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+
+                int spawnChance = Main.tenthAnniversaryWorld ? 10000 : LanternNight.LanternsUp ? 50000 : 100000;
+                return spawnChance * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f));
             }
         }
 
@@ -90,27 +96,17 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private const int MaxStationaryAsteroids = 25;
 
-        private const int MaxCosmicGases = 10;
+        private const int MaxCosmicGases = 50;
 
         public override bool EventIsActive => CosmostoneShower;
 
         public override void OnModLoad()
         {
-            ShiningStars = new(MaxShiningStars);
-            TravellingAsteroids = new(MaxTravellingAsteroids);
-            StationaryAsteroids = new(MaxStationaryAsteroids);
-            CosmicGases = new(MaxCosmicGases);
-
             CascadeGlobalNPC.EditSpawnPoolEvent += EditSpawnPool;
         }
 
         public override void OnModUnload()
         {
-            ShiningStars = null;
-            TravellingAsteroids = null;
-            StationaryAsteroids = null;
-            CosmicGases = null;
-
             CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
         }
 
@@ -226,9 +222,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
-
-            Vector2 dustPosition = closestPlayer.Center + new Vector2(0f, Main.maxTilesY + 10f);
-            Utilities.CreateDustLoop(3, dustPosition, Vector2.Zero, DustID.Dirt);
         }
 
         private void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -237,46 +230,16 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 return;
 
             // Space additions.
-            if (spawnInfo.Player.Center.Y <= Main.maxTilesY * 0.4f)
+            if (spawnInfo.Sky)
             {
                 // Clear the original spawn pool, successfully getting rid of Vanilla NPCs since
                 // they can't be manually removed.
                 pool.Clear();
-
-                // Increase the spawn rate of some Astral Enemies with each defeat of a major boss,
-                // indicating that the Astral Meteor is getting closer.
-
-                // Twinklers.
-                float twinklerSpawnChance =
-                    DownedBossSystem.downedSlimeGod ? 3f :
-                    NPC.downedBoss3 ? 2f :
-                    (DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator) ? 1f :
-                    NPC.downedBoss2 ? 0.25f :
-                    0f;
-
-                // Astral Slimes.
-                float astralSlimeSpawnChance =
-                    DownedBossSystem.downedSlimeGod ? 0.2f :
-                    (DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator) ? 0.05f :
-                    0f;
-
-                // Astral Probes.
-                float astralProbeSpawnChance =
-                    DownedBossSystem.downedSlimeGod ? 0.2f :
-                    NPC.downedBoss3 ? 0.1f :
-                    (DownedBossSystem.downedHiveMind || DownedBossSystem.downedPerforator) ? 0.06f :
-                    NPC.downedBoss2 ? 0.02f :
-                    0f;
-
-                pool.Add(ModContent.NPCType<Twinkler>(), twinklerSpawnChance);
-                pool.Add(ModContent.NPCType<AstralSlime>(), astralSlimeSpawnChance);
-                pool.Add(ModContent.NPCType<AstralProbe>(), astralProbeSpawnChance);
             }
 
             // Surface additions.
             if (spawnInfo.Player.ZoneOverworldHeight)
             {
-                pool.Add(NPCID.LightningBug, 0.25f);
                 pool.Add(NPCID.Firefly, 0.85f);
             }
 
@@ -293,14 +256,8 @@ namespace Cascade.Content.Events.CosmostoneShowers
             int totalAsteroidsLayers = 5;
             VirtualCamera virtualCamera = new(Main.LocalPlayer);
 
-            // Ensure lists are cleared properly.
-            ShiningStars.RemoveAll(s => !s.Active || s.Time >= s.Lifespan);
-            TravellingAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
-            StationaryAsteroids.RemoveAll(a => !a.Active || a.Time >= a.Lifespan);
-            CosmicGases.RemoveAll(g => !g.Active || g.Time >= g.Lifespan);
-
             // Shining Stars.
-            if (ShiningStars.Count < ShiningStars.Capacity && Main.rand.NextBool(ShiningStarSpawnChance))
+            if (SkyEntityManager.CountActiveSkyEntities<ShiningStar>() < MaxShiningStars && Main.rand.NextBool(ShiningStarSpawnChance))
             {
                 for (int i = 0; i < totalStarLayers; i++)
                 {
@@ -315,69 +272,82 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
                     ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan);
                     shiningStar.Spawn();
-                    ShiningStars.Add(shiningStar);
                 }
             }
 
             // Horizontally-travelling Asteroids.
-            if (TravellingAsteroids.Count < TravellingAsteroids.Capacity && Main.rand.NextBool(TravellingAsteroidSpawnChance))
+            if (SkyEntityManager.CountActiveSkyEntities<TravellingAsteroid>() < MaxTravellingAsteroids && Main.rand.NextBool(TravellingAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
                     float x = virtualCamera.Center.X - virtualCamera.Size.X - 1280f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.2f, 0.3f);
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.2f, 0.225f);
                     Vector2 position = new(x, y);
 
                     float speed = Main.rand.NextFloat(3f, 15f);
                     Vector2 velocity = Vector2.UnitX * speed;
 
-                    float maxScale = Main.rand.NextFloat(0.5f, 3f);
-                    float depth = i * 2f;
+                    float maxScale = Main.rand.NextFloat(0.5f, 2f);
+                    float depth = i + 3f;
                     int lifespan = Main.rand.Next(1200, 1800);
 
                     TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
                     asteroid.Spawn();
-                    TravellingAsteroids.Add(asteroid);
                 }
             }
 
             // Stationary, floating asteroids.
-            if (StationaryAsteroids.Count < StationaryAsteroids.Capacity && Main.rand.NextBool(StationaryAsteroidSpawnChance))
+            if (SkyEntityManager.CountActiveSkyEntities<StationaryAsteroid>() < MaxStationaryAsteroids && Main.rand.NextBool(StationaryAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
                     float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.4f);
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.225f);
                     Vector2 position = new(x, y);
 
-                    float maxScale = Main.rand.NextFloat(1f, 5f);
+                    float maxScale = Main.rand.NextFloat(0.5f, 2f);
                     int lifespan = Main.rand.Next(600, 1200);
-                    float depth = i * 4f;
+                    float depth = i + 3f;
 
                     StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
                     stationaryAsteroid.Spawn();
-                    StationaryAsteroids.Add(stationaryAsteroid);
                 }
             }
 
             // Cosmic gases.
-            if (CosmicGases.Count < CosmicGases.Capacity && Main.rand.NextBool(CosmicGasSpawnChance))
+            // Makes the sky less monochromatic with its flat blue color.
+            if (SkyEntityManager.CountActiveSkyEntities<CosmicGas>() < MaxCosmicGases && Main.rand.NextBool(CosmicGasSpawnChance))
             {
-                int numGas = Main.rand.Next(4, 10);
+                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 2f;
+                float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.1f);
+                Vector2 position = new(x, y);
+
+                int numGas = Main.rand.Next(4, 7);
                 for (int i = 0; i < numGas; i++)
                 {
-                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.1f);
-                    Vector2 position = new(x, y);
+                    float individualPositionVariance = Main.rand.NextFloat(850f, 1250f);
+                    position += Main.rand.NextVector2Circular(individualPositionVariance, individualPositionVariance);
 
-                    float maxScale = Main.rand.NextFloat(12f, 16f);
+                    float maxScale = Main.rand.NextFloat(12f, 18f);
                     int lifespan = Main.rand.Next(600, 1200);
-                    float depth = Main.rand.NextFloat(10f, 12f);
+                    float depth = Main.rand.NextFloat(5f, 200f);
 
                     CosmicGas cosmicGas = new(position, ShiningStarColors, maxScale, depth, lifespan);
                     cosmicGas.Spawn();
-                    CosmicGases.Add(cosmicGas);
                 }
+            }
+
+            // Have an extremely low chance for exactly one Sirius star to spawn.
+            if (SkyEntityManager.CountActiveSkyEntities<Sirius>() < 1 && Main.rand.NextBool(SiriusSpawnChance))
+            {
+                int lifespan = Main.rand.Next(600, 1200);
+
+                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 0.85f;
+                float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.08f);
+                Vector2 position = new(x, y);
+
+                Sirius sirius = new(position, Color.SkyBlue, 2f, lifespan);
+                sirius.Spawn();
             }
         }
     }
