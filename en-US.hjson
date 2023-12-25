@@ -11,5 +11,10 @@ Mods: {
 				Tooltip: ""
 			}
 		}
+
+		NPCs: {
+			GravityPlanetoid.DisplayName: Gravity Planetoid
+			GalileoPlanetoid.DisplayName: Galileo Planetoid
+		}
 	}
 }

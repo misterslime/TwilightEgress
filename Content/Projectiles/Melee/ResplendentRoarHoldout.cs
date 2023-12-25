@@ -228,8 +228,8 @@ namespace Cascade.Content.Projectiles.Melee
                     yharonFrameCounter = 0f;
                 }
 
-                float maximumOpacity = 1f * Utils.GetLerpValue(0f, 1f, (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f), true);
-                float maximumScale = 1.35f * Utils.GetLerpValue(0f, 1f, (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f), true);
+                float maximumOpacity = 1f * Utils.GetLerpValue(0f, 1f, (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f), true);
+                float maximumScale = 1.35f * Utils.GetLerpValue(0f, 1f, (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f), true);
                 yharonOpacity = Lerp(yharonOpacity, maximumOpacity, Timer / 90f);
                 yharonScale = Lerp(yharonScale, maximumScale, Timer / 90f);
 
@@ -280,15 +280,15 @@ namespace Cascade.Content.Projectiles.Melee
                 if (Timer >= 30f)
                 {
                     Projectile.Kill();
-                    Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge = 0f;
+                    Owner.Cascade_ResplendentRoar().ResplendentRazeCharge = 0f;
                 }
             }
-            Owner.CascadePlayer_ResplendantRoar().ResplendentRazeUpdateTimer = 0;
+            Owner.Cascade_ResplendentRoar().ResplendentRazeUpdateTimer = 0;
         }
 
         public void ParticleVisuals()
         {
-            if (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge >= 25f)
+            if (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge >= 25f)
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -300,8 +300,8 @@ namespace Cascade.Content.Projectiles.Melee
                     Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                     int lifespan = Main.rand.Next(15, 30);
-                    float scale = Main.rand.NextFloat(0.25f, 0.85f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 2.5f;
-                    float opacity = Main.rand.NextFloat(0.9f, 4f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 1f;
+                    float scale = Main.rand.NextFloat(0.25f, 0.85f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 2.5f;
+                    float opacity = Main.rand.NextFloat(0.9f, 4f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 1f;
 
                     HeavySmokeParticle flames = new(spawnPosition, Vector2.Zero, fireColor, lifespan, scale, opacity, 0.03f, true);
                     GeneralParticleHandler.SpawnParticle(flames);
@@ -317,8 +317,8 @@ namespace Cascade.Content.Projectiles.Melee
                     Color sparkleColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                     int lifespan = Main.rand.Next(15, 30);
-                    float scale = Main.rand.NextFloat(0.45f, 1f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 3f;
-                    float opacity = Main.rand.NextFloat(0.65f, 2f) * (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge / 100f) - 1f;
+                    float scale = Main.rand.NextFloat(0.45f, 1f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 3f;
+                    float opacity = Main.rand.NextFloat(0.65f, 2f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 1f;
 
                     GenericSparkle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor * opacity, sparkleColor * 1.05f * opacity, scale, lifespan);
                     GeneralParticleHandler.SpawnParticle(sparkle);
@@ -329,12 +329,12 @@ namespace Cascade.Content.Projectiles.Melee
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             // Charge the resplendant raze.
-            Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge += 2f;
+            Owner.Cascade_ResplendentRoar().ResplendentRazeCharge += 2f;
             if (hit.Crit)
-                Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge += 4f;
+                Owner.Cascade_ResplendentRoar().ResplendentRazeCharge += 4f;
 
             // Add the Dragonfire Debuff after the charge reaches 75%
-            if (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge >= 75f)
+            if (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge >= 75f)
             {
                 target.AddBuff(ModContent.BuffType<Dragonfire>(), 180);
                 SoundEngine.PlaySound(SoundID.DD2_BetsyFlameBreath with { PitchVariance = 1f, MaxInstances = 0 }, target.Center);
@@ -356,7 +356,7 @@ namespace Cascade.Content.Projectiles.Melee
                 GeneralParticleHandler.SpawnParticle(sparks);
             }
 
-            if (Owner.CascadePlayer_ResplendantRoar().ResplendentRazeCharge >= 75f)
+            if (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge >= 75f)
             {
                 for (int i = 0; i < Main.rand.Next(10, 12); i++)
                 {

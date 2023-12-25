@@ -1,12 +1,16 @@
 ﻿using CalamityMod.Events;
+using CalamityMod.Items.Placeables.Banners;
+using CalamityMod.NPCs;
 using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
+using CalamityMod.Projectiles.Magic;
 using Cascade.Content.NPCs.CosmostoneShowers;
-using Cascade.Content.Particles.ScreenParticles;
 using Cascade.Content.Projectiles;
-using Cascade.Content.Projectiles.Ambient;
+using Cascade.Content.Skies.SkyEntities;
 using Cascade.Core.Globals.GlobalNPCs;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Terraria.GameContent.Events;
+using Terraria.Graphics;
 using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.Events.CosmostoneShowers
@@ -14,6 +18,85 @@ namespace Cascade.Content.Events.CosmostoneShowers
     public class CosmostoneShowerEvent : EventHandler
     {
         public static bool CosmostoneShower { get; set; }
+
+        private int ShiningStarSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 100 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
+            }
+        }
+
+        private int TravellingAsteroidSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 70 * (int)Round(Lerp(1f, 0.6f, Star.starfallBoost / 3f), 0);
+            }
+        }
+
+        private int StationaryAsteroidSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 55;
+            }
+        }
+
+        private int CosmicGasSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+                return 10;
+            }
+        }
+
+        private int SiriusSpawnChance
+        {
+            get
+            {
+                if (!EventIsActive || !CosmostoneShower)
+                    return 0;
+
+                int spawnChance = Main.tenthAnniversaryWorld ? 10000 : LanternNight.LanternsUp ? 50000 : 100000;
+                return spawnChance * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f));
+            }
+        }
+
+        private Color ShiningStarColors
+        {
+            get
+            {
+                // Blues, reds and purples.
+                Color firstColor = Utils.SelectRandom(Main.rand, 
+                    Color.SkyBlue, Color.AliceBlue, Color.DeepSkyBlue, 
+                    Color.Purple, Color.MediumPurple, Color.BlueViolet, 
+                    Color.Violet, Color.PaleVioletRed, Color.MediumVioletRed);
+
+                // Yellows, oranges and whites.
+                Color secondColor = Utils.SelectRandom(Main.rand, 
+                    Color.Yellow, Color.Goldenrod, Color.LightGoldenrodYellow, Color.LightYellow, 
+                    Color.Orange, Color.OrangeRed, Color.White, Color.FloralWhite, Color.NavajoWhite);
+
+                return Color.Lerp(firstColor, secondColor, Main.rand.NextFloat(0.1f, 1f));
+            }
+        }
+
+        private const int MaxShiningStars = 75;
+
+        private const int MaxTravellingAsteroids = 100;
+
+        private const int MaxStationaryAsteroids = 25;
+
+        private const int MaxCosmicGases = 50;
 
         public override bool EventIsActive => CosmostoneShower;
 
@@ -25,6 +108,16 @@ namespace Cascade.Content.Events.CosmostoneShowers
         public override void OnModUnload()
         {
             CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
+        }
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            tag["CosmostoneShower"] = CosmostoneShower;
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            CosmostoneShower = tag.GetBool("CosmostoneShower");
         }
 
         public override void UpdateEvent()
@@ -46,8 +139,11 @@ namespace Cascade.Content.Events.CosmostoneShowers
             if (!EventHandlerManager.SpecificEventIsActive<CosmostoneShowerEvent>())
                 return;
 
-            HandleEventStuff();
-            ParticleVisuals();
+            // Important entities.
+            Entities_SpawnSpecialSpaceNPCs();
+            
+            // Visual objects.
+            Visuals_SpawnAmbientSkyEntities();
         }
 
         public override void ResetEventStuff()
@@ -55,114 +151,204 @@ namespace Cascade.Content.Events.CosmostoneShowers
             CosmostoneShower = false;
         }
 
-        public override void SaveWorldData(TagCompound tag)
+        private void Entities_SpawnSpecialSpaceNPCs()
         {
-            tag["CosmostoneShower"] = CosmostoneShower;
-        }
+            int asteroidSpawnChance = 125;
+            int planetoidSpawnChance = 500;
 
-        public override void LoadWorldData(TagCompound tag)
-        {
-            CosmostoneShower = tag.GetBool("CosmostoneShower");
-        }
+            List<NPC> activePlanetoids = Cascade.BasePlanetoidInheriters.Where(p => p.active).ToList();
+            List<NPC> activePlanetoidsOnScreen = new();
 
-        public void HandleEventStuff()
-        {
-            // Asteroid spawning.
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            // Get all active planetoids that are on-screen.
+            foreach (NPC planetoid in activePlanetoids)
             {
-                float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-                float yWorldPosition = (Main.maxTilesY * 0.05f);
-                Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
+                Rectangle planetoidBounds = new((int)planetoid.Center.X, (int)planetoid.Center.Y, (int)planetoid.localAI[0], (int)planetoid.localAI[1]);
+                Rectangle screenBounds = new((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth + 100, Main.screenHeight + 100);
+                if (planetoidBounds.Intersects(screenBounds))
+                    activePlanetoidsOnScreen.Add(planetoid);
+            }
 
-                int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
-                Player closestPlayer = Main.player[closestPlayerIndex];
+            float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
+            float yWorldPosition = Main.maxTilesY * 0.057f;
+            Vector2 playerPositionInBounds = new(xWorldPosition, yWorldPosition);
 
-                int spawnChance = 250;
-                if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 135f && Main.rand.NextBool(spawnChance))
+            int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
+            Player closestPlayer = Main.player[closestPlayerIndex];
+
+            // Asteroids.
+            if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 1000f && Main.rand.NextBool(asteroidSpawnChance))
+            {
+                // Default spawn position.
+                Vector2 asteroidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(1250f, 250f), Main.rand.NextFloat(600f, 200f));
+
+                // Search for any active Planetoids currently viewable on-screen.
+                // Change the spawn position of asteroids to a radius around the center of these Planetoids if there are any active at the time.
+                // This allows most asteroids to not just spawn directly inside of Planetoids or their radius (may be buggy if there are 
+                // multiple Planetoids close to each other).
+                foreach (NPC planetoid in activePlanetoidsOnScreen)
                 {
-                    Vector2 cometSpawnPosition = closestPlayer.Center + Main.rand.NextVector2Circular(1500f, 1000f);
-                    if (!Collision.SolidCollision(cometSpawnPosition, 160, 160))
-                    {
-                        int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), cometSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
-                        if (Main.projectile.IndexInRange(p))
-                            NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
-                    }
+                    float radiusAroundPlanetoid = planetoid.localAI[0] + planetoid.localAI[1] + Main.rand.NextFloat(1000f, 200f);
+                    Vector2 planetoidPositionWithRadius = planetoid.Center + Vector2.UnitX.RotatedByRandom(Tau) * radiusAroundPlanetoid;
+                    asteroidSpawnPosition = planetoidPositionWithRadius;
+                }
+
+                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
+                {
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
+                    if (Main.projectile.IndexInRange(p))
+                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
 
-            // Handle projectile spawning.
-            if (Main.netMode != NetmodeID.MultiplayerClient)
+            // Planetoids.
+            if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 300f && closestPlayer.Center.Y >= Main.maxTilesY * 0.5f && Main.rand.NextBool(planetoidSpawnChance))
             {
-                // Some of this is derived from Vanilla's code to spawn fallen stars.
-                // Essentially we scan the entire world's surface and then find any players close enough
-                // to these boundraries.
-                float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-                float yWorldPosition = (Main.maxTilesY * 0.05f) * 16f;
-                Vector2 playerPositionInBounds = new Vector2(xWorldPosition, yWorldPosition);
-
-                int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
-                Player closestPlayer = Main.player[closestPlayerIndex];
-
-                int spawnChanceFactor = (int)(float)(10f * ((float)(Main.maxTilesX / 4200f)) * Star.starfallBoost);
-                int timePassed = (int)Main.desiredWorldEventsUpdateRate;
-                for (int i = 0; i < timePassed; i++)
+                Vector2 planetoidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(2500f, 1500f), 600f);
+                if (activePlanetoidsOnScreen.Count > 0)
                 {
-                    int spawnChance = 80000;
-                    if (!(Main.rand.NextFloat(spawnChance) < 10f * spawnChanceFactor))
-                        continue;
-
-                    if (closestPlayer.active && !closestPlayer.dead && closestPlayer.ZoneCosmostoneShowers())
+                    NPC otherPlanetoid = activePlanetoids.LastOrDefault();
+                    if (otherPlanetoid.active)
                     {
-                        Vector2 cometSpawnPosition = closestPlayer.Center + new Vector2(Main.rand.NextFloat(-600f, 601f), -900f);
-                        Vector2 cometVelocity = new Vector2(Main.rand.NextFloat(-8f, 9f), 10f);
-                        // We do a little trolling :)))
-                        int damage = Main.zenithWorld ? 900 : 300;
-                        // Check to ensure collision with floating islands or anything in the sky doesn't occur.
-                        if (!Collision.SolidCollision(playerPositionInBounds, 36, 36))
-                        {
-                            int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), cometSpawnPosition, cometVelocity, ModContent.ProjectileType<Comet>(), damage, 0f, Main.myPlayer);
-                            if (Main.projectile.IndexInRange(p))
-                            {
-                                // Forcefully sync the projectile to hopefully prevent any Multiplayer desync shenanigans.
-                                NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
-                            }
-                        }
+                        float radiusAroundPlanetoid = otherPlanetoid.localAI[0] + otherPlanetoid.localAI[1] + Main.rand.NextFloat(2000f, 750f);
+                        Vector2 planetoidPositionWithRadius = otherPlanetoid.Center + Vector2.UnitX.RotatedByRandom(Tau) * radiusAroundPlanetoid;
+                        planetoidSpawnPosition = planetoidPositionWithRadius;
                     }
+                }
+                
+                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
+                {
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
+                    if (Main.projectile.IndexInRange(p))
+                        NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
         }
 
         private void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
-            if (!spawnInfo.Player.ZoneCosmostoneShowers())
+            if (!spawnInfo.Player.ZoneCosmostoneShowers() || spawnInfo.Invasion)
                 return;
 
-            pool.Add(NPCID.EnchantedNightcrawler, 0.75f);
-            pool.Add(NPCID.LightningBug, 0.75f);
-            if (spawnInfo.Player.Center.Y <= Main.maxTilesY + 135f)
+            // Space additions.
+            if (spawnInfo.Sky)
             {
-                pool.Add(ModContent.NPCType<Twinkler>(), 0.95f);
-                pool.Add(ModContent.NPCType<DwarfJellyfish>(), 0.7f);
+                // Clear the original spawn pool, successfully getting rid of Vanilla NPCs since
+                // they can't be manually removed.
+                pool.Clear();
             }
+
+            // Surface additions.
+            if (spawnInfo.Player.ZoneOverworldHeight)
+            {
+                pool.Add(NPCID.Firefly, 0.85f);
+            }
+
+            pool.Add(NPCID.EnchantedNightcrawler, 0.75f);
 
             // FUCK YOU
             if (pool.ContainsKey(ModContent.NPCType<ShockstormShuttle>()))
                 pool.Remove(ModContent.NPCType<ShockstormShuttle>());
         }
 
-        public static void ParticleVisuals()
+        private void Visuals_SpawnAmbientSkyEntities()
         {
-            // Particle spawning.
-            Vector2 spawnPosition = new Vector2(Main.rand.NextFloat(Main.screenWidth), Main.rand.NextFloat(Main.screenHeight));
-            Color color = Color.CornflowerBlue;
-            float scale = Main.rand.NextFloat(0.05f, 2f);
-            int lifetime = Main.rand.Next(120, 180);
-            CometNightStarParticle starParticle = new(spawnPosition, Main.screenPosition, scale * 0.05f, color, scale, lifetime);
+            int totalStarLayers = 7;
+            int totalAsteroidsLayers = 5;
+            VirtualCamera virtualCamera = new(Main.LocalPlayer);
 
-            if (Main.rand.NextBool(15) && Main.LocalPlayer.ZoneSkyHeight)
-                GeneralParticleHandler.SpawnParticle(starParticle);
-            if (Main.rand.NextBool(100) && Main.LocalPlayer.ZoneOverworldHeight)
-                GeneralParticleHandler.SpawnParticle(starParticle);
+            // Shining Stars.
+            if (SkyEntityManager.CountActiveSkyEntities<ShiningStar>() < MaxShiningStars && Main.rand.NextBool(ShiningStarSpawnChance))
+            {
+                for (int i = 0; i < totalStarLayers; i++)
+                {
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
+                    Vector2 position = new(x, y);
+
+                    float maxScale = Main.rand.NextFloat(1f, 3f);
+                    int lifespan = Main.rand.Next(120, 240);
+
+                    float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
+                    float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
+                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan);
+                    shiningStar.Spawn();
+                }
+            }
+
+            // Horizontally-travelling Asteroids.
+            if (SkyEntityManager.CountActiveSkyEntities<TravellingAsteroid>() < MaxTravellingAsteroids && Main.rand.NextBool(TravellingAsteroidSpawnChance))
+            {
+                for (int i = 0; i < totalAsteroidsLayers; i++)
+                {
+                    float x = virtualCamera.Center.X - virtualCamera.Size.X - 1280f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.2f, 0.225f);
+                    Vector2 position = new(x, y);
+
+                    float speed = Main.rand.NextFloat(3f, 15f);
+                    Vector2 velocity = Vector2.UnitX * speed;
+
+                    float maxScale = Main.rand.NextFloat(0.5f, 2f);
+                    float depth = i + 3f;
+                    int lifespan = Main.rand.Next(1200, 1800);
+
+                    TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
+                    asteroid.Spawn();
+                }
+            }
+
+            // Stationary, floating asteroids.
+            if (SkyEntityManager.CountActiveSkyEntities<StationaryAsteroid>() < MaxStationaryAsteroids && Main.rand.NextBool(StationaryAsteroidSpawnChance))
+            {
+                for (int i = 0; i < totalAsteroidsLayers; i++)
+                {
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.225f);
+                    Vector2 position = new(x, y);
+
+                    float maxScale = Main.rand.NextFloat(0.5f, 2f);
+                    int lifespan = Main.rand.Next(600, 1200);
+                    float depth = i + 3f;
+
+                    StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
+                    stationaryAsteroid.Spawn();
+                }
+            }
+
+            // Cosmic gases.
+            // Makes the sky less monochromatic with its flat blue color.
+            if (SkyEntityManager.CountActiveSkyEntities<CosmicGas>() < MaxCosmicGases && Main.rand.NextBool(CosmicGasSpawnChance))
+            {
+                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 2f;
+                float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.1f);
+                Vector2 position = new(x, y);
+
+                int numGas = Main.rand.Next(4, 7);
+                for (int i = 0; i < numGas; i++)
+                {
+                    float individualPositionVariance = Main.rand.NextFloat(850f, 1250f);
+                    position += Main.rand.NextVector2Circular(individualPositionVariance, individualPositionVariance);
+
+                    float maxScale = Main.rand.NextFloat(12f, 18f);
+                    int lifespan = Main.rand.Next(600, 1200);
+                    float depth = Main.rand.NextFloat(5f, 200f);
+
+                    CosmicGas cosmicGas = new(position, ShiningStarColors, maxScale, depth, lifespan);
+                    cosmicGas.Spawn();
+                }
+            }
+
+            // Have an extremely low chance for exactly one Sirius star to spawn.
+            if (SkyEntityManager.CountActiveSkyEntities<Sirius>() < 1 && Main.rand.NextBool(SiriusSpawnChance))
+            {
+                int lifespan = Main.rand.Next(600, 1200);
+
+                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 0.85f;
+                float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.08f);
+                Vector2 position = new(x, y);
+
+                Sirius sirius = new(position, Color.SkyBlue, 2f, lifespan);
+                sirius.Spawn();
+            }
         }
     }
 }

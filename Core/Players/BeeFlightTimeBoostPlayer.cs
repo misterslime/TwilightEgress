@@ -1,12 +1,11 @@
 namespace Cascade.Core.Players
 {
-    public class HoneyCombPlayer : ModPlayer
+    public class BeeFlightTimeBoostPlayer : ModPlayer
     {
         public int BeeFlightBoost { get; set; }
 
         public override void UpdateEquips()
-        {
-            
+        {            
             switch (BeeFlightBoost)
             {
                 case 1:
@@ -19,7 +18,6 @@ namespace Cascade.Core.Players
                     Player.wingTimeMax = (int)(Player.wingTimeMax * 1.07);
                     break;
             }
-            
         }
 
         public override void ResetEffects()

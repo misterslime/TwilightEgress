@@ -11,6 +11,8 @@
 
         public override void OnWorldUnload() => ResetEventStuff();
 
+        public override void ClearWorld() => ResetEventStuff();
+
         public override void PostUpdateNPCs()
         {
             if (EventIsActive)

@@ -99,5 +99,21 @@
         {
             return npc.SpawnNPC(spawn.X, spawn.Y, type, Start, ai0, ai1, ai2, ai3, target, velocity);
         }
+
+        public static void AdjustNPCHitboxToScale(this NPC npc, float originalWidth, float originalHeight)
+        {
+            int oldWidth = npc.width;
+            int idealWidth = (int)(npc.scale * originalWidth);
+            int idealHeight = (int)(npc.scale * originalHeight);
+            if (idealWidth != oldWidth)
+            {
+                npc.position.X += npc.width / 2;
+                npc.position.Y += npc.height / 2;
+                npc.width = idealWidth;
+                npc.height = idealHeight;
+                npc.position.X -= npc.width / 2;
+                npc.position.Y -= npc.height / 2;
+            }
+        }
     }
 }

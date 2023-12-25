@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Cascade.Content.Items.Materials;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
@@ -10,17 +10,19 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public ref float Timer => ref NPC.ai[0];
 
-        public virtual void OnMeteorCrashKill() { }
-
-        public virtual void SafeOnSpawn(IEntitySource source) { }
-
-        public virtual void SafeAI() { }
-
         public sealed override void OnSpawn(IEntitySource source)
         {
             RotationSpeedSpawnFactor = Main.rand.NextFloat(75f, 480f) * Utils.SelectRandom(Main.rand, -1, 1);
             MaxTime = Main.rand.NextFloat(1200, 7200);
             SafeOnSpawn(source);
+        }
+
+        public override bool PreAI()
+        {
+            // Add to the global list of classes that inherit this base class.
+            Cascade.BaseAsteroidInheriters.AddWithCondition(NPC, !Cascade.BaseAsteroidInheriters.Contains(NPC));
+            SafePreAI();
+            return true;
         }
 
         public sealed override void AI()
@@ -39,7 +41,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             // begins to be pulled in by the planet's gravity.
 
             // In simple terms, the Y-velocity is increased once the asteroid is pushed low enough.
-            if (NPC.Bottom.Y >= Main.maxTilesY + 135f)
+            if (NPC.Bottom.Y >= Main.maxTilesY + 1000f)
             {
                 // Increase damage as Y-velocity begins to increase.
                 NPC.damage = 150 * (int)Utils.GetLerpValue(0f, 1f, NPC.velocity.Y / 12f, true);
@@ -64,20 +66,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             }
 
             NPC.ShowNameOnHover = false;
-
-            // Resize the hitbox based on scale.
-            int oldWidth = NPC.width;
-            int idealWidth = (int)(NPC.scale * 36f);
-            int idealHeight = (int)(NPC.scale * 36f);
-            if (idealWidth != oldWidth)
-            {
-                NPC.position.X += NPC.width / 2;
-                NPC.position.Y += NPC.height / 2;
-                NPC.width = idealWidth;
-                NPC.height = idealHeight;
-                NPC.position.X -= NPC.width / 2;
-                NPC.position.Y -= NPC.height / 2;
-            }
+            NPC.AdjustNPCHitboxToScale(36f, 36f);
 
             // Despawn after some time as to not clog the NPC limit.
             Timer++;
@@ -90,7 +79,59 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 }
             }
 
-            SafeAI();
+            if (SafePreAI())
+                SafeAI();
         }
+
+        public sealed override bool? CanBeHitByItem(Player player, Item item)
+        {
+            if (item.pick <= 0)
+                return false;
+            return null;
+        }
+
+        public sealed override bool? CanBeHitByProjectile(Projectile projectile)
+        {
+            if (!Cascade.PickaxeProjectileIDs.Contains(projectile.type))
+                return false;
+            return null;
+        }
+
+        public sealed override void ModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers)
+        {
+            if (item.pick > 0)
+            {
+                modifiers.Knockback *= 0f;
+                modifiers.FinalDamage *= 2f * Lerp(1f, 0.2f, item.pick / 250f);
+            }
+
+            SafeModifyHitByItem(player, item, ref modifiers);
+        }
+
+        public sealed override void ModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers)
+        {
+            Player player = Main.player[projectile.owner];
+            Item item = player.ActiveItem();
+            if (item.pick > 0 && projectile.owner == player.whoAmI)
+            {
+                modifiers.Knockback *= 0f;
+                modifiers.FinalDamage *= 2f * Lerp(1f, 0.2f, item.pick / 250f);
+            }
+
+            SafeModifyHitByProjectile(projectile, ref modifiers);
+        }
+
+
+        public virtual void OnMeteorCrashKill() { }
+
+        public virtual void SafeOnSpawn(IEntitySource source) { }
+
+        public virtual bool SafePreAI() => true;
+
+        public virtual void SafeAI() { }
+
+        public virtual void SafeModifyHitByItem(Player player, Item item, ref NPC.HitModifiers modifiers) { }
+
+        public virtual void SafeModifyHitByProjectile(Projectile projectile, ref NPC.HitModifiers modifiers) { }
     }
 }

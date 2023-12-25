@@ -20,9 +20,11 @@ namespace Cascade
         #region ModPlayers
         public static BuffHandler Cascade_Buffs(this Player player) => player.GetModPlayer<BuffHandler>();
 
-        public static ResplendentRoarPlayer CascadePlayer_ResplendantRoar(this Player player) => player.GetModPlayer<ResplendentRoarPlayer>();
+        public static ResplendentRoarPlayer Cascade_ResplendentRoar(this Player player) => player.GetModPlayer<ResplendentRoarPlayer>();
 
-        public static HoneyCombPlayer CascadePlayer_HoneyComb(this Player player) => player.GetModPlayer<HoneyCombPlayer>();
+        public static BeeFlightTimeBoostPlayer Cascade_BeeFlightTimeBoost(this Player player) => player.GetModPlayer<BeeFlightTimeBoostPlayer>();
+
+        public static OrbitalGravityPlayer Cascade_OrbitalGravity(this Player player) => player.GetModPlayer<OrbitalGravityPlayer>();
         #endregion
     }
 }

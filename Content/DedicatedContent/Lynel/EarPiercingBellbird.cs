@@ -101,7 +101,8 @@ namespace Cascade.Content.DedicatedContent.Lynel
             }
 
             // Stop perching if the player inverts their gravity.
-            if (Owner.gravDir == -1 && AIState == (float)BellbirdStates.Perching)
+            bool shouldStopPerching = Owner.gravDir == -1 || (Owner.Cascade_OrbitalGravity().Planetoid is not null && Owner.Cascade_OrbitalGravity().Planetoid.NPC.active);
+            if (shouldStopPerching && AIState == (float)BellbirdStates.Perching)
             {
                 AIState = (float)BellbirdStates.Flying;
                 Timer = 0f;

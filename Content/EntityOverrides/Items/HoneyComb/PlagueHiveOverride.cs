@@ -23,7 +23,7 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
 	    {
             player.honeyCombItem = item;
             player.strongBees = true;
-            player.CascadePlayer_HoneyComb().BeeFlightBoost = 3;
+            player.Cascade_BeeFlightTimeBoost().BeeFlightBoost = 3;
         }
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
