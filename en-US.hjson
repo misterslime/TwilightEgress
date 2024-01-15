@@ -15,6 +15,7 @@ Mods: {
 		NPCs: {
 			GravityPlanetoid.DisplayName: Gravity Planetoid
 			GalileoPlanetoid.DisplayName: Galileo Planetoid
+			Manaphage.DisplayName: Manaphage
 		}
 	}
 }

@@ -28,8 +28,6 @@ namespace Cascade.Core.Graphics.Renderers
             if (Main.netMode == NetmodeID.Server)
                 return;
 
-            SmartRenderers.Clear();
-
             Main.QueueMainThreadAction(() =>
             {
                 On_Main.CheckMonoliths -= DrawToSmartTargets;
@@ -40,6 +38,8 @@ namespace Cascade.Core.Graphics.Renderers
                 On_Main.DrawBackgroundBlackFill -= DrawRenderers_BeforeTiles;
                 On_FilterManager.EndCapture -= DrawRenderers_BeforeFilters;
             });
+
+            SmartRenderers.Clear();
         }
 
         public override void PreUpdateEntities()
@@ -56,7 +56,7 @@ namespace Cascade.Core.Graphics.Renderers
 
         private void DrawToSmartTargets(On_Main.orig_CheckMonoliths orig)
         {
-            orig();
+            orig.Invoke();
 
             if (Main.gameMenu)
                 return;

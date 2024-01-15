@@ -1,4 +1,6 @@
-﻿namespace Cascade
+﻿using Terraria.Utilities;
+
+namespace Cascade
 {
     public static partial class Utilities
     {
@@ -113,6 +115,24 @@
                 npc.height = idealHeight;
                 npc.position.X -= npc.width / 2;
                 npc.position.Y -= npc.height / 2;
+            }
+        }
+
+        /// <summary>
+        /// Allows NPCs to search for nearby <see cref="Player"/> and <see cref="NPC"/> instances as viable targets.
+        /// NPCs that use this utility method MUST also havee <see cref="NPCID.Sets.UsesNewTargetting"/> set to true.
+        /// </summary>
+        /// <param name="searcher"></param>
+        /// <param name="targetPlayers"></param>
+        /// <param name="playerSearchDistance"></param>
+        /// <param name="npcSearchDistance"></param>
+        public static void AdvancedNPCTargetSearching(NPC searcher, NPCUtils.SearchFilter<Player> playerSearchFilter, NPCUtils.SearchFilter<NPC> npcSearchFilter)
+        {
+            NPCUtils.TargetSearchResults targetSearchResults = NPCUtils.SearchForTarget(searcher, NPCUtils.TargetSearchFlag.All, playerSearchFilter, npcSearchFilter);
+            if (targetSearchResults.FoundTarget)
+            {
+                searcher.target = targetSearchResults.NearestTargetIndex;
+                searcher.targetRect = targetSearchResults.NearestTargetHitbox;
             }
         }
     }
