@@ -135,5 +135,19 @@ namespace Cascade
                 searcher.targetRect = targetSearchResults.NearestTargetHitbox;
             }
         }
+
+        public static void TurnAroundMovement(this NPC npc, Vector2 centerAhead, bool leavingWorldBounds)
+        {
+            float distanceToTileCollisonLeft = DistanceToTileCollisionHit(npc.Center, npc.velocity.RotatedBy(-PiOver2)) ?? 1000f;
+            float distanceToTileCollisonRight = DistanceToTileCollisionHit(npc.Center, npc.velocity.RotatedBy(PiOver2)) ?? 1000f;
+            float turnAroundDirection = distanceToTileCollisonLeft > distanceToTileCollisonRight ? -1f : 1f;
+
+            Vector2 turnAroundVelocity = npc.velocity.RotatedBy(PiOver2 * turnAroundDirection);
+            if (leavingWorldBounds)
+                turnAroundVelocity = centerAhead.Y < Main.maxTilesY * 0.3f ? Vector2.UnitY * 5f : centerAhead.X >= Main.maxTilesX * 16f - 700f ? Vector2.UnitX * -5f : Vector2.UnitX * 5f;
+
+            npc.velocity.MoveTowards(turnAroundVelocity, 0.2f);
+            npc.velocity = Vector2.Lerp(npc.velocity, turnAroundVelocity, 0.2f);
+        }
     }
 }
