@@ -37,5 +37,8 @@
     <Reference Include="CalamityMod">
       <HintPath>ModDependancies\CalamityMod.dll</HintPath>
     </Reference>
+    <Reference Include="Luminance">
+      <HintPath>ModDependancies\Luminance.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
