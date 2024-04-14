@@ -1,7 +1,7 @@
 ﻿namespace Cascade.Common.Systems.PlanetoidSystem {
     public class PlanetoidSystem : ModSystem {
 
-        public Dictionary<Type, Planetoid> planetoidsByType = new();
+        public static Dictionary<Type, Planetoid> planetoidsByType = new();
         public PlanetoidSystem() { }
 
         public override void Load() {
