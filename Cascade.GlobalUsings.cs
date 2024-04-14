@@ -34,3 +34,19 @@ global using Cascade.Assets.ExtraTextures;
 global using Cascade.Core.EntityOverridingSystem;
 global using Cascade.Core.Graphics;
 
+global using Luminance;
+global using Luminance.Assets;
+global using Luminance.Common;
+global using Luminance.Common.DataStructures;
+global using Luminance.Common.Easings;
+global using Luminance.Common.StateMachines;
+global using Luminance.Common.Utilities;
+
+global using Luminance.Core;
+global using Luminance.Core.ModCalls;
+global using Luminance.Core.Sounds;
+global using Luminance.Core.Graphics;
+global using Luminance.Core.Hooking;
+global using Luminance.Core.Cutscenes;
+global using Luminance.Core.Balancing;
+
