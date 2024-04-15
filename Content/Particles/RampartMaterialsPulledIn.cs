@@ -1,8 +1,9 @@
 ﻿using System.Drawing.Drawing2D;
+using Terraria;
 
 namespace Cascade.Content.Particles
 {
-    public class RampartMaterialsPulledIn : Particle
+    public class RampartMaterialsPulledIn : Luminance.Core.Graphics.Particle
     {
         private enum RampartMaterials
         {
@@ -32,37 +33,35 @@ namespace Cascade.Content.Particles
             AscendantSpiritEssence
         }
 
-        private float Opacity;
-
         private float PullSpeed;
 
         private Vector2 PullTowardsPosition;
 
         private Asset<Texture2D> SpriteTexture;
 
+        private int CurrentFrame;
+
         private int FrameCounter;
 
-        private int Frame;
-
         private int MaxFrames;
+
+        private int Variant;
+
+        public override string AtlasTextureName => "Cascade.EmptyPixel";
 
         public RampartMaterialsPulledIn(Vector2 spawnPosition, Vector2 velocity, Color color, float opacity, float scale, int lifespan)
         {
             Position = spawnPosition;
             Velocity = velocity;
-            Color = color;
+            DrawColor = color;
             Opacity = opacity;
-            Scale = scale;
+            Scale = new(scale);
             Lifetime = lifespan;
             Variant = Main.rand.Next(24);
             MaxFrames = 1;
+
+            CurrentFrame = 0;
         }
-
-        public override string Texture => Utilities.EmptyPixelPath;
-
-        public override bool SetLifetime => true;
-
-        public override bool UseCustomDraw => true;
 
         public override void Update()
         {
@@ -179,24 +178,24 @@ namespace Cascade.Content.Particles
                 if (FrameCounter >= 3)
                 {
                     FrameCounter = 0;
-                    if (++Frame >= MaxFrames)
+                    if (++CurrentFrame >= MaxFrames)
                     {
-                        Frame = 0;
+                        CurrentFrame = 0;
                     }
                 }
             }
 
-            Scale -= 0.03f;
+            Scale -= new Vector2(0.03f);
             Opacity -= 0.03f;
             Rotation += Velocity.X * 0.03f;
         }
 
-        public override void CustomDraw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             Texture2D texture = SpriteTexture.Value;
-            Rectangle spriteFrame = texture.Frame(1, MaxFrames, 0, Frame);
+            Rectangle spriteFrame = SpriteTexture.Frame(1, MaxFrames, 0, CurrentFrame);
             Vector2 origin = spriteFrame.Size() / 2f;
-            spriteBatch.Draw(texture, Position, spriteFrame, Color * Opacity, Rotation, origin, Scale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, Position, spriteFrame, DrawColor * Opacity, Rotation, origin, Scale, SpriteEffects.None, 0f);
         }
     }
 }

@@ -2,6 +2,7 @@
 using CalamityMod.Buffs.DamageOverTime;
 using Terraria.GameContent.Events;
 using Cascade.Core.Graphics.CameraManipulation;
+using EasingType = Luminance.Common.Easings.EasingType;
 
 namespace Cascade.Content.Projectiles.Melee
 {
@@ -37,10 +38,6 @@ namespace Cascade.Content.Projectiles.Melee
 
         private bool Initialized { get; set; }
 
-        private CurveSegment Anticipation = new(EasingType.CircIn, 0f, 0f, 0.125f);
-
-        private CurveSegment Thrust = new(EasingType.ExpOut, 0.5f, 0.125f, 0.875f);
-
         private const float StartingAngle = -(PiOver2 + PiOver4);
 
         private const float LargeSwingAngle = -(Pi + PiOver4);
@@ -63,9 +60,17 @@ namespace Cascade.Content.Projectiles.Melee
 
         private PrimitiveDrawer TrailDrawer { get; set; }
 
-        public float SmallSwingRatio() => PiecewiseAnimation(Timer / SmallSwingMaxTime, Anticipation, Thrust);
+        public float SwingRatio(bool small)
+        {
+            float interpolant = Timer / (small ? SmallSwingMaxTime : LargeSwingMaxTime);
 
-        public float LargeSwingRatio() => PiecewiseAnimation(Timer / LargeSwingMaxTime, Anticipation, Thrust);
+            PiecewiseCurve swingCurve = new PiecewiseCurve();
+
+            swingCurve.Add(EasingCurves.Circ, EasingType.In, 0.125f, 0.5f);
+            swingCurve.Add(EasingCurves.Exp, EasingType.Out, 1f, 1f);
+
+            return swingCurve.Evaluate(interpolant);
+        }
 
         public new string LocalizationCategory => "Projectiles.Melee";
 
@@ -158,16 +163,16 @@ namespace Cascade.Content.Projectiles.Melee
 
             float startingAngle = StartingAngle * SwingDirection + BaseRotation;
             float endingAngle = -StartingAngle * SwingDirection + BaseRotation;
-            Projectile.rotation = Lerp(startingAngle, endingAngle, SmallSwingRatio());
+            Projectile.rotation = Lerp(startingAngle, endingAngle, SwingRatio(true));
 
-            float distanceToMiddle = Distance(SmallSwingRatio(), 0.5f);
+            float distanceToMiddle = Distance(SwingRatio(true), 0.5f);
             if (Timer == (SmallSwingMaxTime / 2))
             {
                 SoundEngine.PlaySound(CascadeSoundRegistry.YharonHurt with { PitchVariance = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh, Projectile.Center);
             }
 
-            Projectile.scale = 1.25f + (float)Math.Sin((double)(SmallSwingRatio() * (float)Math.PI)) * 0.45f;
+            Projectile.scale = 1.25f + (float)Math.Sin((double)(SwingRatio(true) * (float)Math.PI)) * 0.45f;
         }
 
         public void DoBehavior_LargeSwing()
@@ -186,16 +191,16 @@ namespace Cascade.Content.Projectiles.Melee
 
             float startingAngle = LargeSwingAngle * SwingDirection + BaseRotation;
             float endingAngle = -StartingAngle * SwingDirection + BaseRotation;
-            Projectile.rotation = Lerp(startingAngle, endingAngle, LargeSwingRatio());
+            Projectile.rotation = Lerp(startingAngle, endingAngle, SwingRatio(false));
 
-            float distanceToMiddle = Distance(LargeSwingRatio(), 0.5f);
+            float distanceToMiddle = Distance(SwingRatio(false), 0.5f);
             if (Timer == (LargeSwingMaxTime / 2))
             {
                 SoundEngine.PlaySound(CascadeSoundRegistry.YharonRoarShort with { PitchVariance = 0.15f }, Projectile.Center);
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderPhantomPhoenix, Projectile.Center);
             }
 
-            Projectile.scale = 1.25f + (float)Math.Sin((double)(LargeSwingRatio() * (float)Math.PI)) * 0.75f;
+            Projectile.scale = 1.25f + (float)Math.Sin((double)(SwingRatio(false) * (float)Math.PI)) * 0.75f;
         }
 
         public void FinalDyingRoar()

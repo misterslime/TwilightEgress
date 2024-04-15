@@ -1,5 +1,6 @@
 ﻿using Cascade.Content.Particles;
 using Cascade.Core.Graphics.CameraManipulation;
+using EasingType = Luminance.Common.Easings.EasingType;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
 {
@@ -11,13 +12,18 @@ namespace Cascade.Content.DedicatedContent.Enchilada
 
         private ref float WeaponState => ref Projectile.ai[1];
 
-        private CurveSegment Anticipation = new(EasingType.SineOut, 0f, 0f, -0.125f);
-        private CurveSegment Thrust = new(EasingType.ExpOut, 0.5f, 0.125f, 0.875f);
-
         private const int SwingTime = 45;
         private const int MaxTime = 60;
 
-        public float SwordOverheadThrust() => PiecewiseAnimation(Timer / SwingTime, Anticipation, Thrust);
+        public float SwordOverheadThrust()
+        {
+            PiecewiseCurve thrustCurve = new PiecewiseCurve();
+
+            thrustCurve.Add(EasingCurves.Sine, EasingType.Out, -0.125f, 0.5f);
+            thrustCurve.Add(EasingCurves.Exp, EasingType.Out, 1f, 0.5f, 1.25f);
+
+            return thrustCurve.Evaluate(Timer / SwingTime);
+        }
 
         private bool Initialized { get; set; } = false;
 
@@ -67,12 +73,10 @@ namespace Cascade.Content.DedicatedContent.Enchilada
                     Vector2 basePosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
                     Vector2 endPosition = basePosition + Main.rand.NextVector2CircularEdge(200f, 200f);
                     float scale = Main.rand.NextFloat(15f, 20f);
-                    LightningArcParticle lightningArcParticle = new(basePosition, endPosition, 80f, 1f, scale, GetArtColor(Color.Cyan), 25, true, true);
-                    GeneralParticleHandler.SpawnParticle(lightningArcParticle);
+                    new LightningArcParticle(basePosition, endPosition, 80f, 1f, scale, GetArtColor(Color.Cyan), 25, true, true).Spawn();
                 }
 
-                MechonSlayerArtParticle artParticle = new(Owner.RotatedRelativePoint(Owner.MountedCenter), 0.65f, 3f, (int)WeaponState, 60);
-                GeneralParticleHandler.SpawnParticle(artParticle);
+                new MechonSlayerArtParticle(Owner.RotatedRelativePoint(Owner.MountedCenter), 0.65f, 3f, (int)WeaponState, 60).Spawn();
 
                 PulseRing pulseRing = new(Owner.RotatedRelativePoint(Owner.MountedCenter), Vector2.Zero, GetArtColor(Color.Cyan), 0f, 2f, 45);
                 GeneralParticleHandler.SpawnParticle(pulseRing);

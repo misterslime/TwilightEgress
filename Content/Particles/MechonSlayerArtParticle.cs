@@ -1,20 +1,16 @@
-﻿namespace Cascade.Content.Particles
+﻿using Particle = Luminance.Core.Graphics.Particle;
+
+namespace Cascade.Content.Particles
 {
     public class MechonSlayerArtParticle : Particle
     {
-        private float Opacity;
-
         private readonly float BaseScale;
 
         private readonly float NewScale;
 
         private readonly int ArtType;
 
-        public override string Texture => Utilities.EmptyPixelPath;
-
-        public override bool SetLifetime => true;
-
-        public override bool UseCustomDraw => true;
+        public override string AtlasTextureName => "Cascade.EmptyPixel";
 
         public MechonSlayerArtParticle(Vector2 position, float baseScale, float newScale, int artType, int lifespan)
         {
@@ -27,11 +23,11 @@
 
         public override void Update()
         {
-            Opacity = Lerp(1f, 0f, LifetimeCompletion);
-            Scale = Lerp(BaseScale, NewScale, SineOutEasing(LifetimeCompletion, 0));
+            Opacity = Lerp(1f, 0f, LifetimeRatio);
+            Scale = new(Lerp(BaseScale, NewScale, SineOutEasing(LifetimeRatio, 0)));
         }
 
-        public override void CustomDraw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             if (ArtType == -1)
                 return;

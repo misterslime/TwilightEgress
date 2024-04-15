@@ -96,8 +96,7 @@ namespace Cascade.Content.DedicatedContent.Lynel
                 SoundEngine.PlaySound(CascadeSoundRegistry.BellbirdChirp, Projectile.Center);
 
                 Vector2 velocity = new(Main.rand.NextFloat(-3f, 3f), Main.rand.NextFloat(-4f, -2f));
-                MusicNoteParticle chirpNote = new(Projectile.Center, velocity);
-                GeneralParticleHandler.SpawnParticle(chirpNote);
+                new MusicNoteParticle(Projectile.Center, velocity).Spawn();
             }
 
             // Stop perching if the player inverts their gravity.
@@ -206,10 +205,7 @@ namespace Cascade.Content.DedicatedContent.Lynel
                 CascadeCameraSystem.Screenshake(8, 30, Projectile.Center);
                 Projectile.UpdateProjectileAnimationFrames(0, 0, 1);
                 if (Timer % 10 == 0)
-                {
-                    RoaringShockwaveParticle shockwave = new(45, Projectile.Center, Vector2.Zero, Color.White, 0.1f, Main.rand.NextFloat(TwoPi));
-                    GeneralParticleHandler.SpawnParticle(shockwave);
-                }
+                    new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, Color.White, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
 
                 // Stun any nearby NPCs or Players.
                 StunPlayersAndNPCs();

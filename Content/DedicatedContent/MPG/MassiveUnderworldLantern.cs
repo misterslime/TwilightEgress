@@ -105,7 +105,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                         Color bloomColor = Color.Lerp(Color.PowderBlue, Color.LightSkyBlue, Main.rand.NextFloat());
                         float scale = Main.rand.NextFloat(0.45f, 4f);
                         int lifespan = Main.rand.Next(15, 45);
-                        Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
+                        CalamityMod.Particles.Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
                         GeneralParticleHandler.SpawnParticle(sparkle);
                     }
                 }
@@ -138,7 +138,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                 Color color = Color.Lerp(Color.Cyan, Color.CornflowerBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(0.45f, 2f);
                 int lifespan = Main.rand.Next(45, 90);
-                Particle sparkle = new SquishyLightParticle(Projectile.Center, velocity, scale, color, lifespan);
+                CalamityMod.Particles.Particle sparkle = new SquishyLightParticle(Projectile.Center, velocity, scale, color, lifespan);
                 GeneralParticleHandler.SpawnParticle(sparkle);
             }
         }

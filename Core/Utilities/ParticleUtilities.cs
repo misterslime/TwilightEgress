@@ -2,17 +2,6 @@
 {
     public static partial class Utilities
     {
-        /// <summary>
-        /// Simply runs a check to see if the current netMode isn't set to <see cref="NetmodeID.MultiplayerClient"/> to make sure things don't
-        /// screw up on Multiplayer. Same ol' particle spawning as usual besides that.
-        /// </summary>
-        /// <param name="particle"></param>
-        public static void SpawnParticleBetter(Particle particle)
-        {
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-                GeneralParticleHandler.SpawnParticle(particle);
-        }
-
         #region Particle Orchestra Utilities
         // These utilities utilize Vanilla Terraria's ParticleOrchestra system. They cannot be used in conjunction with Calamity's Particle System.
 

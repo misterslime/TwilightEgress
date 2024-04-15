@@ -147,7 +147,7 @@
                 Color bloomColor = Color.Lerp(Color.PaleGoldenrod, Color.LightSkyBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(0.45f, 4f);
                 int lifespan = Main.rand.Next(15, 45);
-                Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
+                CalamityMod.Particles.Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
                 GeneralParticleHandler.SpawnParticle(sparkle);
             }
         }

@@ -91,7 +91,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
                             Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
                             int lifespan = (int)Lerp(10, 45, Timer / 480);
-                            GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                            new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
                             Projectile.netUpdate = true;
                         }
                     }
@@ -106,7 +106,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                     Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
 
                     Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
-                    GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                    new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
                     Projectile.netUpdate = true;
                 }
             }
@@ -144,7 +144,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 if (Timer % 10 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int lifespan = (int)Lerp(45, 100, Timer / 480);
-                    GeneralParticleHandler.SpawnParticle(new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)));
+                    new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
                 }
 
                 if (Timer % 3 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
