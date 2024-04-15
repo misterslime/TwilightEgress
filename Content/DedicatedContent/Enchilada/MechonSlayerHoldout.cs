@@ -15,15 +15,9 @@ namespace Cascade.Content.DedicatedContent.Enchilada
         private const int SwingTime = 45;
         private const int MaxTime = 60;
 
-        public float SwordOverheadThrust()
-        {
-            PiecewiseCurve thrustCurve = new PiecewiseCurve();
-
-            thrustCurve.Add(EasingCurves.Sine, EasingType.Out, -0.125f, 0.5f);
-            thrustCurve.Add(EasingCurves.Exp, EasingType.Out, 1f, 0.5f, 1.25f);
-
-            return thrustCurve.Evaluate(Timer / SwingTime);
-        }
+        public static readonly PiecewiseCurve ThrustCurve = new PiecewiseCurve()
+            .Add(EasingCurves.Sine, EasingType.Out, -0.125f, 0.5f)
+            .Add(EasingCurves.Exp, EasingType.Out, 1f, 1f, 0.125f);
 
         private bool Initialized { get; set; } = false;
 
@@ -51,7 +45,7 @@ namespace Cascade.Content.DedicatedContent.Enchilada
             }
 
             InitializeFields(MaxTime, -PiOver2);
-            Vector2 holdPosition = Owner.Top + new Vector2(0f, -20f * SwordOverheadThrust() + 35f);
+            Vector2 holdPosition = Owner.Top + new Vector2(0f, -20f * ThrustCurve.Evaluate(Timer / SwingTime) + 35f);
             Projectile.Center = Owner.RotatedRelativePoint(holdPosition, true);
 
             Timer++;

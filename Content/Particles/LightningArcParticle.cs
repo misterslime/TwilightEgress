@@ -49,7 +49,7 @@ namespace Cascade.Content.Particles
             ActualEndPosition += (LightningLengthFactor * EndPosition.Length()).ToRotationVector2();
         }
 
-        public float GetLightningWidth(float completionRatio) => 1f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Lerp(1f, 0f, LifetimeRatio);
+        public float GetLightningWidth(float completionRatio) => Scale.X * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Lerp(1f, 0f, LifetimeRatio);
 
         public Color GetLightningColor(float completionRatio) => DrawColor;
 
@@ -59,7 +59,7 @@ namespace Cascade.Content.Particles
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            PrimitiveRenderer.RenderTrail(LightningPoints, new(GetLightningWidth, GetLightningColor, _ => -Main.screenPosition), LightningPoints.Count * 2);
+            PrimitiveRenderer.RenderTrail(LightningPoints, new(GetLightningWidth, GetLightningColor), LightningPoints.Count * 2);
             spriteBatch.ExitShaderRegion();
         }
     }

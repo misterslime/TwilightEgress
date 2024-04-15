@@ -58,19 +58,11 @@ namespace Cascade.Content.Projectiles.Melee
 
         private const int YharonDrawImageRadiusIndex = 5;
 
-        private PrimitiveDrawer TrailDrawer { get; set; }
+        public static readonly PiecewiseCurve ThrustCurve = new PiecewiseCurve()
+            .Add(EasingCurves.Circ, EasingType.In, 0.125f, 0.5f)
+            .Add(EasingCurves.Exp, EasingType.Out, 1f, 1f);
 
-        public float SwingRatio(bool small)
-        {
-            float interpolant = Timer / (small ? SmallSwingMaxTime : LargeSwingMaxTime);
-
-            PiecewiseCurve swingCurve = new PiecewiseCurve();
-
-            swingCurve.Add(EasingCurves.Circ, EasingType.In, 0.125f, 0.5f);
-            swingCurve.Add(EasingCurves.Exp, EasingType.Out, 1f, 1f);
-
-            return swingCurve.Evaluate(interpolant);
-        }
+        public float SwingRatio(bool small) => ThrustCurve.Evaluate(Timer / (small ? SmallSwingMaxTime : LargeSwingMaxTime));
 
         public new string LocalizationCategory => "Projectiles.Melee";
 
