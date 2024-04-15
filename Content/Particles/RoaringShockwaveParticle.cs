@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Particles
 {
-    public class RoaringShockwaveParticle : Luminance.Core.Graphics.Particle
+    public class RoaringShockwaveParticle : Particle
     {
         //public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/DistortedShockwave2";
 

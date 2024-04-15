@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class MusicNoteParticle : Luminance.Core.Graphics.Particle
+    public class MusicNoteParticle : Particle
     {
         private const int MusicNoteScaleChangeThreshold = 30;
 

@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class SwordSlashParticle : Luminance.Core.Graphics.Particle
+    public class SwordSlashParticle : Particle
     {
         private float BaseScale;
 

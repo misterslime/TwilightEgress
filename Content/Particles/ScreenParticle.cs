@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public abstract class ScreenParticle : Luminance.Core.Graphics.Particle
+    public abstract class ScreenParticle : Particle
     {
         /// <summary>
         /// The on-screen position a particle starts off at when it spawns. Usually set to <see cref="Main.screenPosition"/>.

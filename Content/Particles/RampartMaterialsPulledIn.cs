@@ -3,7 +3,7 @@ using Terraria;
 
 namespace Cascade.Content.Particles
 {
-    public class RampartMaterialsPulledIn : Luminance.Core.Graphics.Particle
+    public class RampartMaterialsPulledIn : Particle
     {
         private enum RampartMaterials
         {

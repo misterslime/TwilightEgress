@@ -25,7 +25,6 @@ global using Terraria.Localization;
 global using ReLogic.Content;
 
 global using CalamityMod;
-global using CalamityMod.Particles;
 global using CalamityMod.Sounds;
 global using static CalamityMod.CalamityUtils;
 

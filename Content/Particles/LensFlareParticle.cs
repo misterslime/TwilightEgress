@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class LensFlareParticle : Luminance.Core.Graphics.Particle
+    public class LensFlareParticle : Particle
     {
         public override string AtlasTextureName => "Cascade.SoftStar";
 

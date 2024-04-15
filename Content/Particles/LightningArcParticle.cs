@@ -1,6 +1,4 @@
-﻿using Particle = Luminance.Core.Graphics.Particle;
-
-namespace Cascade.Content.Particles
+﻿namespace Cascade.Content.Particles
 {
     public class LightningArcParticle : Particle
     {
@@ -55,12 +53,16 @@ namespace Cascade.Content.Particles
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.EnterShaderRegion(AdditiveBlending ? BlendState.Additive : BlendState.AlphaBlend);
+            /*spriteBatch.EnterShaderRegion(AdditiveBlending ? BlendState.Additive : BlendState.AlphaBlend);
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
             PrimitiveRenderer.RenderTrail(LightningPoints, new(GetLightningWidth, GetLightningColor), LightningPoints.Count * 2);
-            spriteBatch.ExitShaderRegion();
+            spriteBatch.ExitShaderRegion();*/
+
+            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
+            PrimitiveSettings primSettings = new(GetLightningWidth, GetLightningColor, Shader: shader);
+            PrimitiveRenderer.RenderTrail(LightningPoints, primSettings, LightningPoints.Count * 2);
         }
     }
 }

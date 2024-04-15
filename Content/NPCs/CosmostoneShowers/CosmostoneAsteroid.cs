@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Items.Materials;
+﻿using CalamityMod.Particles;
+using Cascade.Content.Items.Materials;
 using System.Collections.Generic;
 using Terraria.GameContent.ItemDropRules;
 
@@ -6,7 +7,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 {
     public class CosmostoneAsteroid : BaseAsteroid, ILocalizedModType
     {
-        private PrimitiveDrawer TrailDrawer { get; set; }
 
         private List<int> ViableCollisionTypes = new List<int>()
         {
@@ -219,13 +219,18 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public void DrawTrail()
         {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
             TrailDrawer.DrawPrimitives(NPC.oldPos.ToList(), NPC.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();
+            Main.spriteBatch.ExitShaderRegion();*/
+
+            Vector2 positionToCenterOffset = NPC.Size * 0.5f;
+            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
+            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
+            PrimitiveRenderer.RenderTrail(NPC.oldPos.ToList(), laserSettings, 85);
         }
     }
 }

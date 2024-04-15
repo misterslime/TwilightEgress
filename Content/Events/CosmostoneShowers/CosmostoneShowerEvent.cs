@@ -270,8 +270,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
                     float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
-                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan);
-                    shiningStar.Spawn();
+                    new ShiningStar(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan).Spawn();
                 }
             }
 
@@ -291,8 +290,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float depth = i + 3f;
                     int lifespan = Main.rand.Next(1200, 1800);
 
-                    TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
-                    asteroid.Spawn();
+                    new TravellingAsteroid(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
                 }
             }
 
@@ -309,8 +307,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     int lifespan = Main.rand.Next(600, 1200);
                     float depth = i + 3f;
 
-                    StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
-                    stationaryAsteroid.Spawn();
+                    new StationaryAsteroid(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
                 }
             }
 
@@ -332,8 +329,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     int lifespan = Main.rand.Next(600, 1200);
                     float depth = Main.rand.NextFloat(5f, 200f);
 
-                    CosmicGas cosmicGas = new(position, ShiningStarColors, maxScale, depth, lifespan);
-                    cosmicGas.Spawn();
+                    new CosmicGas(position, ShiningStarColors, maxScale, depth, lifespan).Spawn();
                 }
             }
 
@@ -346,8 +342,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.08f);
                 Vector2 position = new(x, y);
 
-                Sirius sirius = new(position, Color.SkyBlue, 2f, lifespan);
-                sirius.Spawn();
+                new Sirius(position, Color.SkyBlue, 2f, lifespan).Spawn();
             }
         }
     }

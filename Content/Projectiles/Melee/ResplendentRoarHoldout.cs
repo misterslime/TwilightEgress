@@ -491,6 +491,11 @@ namespace Cascade.Content.Projectiles.Melee
 
             TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 60);
             Main.spriteBatch.ExitShaderRegion();*/
+
+            Vector2 positionToCenterOffset = Projectile.Size / 2f;
+            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
+            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 60);
         }
     }
 }

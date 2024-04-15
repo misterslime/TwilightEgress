@@ -1,6 +1,4 @@
-﻿using Particle = Luminance.Core.Graphics.Particle;
-
-namespace Cascade.Content.Particles
+﻿namespace Cascade.Content.Particles
 {
     public class MechonSlayerArtParticle : Particle
     {

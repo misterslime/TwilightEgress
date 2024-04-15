@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using Terraria.Graphics.Shaders;
-
-namespace Cascade.Content.DedicatedContent.Marv
+﻿namespace Cascade.Content.DedicatedContent.Marv
 {
     public class ElectricSkyBolt : ModProjectile, ILocalizedModType
     {
         public Vector2 StrikePosition { get; set; }
 
         public List<Vector2> StrikePositions = new List<Vector2>();
-
-        public PrimitiveDrawer TrailDrawer { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
@@ -91,13 +86,17 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override bool PreDraw(ref Color lightColor)
         {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
+            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
             TrailDrawer.DrawPrimitives(StrikePositions, -Main.screenPosition, 22);
-            Main.spriteBatch.ExitShaderRegion();
+            Main.spriteBatch.ExitShaderRegion();*/
+
+            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
+            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, Shader: shader);
+            PrimitiveRenderer.RenderTrail(StrikePositions, laserSettings, 22);
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             DrawBloomFlare(texture);
