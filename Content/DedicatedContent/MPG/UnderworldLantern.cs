@@ -134,7 +134,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             ShouldDrawUndeadSpirit = false;
 
             // Search for any nearby targets.
-            Projectile.GetNearestMinionTarget(Owner, 2500f, 300f, out bool foundTarget, out NPC target);
+            NPC target = Projectile.GetNearestMinionTarget(Owner, 2500f, 300f, out bool foundTarget);
             if (foundTarget)
             {
                 TargetToChase = target;

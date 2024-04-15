@@ -96,11 +96,16 @@
             Myself = Projectile;
 
             // Search for nearby targets.
-            Projectile.GetNearestMinionTarget(Owner, 1750f, 500f, out bool foundTarget, out NPC target);
+            NPC target = Projectile.GetNearestMinionTarget(Owner, 1750f, 500f, out bool foundTarget);
 
             // If the player is using the acceessory as vanity, make sure to always set this to false so no attacks are done.
             if (Owner.Cascade_Buffs().GeminiGeniesVanity)
                 foundTarget = false;
+
+            if (target == null && (AIStates)AttackState == AIStates.Attacking)
+            {
+                AttackState = (int)AIStates.Idle;
+            }
 
             switch ((AIStates)AttackState)
             {

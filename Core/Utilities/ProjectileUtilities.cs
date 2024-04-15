@@ -225,18 +225,20 @@ namespace Cascade
         /// <param name="maxSearchDistanceThroughWalls">The maximum distance through walls around a projectile to allow searching for viable targets.</param>
         /// <param name="foundTarget">Whether or not a target has been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
         /// <param name="target">The target that's been found. Must use the <see cref="out"/> keyword when initially calling the method.</param>
-        public static void GetNearestMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out NPC target)
+        public static NPC GetNearestMinionTarget(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget)
         {
-            target = null;
             foundTarget = false;
 
             // Ensures minions using this will still target accordingly if the minion is compatible with the right-click targeting feature.
             if (owner.HasMinionAttackTargetNPC)
             {
-                target = Main.npc[owner.MinionAttackTargetNPC];
+                NPC target = Main.npc[owner.MinionAttackTargetNPC];
                 float distanceBetweem = Vector2.Distance(target.Center, projectile.Center);
                 if (distanceBetweem < maxSearchDistance)
+                {
                     foundTarget = true;
+                    return target;
+                }
             }
 
             // Usual targetting code.
@@ -255,12 +257,14 @@ namespace Cascade
 
                         if (((closestToProjectile && inRangeOfProjectile) || !foundTarget) || (lineOfSight || closestTargetThroughWalls))
                         {
-                            target = npc;
                             foundTarget = true;
+                            return npc;
                         }
                     }
                 }
             }
+
+            return null;
         }
     }
 }
