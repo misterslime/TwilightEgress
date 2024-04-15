@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Projectiles.Ranged
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Content.Projectiles.Ranged
 {
     public class ChickenCannonExplosion : ModProjectile, ILocalizedModType
     {

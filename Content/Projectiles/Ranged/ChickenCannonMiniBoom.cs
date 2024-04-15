@@ -1,4 +1,5 @@
-﻿using Cascade.Content.DedicatedContent.Fluffy;
+﻿using CalamityMod.Particles;
+using Cascade.Content.DedicatedContent.Fluffy;
 
 namespace Cascade.Content.Projectiles.Ranged
 {

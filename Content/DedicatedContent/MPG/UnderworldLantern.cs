@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Buffs.Minions;
+﻿using CalamityMod.Particles;
+using Cascade.Content.Buffs.Minions;
 using Cascade.Content.Particles;
 using System.Runtime;
 

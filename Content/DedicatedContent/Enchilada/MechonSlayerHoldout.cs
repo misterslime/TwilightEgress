@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Particles;
+﻿using CalamityMod.Particles;
+using Cascade.Content.Particles;
 using Cascade.Core.Graphics.CameraManipulation;
 using EasingType = Luminance.Common.Easings.EasingType;
 

@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.DedicatedContent.Jacob
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Content.DedicatedContent.Jacob
 {
     public class Rampart : ModProjectile, ILocalizedModType
     {

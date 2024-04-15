@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Weapons.Ranged;
+using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 
 namespace Cascade.Content.Projectiles.Ranged

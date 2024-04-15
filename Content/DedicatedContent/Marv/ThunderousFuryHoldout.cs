@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Particles;
+﻿using CalamityMod.Particles;
+using Cascade.Content.Particles;
 
 namespace Cascade.Content.DedicatedContent.Marv
 {

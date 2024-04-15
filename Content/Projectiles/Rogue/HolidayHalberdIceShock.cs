@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
+using CalamityMod.Particles;
 
 namespace Cascade.Content.Projectiles.Rogue
 {

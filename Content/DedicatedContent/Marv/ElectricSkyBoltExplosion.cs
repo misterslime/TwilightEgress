@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.DedicatedContent.Marv
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Content.DedicatedContent.Marv
 {
     public class ElectricSkyBoltExplosion : ModProjectile, ILocalizedModType
     {

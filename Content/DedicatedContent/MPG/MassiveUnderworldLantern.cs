@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using CalamityMod.Particles;
+using Terraria;
 using Particle = CalamityMod.Particles.Particle;
 
 namespace Cascade.Content.DedicatedContent.MPG

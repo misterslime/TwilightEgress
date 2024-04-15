@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Items.Pets;
+using CalamityMod.Particles;
 using Cascade.Core.Graphics.Renderers.ScreenRenderers;
 
 namespace Cascade.Core.Players.BuffHandlers

@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.DedicatedContent.Fluffy
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Content.DedicatedContent.Fluffy
 {
     public class TheBastOffenseHoldout : ModProjectile, ILocalizedModType
     {

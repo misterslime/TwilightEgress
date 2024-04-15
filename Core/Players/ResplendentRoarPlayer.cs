@@ -1,4 +1,6 @@
-﻿namespace Cascade.Core.Players
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Core.Players
 {
     public class ResplendentRoarPlayer : ModPlayer
     {

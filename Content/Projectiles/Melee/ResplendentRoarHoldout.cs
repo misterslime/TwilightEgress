@@ -3,6 +3,7 @@ using CalamityMod.Buffs.DamageOverTime;
 using Terraria.GameContent.Events;
 using Cascade.Core.Graphics.CameraManipulation;
 using EasingType = Luminance.Common.Easings.EasingType;
+using CalamityMod.Particles;
 
 namespace Cascade.Content.Projectiles.Melee
 {

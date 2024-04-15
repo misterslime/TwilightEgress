@@ -1,4 +1,5 @@
-﻿using Cascade.Content.Buffs.Debuffs;
+﻿using CalamityMod.Particles;
+using Cascade.Content.Buffs.Debuffs;
 using rail;
 
 namespace Cascade.Content.Projectiles.Misc

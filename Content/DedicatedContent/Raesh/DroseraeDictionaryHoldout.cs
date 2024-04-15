@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.DedicatedContent.Raesh
+﻿using CalamityMod.Particles;
+
+namespace Cascade.Content.DedicatedContent.Raesh
 {
     public class DroseraeDictionaryHoldout : ModProjectile, ILocalizedModType
     {
