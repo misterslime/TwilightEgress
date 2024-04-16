@@ -11,35 +11,6 @@
             => entity.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
         /// <summary>
-        /// Sets <see cref="Main.graphics"/>' GraphicsDevice to the specified <see cref="RenderTarget2D"/> 
-        /// and clears the device with a specified color.
-        /// </summary>
-        /// <param name="flushColor">The color to clear the <see cref="GraphicsDevice"/> with. 
-        /// Defaults to <see cref="Color.Transparent"/> if no value is manually given. 
-        /// In most cases, you will want this to stay as the mentioned default value.</param>
-        public static void SwapToTarget(this RenderTarget2D renderTarget, Color? flushColor = null)
-        {
-            GraphicsDevice graphicsDevice = Main.graphics.GraphicsDevice;
-
-            // Do nothing if we are in the menu, on a server or if any of the following variables are null.
-            if (Main.gameMenu || Main.dedServ || graphicsDevice is null || renderTarget is null)
-                return;
-
-            graphicsDevice.SetRenderTarget(renderTarget);
-            graphicsDevice.Clear(flushColor ?? Color.Transparent);
-        }
-
-        /// <summary>
-        /// The same as <see cref="SwapToTarget(RenderTarget2D, Color?)"/>, though accepts a <see cref="SmartRenderTarget"/> instance
-        /// instead of just a <see cref="RenderTarget2D"/> instance.
-        /// </summary>
-        /// <param name="flushColor">The color to clear the <see cref="GraphicsDevice"/> with. 
-        /// Defaults to <see cref="Color.Transparent"/> if no value is manually given. 
-        /// In most cases, you will want this to stay as the mentioned default value.</param>
-        public static void SwapToTarget(this SmartRenderTarget smartRenderTarget, Color? flushColor = null)
-            => SwapToTarget(smartRenderTarget.RenderTarget, flushColor ?? Color.Transparent);
-
-        /// <summary>
         /// Resets the sprite batch to a state that is most commonly used for drawing effects in the vanilla game. Do not overuse this function
         /// as such misuse can lead to serious performance drops on weaker devices.
         /// </summary>

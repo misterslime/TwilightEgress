@@ -74,7 +74,7 @@
 
             Vector2 drawPosition = VignettePosition - Main.screenPosition;
             Vector2 origin = VignettePosition + new Vector2(500f) - Main.screenPosition;
-            Main.spriteBatch.Draw(MainTarget.RenderTarget, drawPosition, screenFit, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(MainTarget.Target, drawPosition, screenFit, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
         }
     }

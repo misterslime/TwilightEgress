@@ -52,7 +52,7 @@
             shader.TrySetParameter("impactPosition", ChromaPosition - Main.screenPosition);
             shader.Apply();
 
-            spriteBatch.Draw(MainTarget.RenderTarget, Vector2.Zero, Color.White);
+            spriteBatch.Draw(MainTarget.Target, Vector2.Zero, Color.White);
 
             spriteBatch.End();
         }
