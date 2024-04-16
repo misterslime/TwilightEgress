@@ -86,7 +86,8 @@ namespace Cascade.Content.DedicatedContent.Marv
                             Timer = 0f;
                             Projectile.velocity = Projectile.DirectionTo(Owner.Calamity().mouseWorld) * 35f;
                             SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBlastSound, Projectile.Center);
-                            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
+                            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
+                            ScreenShakeSystem.StartShake(7f * Projectile.scale, shakeStrengthDissipationIncrement: 0.185f);
 
                             Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
                             int lifespan = (int)Lerp(10, 45, Timer / 480);
@@ -102,7 +103,8 @@ namespace Cascade.Content.DedicatedContent.Marv
                     Timer = 0f;
                     Projectile.velocity = Projectile.DirectionTo(Owner.Calamity().mouseWorld) * 35f;
                     SoundEngine.PlaySound(CommonCalamitySounds.PlasmaBlastSound, Projectile.Center);
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
+                    //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
+                    ScreenShakeSystem.StartShake(7f * Projectile.scale, shakeStrengthDissipationIncrement: 0.185f);
 
                     Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
                     new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
@@ -159,7 +161,8 @@ namespace Cascade.Content.DedicatedContent.Marv
 
                 Timer++;
                 Projectile.velocity *= 0.3f;
-                Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5f;
+                //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5f;
+                ScreenShakeSystem.StartShake(5f, shakeStrengthDissipationIncrement: 0.185f);
             }
 
             Projectile.scale = ScaleControl;

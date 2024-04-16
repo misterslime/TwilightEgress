@@ -1,6 +1,5 @@
 ﻿using CalamityMod.Particles;
 using Cascade.Content.Particles;
-using Cascade.Core.Graphics.CameraManipulation;
 using EasingType = Luminance.Common.Easings.EasingType;
 
 namespace Cascade.Content.DedicatedContent.Enchilada
@@ -76,7 +75,8 @@ namespace Cascade.Content.DedicatedContent.Enchilada
                 PulseRing pulseRing = new(Owner.RotatedRelativePoint(Owner.MountedCenter), Vector2.Zero, GetArtColor(Color.Cyan), 0f, 2f, 45);
                 GeneralParticleHandler.SpawnParticle(pulseRing);
 
-                CascadeCameraSystem.Screenshake(3, 10, Owner.Center);
+                //CascadeCameraSystem.Screenshake(3, 10, Owner.Center);
+                ScreenShakeSystem.StartShakeAtPoint(Owner.Center, 3f, shakeStrengthDissipationIncrement: 0.3f, intensityTaperEndDistance: 2000);
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
 

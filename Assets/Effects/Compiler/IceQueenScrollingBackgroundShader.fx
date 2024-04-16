@@ -38,7 +38,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 technique Technique1
 {
-    pass ScrollPass
+    pass AutoloadPass
     {
         PixelShader = compile ps_2_0 PixelShaderFunction();
     }

@@ -86,7 +86,8 @@ namespace Cascade.Content.DedicatedContent.MPG
                 Projectile.rotation = Projectile.velocity.ToRotation();
                 if (Timer >= MaxChargingTime || HitCounter >= 1f)
                 {
-                    Main.LocalPlayer.Calamity().GeneralScreenShakePower = 8f;
+                    //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 8f;
+                    ScreenShakeSystem.StartShake(8f, shakeStrengthDissipationIncrement: 0.185f);
                     AIState = 2f;
                     Timer = 0f;
 

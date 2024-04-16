@@ -138,7 +138,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
                 GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
             }
 
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 10f;
+            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 10f;
+            ScreenShakeSystem.StartShake(10f, shakeStrengthDissipationIncrement: 0.185f);
         }
 
         public override bool PreDraw(ref Color lightColor)

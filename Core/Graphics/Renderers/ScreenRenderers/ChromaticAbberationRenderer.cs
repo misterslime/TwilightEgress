@@ -47,9 +47,9 @@
         {           
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-            var shader = Utilities.TryGetScreenShader("ChromaticAbberationShader");
-            shader.TrySetParameterValue("distortionAmount", (1f - ChromaLifespanRatio) * ChromaStrength);
-            shader.TrySetParameterValue("impactPosition", ChromaPosition - Main.screenPosition);
+            ManagedScreenFilter shader = ShaderManager.GetFilter("Cascade.ChromaticAbberation");
+            shader.TrySetParameter("distortionAmount", (1f - ChromaLifespanRatio) * ChromaStrength);
+            shader.TrySetParameter("impactPosition", ChromaPosition - Main.screenPosition);
             shader.Apply();
 
             spriteBatch.Draw(MainTarget.RenderTarget, Vector2.Zero, Color.White);

@@ -67,7 +67,8 @@ namespace Cascade.Content.Projectiles.Ranged
             }
 
             Timer++;
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15f;
+            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15f;
+            ScreenShakeSystem.StartShake(15f, shakeStrengthDissipationIncrement: 0.185f);
         }
     }
 }

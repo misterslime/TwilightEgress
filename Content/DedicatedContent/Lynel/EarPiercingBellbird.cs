@@ -1,8 +1,6 @@
 ﻿using Cascade.Content.Buffs.Debuffs;
 using Cascade.Content.Buffs.Pets;
 using Cascade.Content.Particles;
-using Cascade.Core.Graphics.CameraManipulation;
-using Microsoft.Xna.Framework;
 
 namespace Cascade.Content.DedicatedContent.Lynel
 {
@@ -202,7 +200,8 @@ namespace Cascade.Content.DedicatedContent.Lynel
                     SoundEngine.PlaySound(CascadeSoundRegistry.BellbirdStunningScream with { Volume = 30f }, Projectile.Center);
 
                 // Visual effects.
-                CascadeCameraSystem.Screenshake(8, 30, Projectile.Center);
+                //CascadeCameraSystem.Screenshake(8, 30, Projectile.Center);
+                ScreenShakeSystem.StartShakeAtPoint(Projectile.Center, 8f, shakeStrengthDissipationIncrement: 0.26f, intensityTaperEndDistance: 2000);
                 Projectile.UpdateProjectileAnimationFrames(0, 0, 1);
                 if (Timer % 10 == 0)
                     new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, Color.White, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();

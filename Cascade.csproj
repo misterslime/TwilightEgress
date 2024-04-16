@@ -8,6 +8,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\ChromaticAbberation.fx" />
+    <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\EllipticalVignette.fx" />
+    <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\NoisyVignette.fx" />
+    <None Remove="Assets\AutoloadedEffects\Filters\Shapes\BlackHole.fx" />
+    <None Remove="Assets\AutoloadedEffects\Shaders\SkyEffects\IceQueenScrollingBackgroundShader.fx" />
     <None Remove="Localization\en-US\Mods.Cascade.Buffs.Debuffs.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Buffs.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Configs.hjson" />

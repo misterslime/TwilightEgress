@@ -8,7 +8,7 @@
 
         public override void SpecialVisuals(Player player, bool isActive)
         {
-            player.ManageSpecialBiomeVisuals("Cascade:IceQueen", isActive); 
+            player.ManageSpecialBiomeVisuals("Cascade:IceQueen", isActive);
         }
     }
 
@@ -131,19 +131,19 @@
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            /*Asset<Texture2D> noiseTexture = CascadeTextureRegistry.GreyscaleSeemlessNoise;
+            Asset<Texture2D> noiseTexture = CascadeTextureRegistry.GreyscaleSeemlessNoise;
             Asset<Texture2D> noiseTexture2 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Cracks");
             CalamityUtils.EnterShaderRegion(Main.spriteBatch, BlendState.Additive);
 
-            var shader = Utilities.TryGetShader("NoisyVignetteShader");
-            shader.SetShaderTexture(noiseTexture, 1);
-            shader.SetShaderTexture(noiseTexture2, 2);
-            shader.TrySetParameterValue("time", Main.GlobalTimeWrappedHourly / 10f);
-            shader.TrySetParameterValue("scrollSpeed", 0.2f);
-            shader.TrySetParameterValue("vignettePower", 1.65f);
-            shader.TrySetParameterValue("vignetteBrightness", 1.25f);
-            shader.TrySetParameterValue("primaryColor", Color.DarkGray.ToVector4());
-            shader.TrySetParameterValue("secondaryColor", Color.DarkGray.ToVector4());
+            ManagedShader shader = ShaderManager.GetShader("Cascade.NoisyVignette");
+            shader.SetTexture(noiseTexture, 1);
+            shader.SetTexture(noiseTexture2, 2);
+            shader.TrySetParameter("time", Main.GlobalTimeWrappedHourly / 10f);
+            shader.TrySetParameter("scrollSpeed", 0.2f);
+            shader.TrySetParameter("vignettePower", 1.65f);
+            shader.TrySetParameter("vignetteBrightness", 1.25f);
+            shader.TrySetParameter("primaryColor", Color.DarkGray.ToVector4());
+            shader.TrySetParameter("secondaryColor", Color.DarkGray.ToVector4());
             shader.Apply();
 
             Vector2 screenArea = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
@@ -156,9 +156,9 @@
                 CalamityUtils.SetBlendState(spriteBatch, BlendState.Additive);
                 Vector2 drawPosition = GlowStars[i].Position - Main.screenPosition;
                 spriteBatch.Draw(TextureAssets.Extra[49].Value, drawPosition, null, GlowStars[i].Color * FadeOpacity, 0f, GlowStarTexture.Size() / 2f, GlowStars[i].Scale / 2f, SpriteEffects.None, 0f);
-                spriteBatch.Draw(CascadeTextureRegistry.GreyscaleStar.Value, drawPosition, null, GlowStars[i].Color * FadeOpacity, 0f, GlowStarTexture.Size() / 2f, GlowStars[i].Scale / 12f, SpriteEffects.None, GlowStars[i].Depth);
+                spriteBatch.Draw(CascadeTextureRegistry.SoftStar.Value, drawPosition, null, GlowStars[i].Color * FadeOpacity, 0f, GlowStarTexture.Size() / 2f, GlowStars[i].Scale / 12f, SpriteEffects.None, GlowStars[i].Depth);
                 CalamityUtils.SetBlendState(spriteBatch, BlendState.AlphaBlend);
-            }*/
+            }
         }
 
         public override float GetCloudAlpha()

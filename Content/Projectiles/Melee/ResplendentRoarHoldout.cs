@@ -1,7 +1,5 @@
 ﻿using Cascade.Content.Items.Weapons.Melee;
 using CalamityMod.Buffs.DamageOverTime;
-using Terraria.GameContent.Events;
-using Cascade.Core.Graphics.CameraManipulation;
 using EasingType = Luminance.Common.Easings.EasingType;
 using CalamityMod.Particles;
 
@@ -339,7 +337,8 @@ namespace Cascade.Content.Projectiles.Melee
             }
 
             // Visual stuff.
-            CascadeCameraSystem.Screenshake(3, 6, target.Center);
+            //CascadeCameraSystem.Screenshake(3, 6, target.Center);
+            ScreenShakeSystem.StartShakeAtPoint(target.Center, 3f, shakeStrengthDissipationIncrement: 0.5f, intensityTaperEndDistance: 2000);
             for (int i = 0; i < Main.rand.Next(15, 25); i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(5f, 15f);

@@ -56,7 +56,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
 
 technique Technique1
 {
-    pass ChromaAbberationPass
+    pass AutoloadPass
     {
         PixelShader = compile ps_2_0 PixelShaderFunction();
     }

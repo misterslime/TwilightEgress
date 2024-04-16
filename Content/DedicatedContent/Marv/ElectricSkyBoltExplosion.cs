@@ -62,7 +62,8 @@ namespace Cascade.Content.DedicatedContent.Marv
             }
 
             Timer++;
-            Main.LocalPlayer.Calamity().GeneralScreenShakePower = 4f;
+            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 4f;
+            ScreenShakeSystem.StartShake(4f, shakeStrengthDissipationIncrement: 0.185f);
             Projectile.rotation += Pi / 30f;
             Lighting.AddLight(Projectile.Center, Color.Goldenrod.ToVector3() * 0.65f);
         }

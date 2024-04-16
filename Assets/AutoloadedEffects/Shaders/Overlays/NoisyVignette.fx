@@ -21,19 +21,27 @@ float4 uSourceRect;
 float2 uZoom;
 float4 uShaderSpecificData;
 
+float time;
+float scrollSpeed;
 float vignettePower;
 float vignetteBrightness;
 
+float4 primaryColor;
+float4 secondaryColor;
+
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
-    float4 color = tex2D(uImage0, coords);
-    float vignetteInterpolant = saturate(1 - pow(distance(coords, 0.5), vignettePower) * vignetteBrightness);
-    return sampleColor * color * vignetteInterpolant;
+    float4 noiseColor1 = tex2D(uImage1, coords * 2 + float2(time * -scrollSpeed, 0));
+    float4 noiseColor2 = tex2D(uImage2, coords * 3 + float2(0, time * scrollSpeed));
+    float4 noiseColor = noiseColor1 * primaryColor + noiseColor2 * secondaryColor;
+    
+    float vignetteInterpolant = saturate(pow(distance(coords, 0.5), vignettePower) * vignetteBrightness);
+    return sampleColor * noiseColor * vignetteInterpolant;
 }
 
 technique Technique1
 {
-    pass VignettePass
+    pass AutoloadPass
     {
         PixelShader = compile ps_2_0 PixelShaderFunction();
     }
