@@ -1,4 +1,5 @@
-﻿namespace Cascade.Core.Globals.GlobalNPCs
+﻿
+namespace Cascade.Core.Globals.GlobalNPCs
 {
     public partial class CascadeGlobalNPC : GlobalNPC
     {
@@ -25,6 +26,12 @@
             }
 
             base.PostAI(npc);
+        }
+
+        public override void DrawEffects(NPC npc, ref Color drawColor)
+        {
+            if (npc.type == NPCID.IceQueen)
+                drawColor = Color.White;
         }
     }
 }
