@@ -1,6 +1,6 @@
 ﻿namespace Cascade
 {
-    public static partial class Utilities
+    public static partial class CascadeUtilities
     {
         /// <summary>
         /// Creates a simple for loop that spawns dusts.

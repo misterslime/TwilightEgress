@@ -40,7 +40,7 @@
                 Scale = new(Clamp(Scale.X - 0.04f, 0f, 1f));
 
             Velocity *= 0.98f;
-            Rotation = Lerp(ToRadians(-15f), ToRadians(15f), SineInOutEasing(Time / 45f, 0));
+            Rotation = Lerp(ToRadians(-15f), ToRadians(15f), CascadeUtilities.SineEaseInOut(Time / 45f));
         }
 
         public override void Draw(SpriteBatch spriteBatch)

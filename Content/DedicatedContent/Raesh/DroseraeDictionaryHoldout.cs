@@ -18,7 +18,7 @@ namespace Cascade.Content.DedicatedContent.Raesh
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => Utilities.EmptyPixelPath;
+        public override string Texture => CascadeUtilities.EmptyPixelPath;
 
         public override void SetStaticDefaults()
         {
@@ -83,7 +83,7 @@ namespace Cascade.Content.DedicatedContent.Raesh
 
                 float damageScaleFactor = Lerp(1f, 5f, Utils.GetLerpValue(Owner.statLifeMax, 100f, Owner.statLife, true));
                 int damage = Projectile.originalDamage.GetPercentageOfInteger(damageScaleFactor);
-                Projectile.SpawnProjectile(flytrapMawSpawnPos, flyTrapMawVelocity, ModContent.ProjectileType<FlytrapMaw>(), damage, Projectile.knockBack, true, CascadeSoundRegistry.FlytrapMawSpawn, Projectile.owner);
+                Projectile.BetterNewProjectile(flytrapMawSpawnPos, flyTrapMawVelocity, ModContent.ProjectileType<FlytrapMaw>(), damage, Projectile.knockBack, CascadeSoundRegistry.FlytrapMawSpawn, null, Projectile.owner);
 
                 Owner.ConsumeManaManually(Owner.HeldItem.mana);
                 ParticleBurst();
@@ -125,7 +125,7 @@ namespace Cascade.Content.DedicatedContent.Raesh
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width * 0.375f, Projectile.height * 0.485f);
                 Color dustColor = Color.Lerp(Color.Crimson, Color.DarkRed, Main.rand.NextFloat());
                 float dustScale = Main.rand.NextFloat(0.65f, 1f);
-                Utilities.CreateDustLoop(3, spawnPosition, Vector2.Zero, 264, dustScale: dustScale, dustColor: dustColor);
+                CascadeUtilities.CreateDustLoop(3, spawnPosition, Vector2.Zero, 264, dustScale: dustScale, dustColor: dustColor);
             }
         }
 
@@ -141,7 +141,7 @@ namespace Cascade.Content.DedicatedContent.Raesh
         public override bool PreDraw(ref Color lightColor)
         {
             DrawRitualCircle();
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            Main.spriteBatch.ResetToDefault();
 
             return false;
         }
@@ -158,11 +158,30 @@ namespace Cascade.Content.DedicatedContent.Raesh
             // Summoning Circle.
             Vector2 ritualCircleDrawPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() - Main.screenPosition;
 
-            Utilities.ApplyRancorMagicCircleShader(blurredRitualCircle, ritualCircleOpacity, -ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.Crimson, Color.Red, BlendState.Additive);
+            ApplyShader(blurredRitualCircle, ritualCircleOpacity, -ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.Crimson, Color.Red, BlendState.Additive);
             Main.EntitySpriteDraw(blurredRitualCircle, ritualCircleDrawPosition, null, Color.Red, 0f, blurredRitualCircle.Size() / 2f, ritualCircleScale * 1.275f, SpriteEffects.None, 0);
-            Utilities.ApplyRancorMagicCircleShader(ritualCircle, ritualCircleOpacity, ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.DarkRed, Color.Crimson, BlendState.AlphaBlend);
+
+            ApplyShader(ritualCircle, ritualCircleOpacity, ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Projectile.direction, Color.DarkRed, Color.Crimson, BlendState.AlphaBlend);
             Main.EntitySpriteDraw(ritualCircle, ritualCircleDrawPosition, null, Color.Red, 0f, ritualCircle.Size() / 2f, ritualCircleScale, SpriteEffects.None, 0);
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+
+            Main.spriteBatch.ResetToDefault();
+        }
+
+        public static void ApplyShader(Texture2D texture, float opacity, float circularRotation, float directionRotation, int direction, Color startingColor, Color endingColor, BlendState blendMode)
+        {
+            Main.spriteBatch.PrepareForShaders(blendMode);
+
+            CalamityUtils.CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseColor(startingColor);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSecondaryColor(endingColor);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSaturation(directionRotation);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseOpacity(opacity);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uDirection"].SetValue(direction);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uCircularRotation"].SetValue(circularRotation);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uImageSize0"].SetValue(texture.Size());
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["overallImageSize"].SetValue(texture.Size());
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uWorldViewProjection"].SetValue(viewMatrix * projectionMatrix);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Apply();
         }
     }
 }

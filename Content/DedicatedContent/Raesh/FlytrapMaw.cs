@@ -83,7 +83,7 @@
             int dustCount = 15 * (int)Lerp(1f, 2f, Utils.GetLerpValue(Owner.statLifeMax, 100f, Owner.statLife, true));
             float speed = Lerp(5f, 10f, Utils.GetLerpValue(Owner.statLifeMax, 100f, Owner.statLife, true));
             float scale = Main.rand.NextFloat(0.65f, 1.25f) * Projectile.scale;
-            Utilities.CreateRandomizedDustExplosion(dustCount, Projectile.Center, DustID.Plantera_Green, speed, dustScale: scale);
+            CascadeUtilities.CreateRandomizedDustExplosion(dustCount, Projectile.Center, DustID.Plantera_Green, speed, dustScale: scale);
 
             for (int i = 0; i < 2; i++)
             {

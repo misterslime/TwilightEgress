@@ -6,7 +6,6 @@ namespace Cascade.Content.DedicatedContent.Jacob
     {
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        // Nothin to see here, just inheriting this class so I don't have to copy the same code over.
         public override void SetDefaults()
         {
             Projectile.width = 80;

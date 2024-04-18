@@ -195,14 +195,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             Vector2 origin = NPC.frame.Size() / 2f;
 
             // Backglow effects.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 float spinAngle = Main.GlobalTimeWrappedHourly * 0.35f;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
                 Main.EntitySpriteDraw(texture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
         }

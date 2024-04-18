@@ -109,7 +109,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 {
                     Owner.ConsumeManaManually(15, 75);
                     Vector2 spawnPosition = Main.MouseWorld + new Vector2(Main.rand.NextFloat(-300f, 300f), -900f);
-                    Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBolt>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                    Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBolt>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
                 }
                 ChargeTimer++;
             }
@@ -136,7 +136,7 @@ namespace Cascade.Content.DedicatedContent.Marv
             {
                 Owner.ConsumeManaManually(100, 75);
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 120f;
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<BoltStrike>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<BoltStrike>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
             }
         }
 
@@ -159,12 +159,12 @@ namespace Cascade.Content.DedicatedContent.Marv
             // Draw pulsing backglow effects.
             for (int i = 0; i < 4; i++)
             {
-                float backglowRadius = Lerp(2f, 5f, SineInOutEasing((float)(Main.timeForVisualEffects / 30f), 1));
+                float backglowRadius = Lerp(2f, 5f, CascadeUtilities.SineEaseInOut((float)(Main.timeForVisualEffects / 30f)));
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * backglowRadius;
 
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, texture.Frame(), Projectile.GetAlpha(Color.LightYellow), rotation, texture.Size() / 2f, Projectile.scale, effects, 0);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.ResetToDefault();
             }
 
             // Draw the main sprite.

@@ -126,7 +126,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             bool shouldIncreaseSpawnRate = LanternNight.NextNightIsLanternNight;
 
             // Start and stop the event.
-            if (Utilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
+            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
                 Main.NewText("The night sky glimmers with cosmic energy...", Color.DeepSkyBlue);
                 CosmostoneShower = true;
@@ -192,7 +192,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     asteroidSpawnPosition = planetoidPositionWithRadius;
                 }
 
-                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
+                if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
                     if (Main.projectile.IndexInRange(p))
@@ -215,7 +215,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     }
                 }
                 
-                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
+                if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
                     if (Main.projectile.IndexInRange(p))

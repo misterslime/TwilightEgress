@@ -31,7 +31,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 
         public new string LocalizationCategory => "Projectiles.Summon";
 
-        public override string Texture => Utilities.EmptyPixelPath;
+        public override string Texture => CascadeUtilities.EmptyPixelPath;
 
         public override void SetStaticDefaults()
         {
@@ -177,7 +177,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
             {
                 // Summon Spirit Flames that home in on enemies.
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(100f, 100f);
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<SpiritFlame>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<SpiritFlame>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack);
             }
 
             // Stick to a radius around the target.
@@ -227,7 +227,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
             Rectangle projRec = new Rectangle(0, currentYFrame, baseTexture.Width, individualFrameHeight);
 
             // Draw the afterimagee trail.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 SpriteEffects effects = Projectile.oldSpriteDirection[i] < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -235,7 +235,7 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
                 Color trailColor = Color.Lerp(Color.Magenta, Color.White, 0.6f) * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                 Main.EntitySpriteDraw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.oldRot[i], baseTexture.Size() / 2f, Projectile.scale * 1.275f, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main texture.
             SpriteEffects spriteEffects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

@@ -10,7 +10,6 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Thunderous Explosion");
             Main.projFrames[Type] = 4;
         }
 
@@ -54,7 +53,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 }
             }
 
-            float sine = SineInOutEasing(Timer / 17.5f, 0);
+            float sine = CascadeUtilities.SineEaseInOut(Timer / 17.5f);
             if (Timer <= 35f)
             {
                 Projectile.scale = Lerp(0.1f, 2f, sine);

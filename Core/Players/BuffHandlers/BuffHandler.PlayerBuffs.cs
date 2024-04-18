@@ -21,7 +21,7 @@ namespace Cascade.Core.Players.BuffHandlers
         #region Other Fields and Properties
         private int MechonSlayerResetTime;
 
-        private readonly int MechonSlayerMaxResetTime = SecondsToFrames(5);
+        private readonly int MechonSlayerMaxResetTime = Utilities.SecondsToFrames(5);
         #endregion
 
         #region Methods
@@ -41,7 +41,7 @@ namespace Cascade.Core.Players.BuffHandlers
 
                 Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
                 Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.OrangeTorch);
+                CascadeUtilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.OrangeTorch);
             }
 
             if (MechonSlayerBuffs[1] && !Player.HasCooldown(MechonSlayerEater.ID))
@@ -57,7 +57,7 @@ namespace Cascade.Core.Players.BuffHandlers
                 }
 
                 // Apply a separate cooldown specifically for this effect.
-                Player.AddCooldown(MechonSlayerEater.ID, SecondsToFrames(120));
+                Player.AddCooldown(MechonSlayerEater.ID, Utilities.SecondsToFrames(120));
             }
 
             if (MechonSlayerBuffs[2])
@@ -67,7 +67,7 @@ namespace Cascade.Core.Players.BuffHandlers
 
                 Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
                 Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.PurpleTorch);
+                CascadeUtilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.PurpleTorch);
             }
 
             if (MechonSlayerBuffs[3])
@@ -76,7 +76,7 @@ namespace Cascade.Core.Players.BuffHandlers
 
                 Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
                 Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.GreenTorch);
+                CascadeUtilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.GreenTorch);
             }
 
             if (MechonSlayerBuffs[4])
@@ -86,7 +86,7 @@ namespace Cascade.Core.Players.BuffHandlers
 
                 Vector2 dustPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
                 Vector2 dustVelocity = Vector2.UnitY * Main.rand.NextFloat(-8f, -2f);
-                Utilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.IceTorch);
+                CascadeUtilities.CreateDustLoop(2, dustPosition, dustVelocity, DustID.IceTorch);
             }
 
             if (!Player.HasCooldown(MechonSlayerArtSelection.ID))

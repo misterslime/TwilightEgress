@@ -1,6 +1,6 @@
 ﻿namespace Cascade
 {
-    public static partial class Utilities
+    public static partial class CascadeUtilities
     {
         /// <summary>
         /// Checks if it just became day time, which would be 4:30am in-game.

@@ -23,7 +23,7 @@
             int chance = hit.Crit ? 1 : 4;
             if (Main.rand.NextBool(chance))
             {
-                Utilities.CreateDustCircle(15, Projectile.Center, 18, 6f);
+                CascadeUtilities.CreateDustCircle(15, Projectile.Center, 18, 6f);
                 target.AddBuff(BuffID.Poisoned, 180);
             }
         }

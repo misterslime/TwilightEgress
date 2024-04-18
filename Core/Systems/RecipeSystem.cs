@@ -1,25 +1,26 @@
 ﻿using CalamityMod.Items.Accessories;
+using Terraria.ModLoader.Exceptions;
 
 namespace Cascade.Core.Systems
 {
     public class RecipeSystem : ModSystem
     {
-        private List<int> RecipesToBeDisabled;
+        private readonly List<int> RecipesToBeDisabled = new()
+        {
+            ModContent.ItemType<PlagueHive>()
+        };
 
         public override void PostAddRecipes()
         {
-            RecipesToBeDisabled = new List<int>()
-            {
-                ModContent.ItemType<PlagueHive>()
-            };
-
             for (int i = 0; i < Recipe.numRecipes; i++)
             {
                 Recipe recipe = Main.recipe[i];
-
                 // Disabling recipes.
                 foreach (int result in RecipesToBeDisabled)
-                    recipe.DisableCalamityRecipe(result);
+                {
+                    if (recipe.HasResult(result) && recipe.Mod == Cascade.Instance.CalamityMod)
+                        recipe.DisableRecipe();
+                }
             }
         } 
     }

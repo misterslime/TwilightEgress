@@ -1,6 +1,6 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
 using System.Runtime.Serialization;
-using Terraria.GameContent.Skies;
+using Luminance.Common.Utilities;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
@@ -31,7 +31,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             // Always ensure that the current ID is set to the highest value in the dictionary.
             int currentID = SkyEntityIDs.Any() ? SkyEntityIDs.Values.Max() : 0;
 
-            IEnumerable<Type> skyEntitySubclasses = Utilities.GetAllSubclassesOfType(Cascade.Instance, typeof(SkyEntity));
+            IEnumerable<Type> skyEntitySubclasses = Utilities.GetEveryTypeDerivedFrom(typeof(SkyEntity), Cascade.Instance.Code);
             foreach (Type type in skyEntitySubclasses)
             {
                 SkyEntity skyEntity = (SkyEntity)FormatterServices.GetUninitializedObject(type);
@@ -113,7 +113,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
                 return;
 
             // Prepare for screen culling.
-            RasterizerState screenCullState = Utilities.PrepareScissorRectangleState();
+            RasterizerState screenCullState = CascadeUtilities.PrepareScissorRectangleState();
 
             spriteBatch.Begin(SpriteSortMode.Deferred, skyEntity.BlendState, Main.DefaultSamplerState, DepthStencilState.None, screenCullState, null, Main.GameViewMatrix.TransformationMatrix);
 
@@ -132,7 +132,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
                     continue;
                 DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
             }
-            spriteBatch.ResetToVanilla();
+            spriteBatch.ResetToDefault(false);
 
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
         }
@@ -148,7 +148,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
                     continue;
                 DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
             }
-            spriteBatch.ResetToVanilla();
+            spriteBatch.ResetToDefault(false);
         }
         #endregion
     }

@@ -351,7 +351,7 @@
             <param name="p">The original point.</param>
             <param name="direction">The direction to search in.</param>
         </member>
-        <member name="M:Luminance.Common.Utilities.Utilities.DrawAfterimagesCentered(Terraria.Projectile,System.Int32,Microsoft.Xna.Framework.Color,System.Int32,System.Nullable{System.Int32},System.Single,System.Single,Microsoft.Xna.Framework.Graphics.Texture2D,System.Boolean)">
+        <member name="M:Luminance.Common.Utilities.Utilities.Utilities.DrawAfterimagesCentered(Terraria.Projectile,System.Int32,Microsoft.Xna.Framework.Color,System.Int32,System.Nullable{System.Int32},System.Single,System.Single,Microsoft.Xna.Framework.Graphics.Texture2D,System.Boolean)">
             <summary>
                 Draws a projectile as a series of afterimages. The first of these afterimages is centered on the center of the projectile's hitbox.<br />
                 This function is guaranteed to draw the projectile itself, even if it has no afterimages and/or the Afterimages config option is turned off.

@@ -122,10 +122,10 @@ namespace Cascade.Content.DedicatedContent.MPG
             {
                 Owner.AddBuff(ModContent.BuffType<UnderworldLanterns>(), 180000);
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 85f;
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<UnderworldLantern>(), Projectile.damage, 0f, true, SoundID.DD2_BetsyFireballShot, Projectile.owner);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<UnderworldLantern>(), Projectile.damage, 0f, SoundID.DD2_BetsyFireballShot, null, Projectile.owner);
 
                 // Some light dust visuals.
-                Utilities.CreateRandomizedDustExplosion(15, spawnPosition, 267, dustScale: 2f, dustColor: Color.LightSkyBlue);
+                CascadeUtilities.CreateRandomizedDustExplosion(15, spawnPosition, 267, dustScale: 2f, dustColor: Color.LightSkyBlue);
             }
         }
 
@@ -136,9 +136,9 @@ namespace Cascade.Content.DedicatedContent.MPG
 
             // Ritual circle visuals.
             if (Timer <= 60f)
-                ritualCircleOpacity = Lerp(1f, 0f, SineOutEasing(Timer / 60f, 0));
+                ritualCircleOpacity = Lerp(1f, 0f, CascadeUtilities.SineEaseOut(Timer / 60f));
             if (Timer <= 75f)
-                ritualCircleScale = Lerp(0f, 3f, SineOutEasing(Timer / 75f, 0));
+                ritualCircleScale = Lerp(0f, 3f, CascadeUtilities.SineEaseOut(Timer / 75f));
 
             if (Timer == 1)
             {
@@ -147,7 +147,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                 {
                     Vector2 spawnPosition = Owner.Center + Main.rand.NextVector2CircularEdge(120f, 120f);
                     Vector2 initialVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 16f;
-                    Projectile.SpawnProjectile(spawnPosition, initialVelocity, ModContent.ProjectileType<MassiveUnderworldLantern>(), (int)(Projectile.damage * 15f), Projectile.knockBack * 3f, true, SoundID.Item107, Projectile.owner);
+                    Projectile.BetterNewProjectile(spawnPosition, initialVelocity, ModContent.ProjectileType<MassiveUnderworldLantern>(), (int)(Projectile.damage * 15f), Projectile.knockBack * 3f, SoundID.Item107, null, Projectile.owner);
                 }
 
                 // If the player matches the Easter Egg Name Criteria,
@@ -181,7 +181,7 @@ namespace Cascade.Content.DedicatedContent.MPG
             // I'm not sure why this needs to be here personally but
             // not calling this causes the player's arm to also have 
             // the shader applied to them so... lmao?
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            Main.spriteBatch.ResetToDefault();
 
             return false;
         }
@@ -210,14 +210,14 @@ namespace Cascade.Content.DedicatedContent.MPG
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw pulsing backglow effects.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * 3f;
-                Color backglowColor = ColorSwap(Color.Cyan, Color.LightSkyBlue, 5f);
+                Color backglowColor = Utilities.ColorSwap(Color.Cyan, Color.LightSkyBlue, 5f);
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, null, Projectile.GetAlpha(backglowColor), drawRotation, origin, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
@@ -235,25 +235,23 @@ namespace Cascade.Content.DedicatedContent.MPG
             // Summoning Circle.
             Vector2 ritualCircleDrawPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 85f - Main.screenPosition;
 
-            ApplyShader(blurredRitualCircle, ritualCircleOpacity, -ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Color.SkyBlue, Color.DarkCyan, BlendState.Additive);
+            ApplyShader(blurredRitualCircle, ritualCircleOpacity, -ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), -1, Color.SkyBlue, Color.DarkCyan, BlendState.Additive);
             Main.EntitySpriteDraw(blurredRitualCircle, ritualCircleDrawPosition, null, Color.White, 0f, blurredRitualCircle.Size() / 2f, ritualCircleScale * 1.275f, SpriteEffects.None, 0);
-            ApplyShader(ritualCircle, ritualCircleOpacity, ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), Color.CornflowerBlue, Color.LightSkyBlue, BlendState.AlphaBlend);
+            ApplyShader(ritualCircle, ritualCircleOpacity, ritualCircleRotation, Projectile.AngleTo(Main.MouseWorld), -1, Color.CornflowerBlue, Color.LightSkyBlue, BlendState.AlphaBlend);
             Main.EntitySpriteDraw(ritualCircle, ritualCircleDrawPosition, null, Color.White, 0f, ritualCircle.Size() / 2f, ritualCircleScale, SpriteEffects.None, 0);
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            Main.spriteBatch.ResetToDefault();
         }
 
-        // Future reminder to turn this into a utility method, it's being used a lot more commonly than I thought.
-        // -fryzahh.
-        public void ApplyShader(Texture2D texture, float opacity, float circularRotation, float directionRotation, Color startingColor, Color endingColor, BlendState blendMode)
+        public static void ApplyShader(Texture2D texture, float opacity, float circularRotation, float directionRotation, int direction, Color startingColor, Color endingColor, BlendState blendMode)
         {
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, blendMode, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
+            Main.spriteBatch.PrepareForShaders(blendMode);
+
+            CalamityUtils.CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseColor(startingColor);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSecondaryColor(endingColor);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSaturation(directionRotation);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseOpacity(opacity);
-            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uDirection"].SetValue(Projectile.direction);
+            GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uDirection"].SetValue(direction);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uCircularRotation"].SetValue(circularRotation);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uImageSize0"].SetValue(texture.Size());
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["overallImageSize"].SetValue(texture.Size());

@@ -86,15 +86,15 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
                     d.noGravity = true;
                 }
 
-                Utilities.CreateDustCircle(36, Projectile.Center, dustType, 10f);
+                CascadeUtilities.CreateDustCircle(36, Projectile.Center, dustType, 10f);
             }
 
             // Fade in.
             if (Timer <= 60f)
             {
                 Projectile.velocity *= 0.98f;
-                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / 60f, 0));
-                Projectile.scale = Lerp(Projectile.scale, 1f, SineInOutEasing(Timer / 60f, 0));
+                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 60f));
+                Projectile.scale = Lerp(Projectile.scale, 1f, CascadeUtilities.SineEaseInOut(Timer / 60f));
             }
 
             // Home in on targets, though very sloppily.
@@ -118,10 +118,10 @@ namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
         {
             Color color = ColorPicker == 1f ? Color.Purple : Color.Gold;
 
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Projectile.DrawBackglow(Projectile.GetAlpha(color * 0.45f), 2f);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(color));
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(color));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(color), Projectile.rotation, Projectile.scale, animated: true);
             return false;

@@ -138,7 +138,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
             Timer++;
             Projectile.scale = Clamp(Projectile.scale + 0.05f, 0f, 1f);
             if (Main.rand.NextBool(3))
-                Utilities.CreateDustLoop(2, Main.rand.NextVector2Circular(Projectile.width, Projectile.height), Vector2.Zero, DustID.FireworkFountain_Yellow, shouldDefyGravity: true);
+                CascadeUtilities.CreateDustLoop(2, Main.rand.NextVector2Circular(Projectile.width, Projectile.height), Vector2.Zero, DustID.FireworkFountain_Yellow, shouldDefyGravity: true);
         }
 
         public override void OnKill(int timeLeft)
@@ -168,7 +168,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
             else
             {
                 // KABOOM
-                Projectile.SpawnProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<Bastsplosion>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                Projectile.BetterNewProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<Bastsplosion>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
             }
         }
 
@@ -216,10 +216,10 @@ namespace Cascade.Content.DedicatedContent.Fluffy
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Gold * 0.45f), 2f);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Gold));
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Gold));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.scale, animated: true);
             return false;

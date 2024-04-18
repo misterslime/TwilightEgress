@@ -10,11 +10,6 @@
 
         public new string LocalizationCategory => "NPCs.Misc";
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("...");
-        }
-
         public override void SetDefaults()
         {
             NPC.width = 283;
@@ -78,31 +73,31 @@
             ref float glowingBackIllusionsOutwardness = ref NPC.Cascade().ExtraAI[GlowingBackIllusionsOutwardnessIndex];
             ref float eyeGlareScale = ref NPC.Cascade().ExtraAI[EyeGlareScaleIndex];
 
-            Texture2D Noxus = TextureAssets.Npc[NPC.type].Value;
-            Texture2D EyeGlare = CascadeTextureRegistry.SoftStar.Value;
+            Texture2D noxus = TextureAssets.Npc[NPC.type].Value;
+            Texture2D eyeGlare = CascadeTextureRegistry.SoftStar.Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition + new Vector2(0f, NPC.gfxOffY);
 
             // Lerp between magenta and blue.
-            Color backEffectColor = ColorSwap(Color.Magenta, Color.DarkBlue, 10f);
+            Color backEffectColor = Utilities.ColorSwap(Color.Magenta, Color.DarkBlue, 10f);
 
             for (int i = 0; i < 8; i++)
             {
                 float targetAngle = (float)Main.timeForVisualEffects / 180f * TwoPi;
                 glowingBackIllusionsAngle = glowingBackIllusionsAngle.AngleTowards(targetAngle, ToRadians(12f));
                 Vector2 backEffectDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(glowingBackIllusionsAngle + TwoPi * i / 8f) * glowingBackIllusionsOutwardness;
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
-                Main.EntitySpriteDraw(Noxus, backEffectDrawPosition, NPC.frame, NPC.GetAlpha(backEffectColor) * 0.45f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
+                Main.EntitySpriteDraw(noxus, backEffectDrawPosition, NPC.frame, NPC.GetAlpha(backEffectColor) * 0.45f, NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
+                Main.spriteBatch.ResetToDefault();
 
             }
 
             // Draw the main texture.
-            Main.EntitySpriteDraw(Noxus, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(noxus, drawPosition, NPC.frame, NPC.GetAlpha(drawColor), NPC.rotation, NPC.frame.Size() / 2f, NPC.scale, SpriteEffects.None, 0);
             // Draw the eye glare.
             Vector2 eyeGlareDrawPosition = drawPosition + new Vector2(2f, 10f);
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-            Main.EntitySpriteDraw(EyeGlare, eyeGlareDrawPosition, null, NPC.GetAlpha(backEffectColor), NPC.rotation, EyeGlare.Size() / 2f, eyeGlareScale, SpriteEffects.None, 0);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
+            Main.EntitySpriteDraw(eyeGlare, eyeGlareDrawPosition, null, NPC.GetAlpha(backEffectColor), NPC.rotation, eyeGlare.Size() / 2f, eyeGlareScale, SpriteEffects.None, 0);
+            Main.spriteBatch.ResetToDefault();
             return false;
         }
     }

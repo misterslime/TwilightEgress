@@ -149,7 +149,7 @@
             Vector2 screenArea = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
             Vector2 textureScale = screenArea / TextureAssets.BlackTile.Value.Size();
             spriteBatch.Draw(TextureAssets.BlackTile.Value, screenArea * 0.5f, null, Color.Lerp(Color.White, Color.DarkGray, 1f) * FadeOpacity, 0f, TextureAssets.BlackTile.Value.Size() * 0.5f, textureScale, SpriteEffects.None, 0f);
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            Main.spriteBatch.ResetToDefault();
 
             for (int i = 0; i < GlowStars.Count; i++)
             {

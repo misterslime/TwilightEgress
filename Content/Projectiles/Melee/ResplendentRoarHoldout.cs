@@ -237,8 +237,8 @@ namespace Cascade.Content.Projectiles.Melee
 
                     for (int i = 0; i < 3; i++)
                     {
-                        Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                        Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                        Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                        Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
                         Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                         float scale = i == 2 ? 9f : i == 1f ? 6f : 3f;
@@ -291,8 +291,8 @@ namespace Cascade.Content.Projectiles.Melee
                     float lineLength = 146f * Projectile.scale;
                     Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * lineLength + DistanceFromPlayer + Main.rand.NextVector2Circular(80f, 80f);
 
-                    Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                    Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                    Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                    Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
                     Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                     int lifespan = Main.rand.Next(15, 30);
@@ -308,8 +308,8 @@ namespace Cascade.Content.Projectiles.Melee
                     float lineLength = 146f * Projectile.scale;
                     Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * lineLength + DistanceFromPlayer + Main.rand.NextVector2Circular(120f, 120f);
 
-                    Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                    Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                    Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                    Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
                     Color sparkleColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                     int lifespan = Main.rand.Next(15, 30);
@@ -337,7 +337,6 @@ namespace Cascade.Content.Projectiles.Melee
             }
 
             // Visual stuff.
-            //CascadeCameraSystem.Screenshake(3, 6, target.Center);
             ScreenShakeSystem.StartShakeAtPoint(target.Center, 3f, shakeStrengthDissipationIncrement: 0.5f, intensityTaperEndDistance: 2000);
             for (int i = 0; i < Main.rand.Next(15, 25); i++)
             {
@@ -345,9 +344,9 @@ namespace Cascade.Content.Projectiles.Melee
                 float scale = Main.rand.NextFloat(0.85f, 1.25f);
                 int lifespan = Main.rand.Next(25, 45);
 
-                Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
-                Color sparkColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
+                Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                Color sparkColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                 SparkParticle sparks = new(target.Center, velocity, false, lifespan, scale, sparkColor);
                 GeneralParticleHandler.SpawnParticle(sparks);
@@ -361,9 +360,9 @@ namespace Cascade.Content.Projectiles.Melee
                     float scale = Main.rand.NextFloat(1f, 2f);
                     int lifespan = Main.rand.Next(25, 45);
 
-                    Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                    Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
-                    Color flameColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
+                    Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                    Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                    Color flameColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                     HeavySmokeParticle flames = new(target.Center, velocity, flameColor, lifespan, scale, 1f, 0.03f, true);
                     GeneralParticleHandler.SpawnParticle(flames);
@@ -414,18 +413,18 @@ namespace Cascade.Content.Projectiles.Melee
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw backglow effects. 
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * 3f;
 
-                Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-                Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
-                Color backglowColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
+                Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+                Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+                Color backglowColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, null, Projectile.GetAlpha(backglowColor), drawRotation, origin, Projectile.scale * 1.015f, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
@@ -448,8 +447,8 @@ namespace Cascade.Content.Projectiles.Melee
             float extraAngle = (Owner.direction < 0 ? Pi : 0f);
             float rotation = Projectile.rotation - extraAngle; 
 
-            Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-            Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+            Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+            Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
             Color chickenColor = Color.Lerp(MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup), Color.White, 0.3f);
 
             for (int i = 0; i < 6; i++)
@@ -468,9 +467,9 @@ namespace Cascade.Content.Projectiles.Melee
 
         public Color SetTrailColor(float completionRatio)
         {
-            Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-            Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
-            Color trailColor = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
+            Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+            Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+            Color trailColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
             return trailColor;
         }
 
@@ -478,8 +477,8 @@ namespace Cascade.Content.Projectiles.Melee
         {
             /*TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ExobladePierce"]);
 
-            Color colorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-            Color secondColorGroup = MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+            Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
+            Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(colorGroup);

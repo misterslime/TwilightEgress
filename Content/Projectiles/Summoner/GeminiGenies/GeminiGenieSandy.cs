@@ -131,7 +131,7 @@
             Projectile.AdjustProjectileHitboxByScale(54f, 114f);
 
             Vector2 idlePosition = Owner.Center - Vector2.UnitX * 175f;
-            idlePosition.Y += Lerp(-15f, 15f, SineInOutEasing(Timer / 240f, 0));
+            idlePosition.Y += Lerp(-15f, 15f, CascadeUtilities.SineEaseInOut(Timer / 240f));
 
             float speed = 25f;
             Vector2 idealVelocity = idlePosition - Projectile.Center;
@@ -141,7 +141,7 @@
             {
                 // Teleport when the player is too far away.
                 Projectile.Center = Owner.Center;
-                Utilities.CreateRandomizedDustExplosion(36, Projectile.Center, DustID.GoldCoin, 10f);
+                CascadeUtilities.CreateRandomizedDustExplosion(36, Projectile.Center, DustID.GoldCoin, 10f);
             }
 
             if (distance > 70f)
@@ -215,7 +215,7 @@
                 if (Timer <= maxSandnadoAttackTime && Timer % sandnadoSummonInterval == 0)
                 {
                     Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2CircularEdge(200f, 200f);
-                    Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Sandnado>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, true, SoundID.Item60, Projectile.owner, ai1: Utils.SelectRandom(Main.rand, 0f, 1f));
+                    Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Sandnado>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, SoundID.Item60, null, Projectile.owner, ai1: Utils.SelectRandom(Main.rand, 0f, 1f));
                 }
 
                 if (Timer >= maxSandnadoAttackTime)
@@ -243,7 +243,7 @@
                 if (Timer == 0f)
                 {
                     SoundEngine.PlaySound(SoundID.Item60, Projectile.Center);
-                    Utilities.CreateDustCircle(36, Projectile.Center, DustID.GoldCoin, 10f);
+                    CascadeUtilities.CreateDustCircle(36, Projectile.Center, DustID.GoldCoin, 10f);
                 }
 
                 if (Timer <= rushTime)
@@ -252,9 +252,9 @@
                     Projectile.SimpleMove(targetCenter, 45f, 85f);
                     if (Timer <= 30f)
                     {
-                        sandTwisterOpacity = Lerp(sandTwisterOpacity, 1f, SineInOutEasing(Timer / 30f, 0));
-                        sandTwisterScale = Lerp(5f, 2.25f, SineInOutEasing(Timer / 30f, 0));
-                        Projectile.Opacity = Lerp(Projectile.Opacity, 0f, SineInOutEasing(Timer / 30f, 0));
+                        sandTwisterOpacity = Lerp(sandTwisterOpacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 30f));
+                        sandTwisterScale = Lerp(5f, 2.25f, CascadeUtilities.SineEaseInOut(Timer / 30f));
+                        Projectile.Opacity = Lerp(Projectile.Opacity, 0f, CascadeUtilities.SineEaseInOut(Timer / 30f));
                     }
                 }
 
@@ -334,7 +334,7 @@
             Vector2 origin = rec.Size() / 2f;
 
             // Draw the afterimage trail.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
             {
                 SpriteEffects effects = Projectile.oldSpriteDirection[i] > 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -342,7 +342,7 @@
                 Color trailColor = Color.Lerp(Color.Gold, Color.White, 0.4f) * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                 Main.EntitySpriteDraw(sandTwister, trailDrawPosition, rec, trailColor * sandTwisterOpacity, Projectile.oldRot[i], origin, sandTwisterScale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main texture.
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -359,7 +359,7 @@
             Rectangle projRec = new Rectangle(0, currentYFrame, baseTexture.Width, individualFrameHeight);
 
             // Draw the afterimagee trail.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
             {
                 SpriteEffects effects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -367,7 +367,7 @@
                 Color trailColor = Color.Gold * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                 Main.EntitySpriteDraw(glowTexture, drawPosition, null, Projectile.GetAlpha(trailColor), Projectile.oldRot[i], glowTexture.Size() / 2f, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main texture.
             SpriteEffects spriteEffects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

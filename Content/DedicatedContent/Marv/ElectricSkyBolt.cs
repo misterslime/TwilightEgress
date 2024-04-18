@@ -43,7 +43,7 @@
 
             if (Projectile.timeLeft == 44)
             {
-                StrikePositions = Utilities.CreateLightningBoltPoints(Projectile.Center, StrikePosition);
+                StrikePositions = CascadeUtilities.CreateLightningBoltPoints(Projectile.Center, StrikePosition);
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), StrikePosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBoltExplosion>(), Projectile.damage, Projectile.knockBack, Owner: Projectile.owner);
                 int numOfMist = Main.rand.Next(5, 10);
                 for (int i = 0; i < numOfMist; i++)
@@ -107,7 +107,7 @@
 
         public void DrawBloomFlare(Texture2D texture, bool strikePosition = false)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Vector2 drawPosition = strikePosition ? StrikePosition : Projectile.Center;
             Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
@@ -116,7 +116,7 @@
             Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation * 3f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
 
             Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation * 4f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
         }
     }
 }

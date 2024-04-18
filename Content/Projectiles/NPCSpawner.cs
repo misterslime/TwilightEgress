@@ -6,7 +6,7 @@
 
         public new string LocalizationCategory => "Projectiles.Misc";
 
-        public override string Texture => Utilities.ExtraTexturesDirectory + "/EmptyPixel";
+        public override string Texture => CascadeUtilities.EmptyPixelPath;
 
         public override void SetDefaults()
         {

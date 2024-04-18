@@ -3,7 +3,7 @@ using Cascade.Content.Events.CosmostoneShowers;
 
 namespace Cascade
 {
-    public static partial class Utilities
+    public static partial class CascadeUtilities
     {
         public static bool ZoneCosmostoneShowers(this Player player) => EventHandlerManager.SpecificEventIsActive<CosmostoneShowerEvent>() && (player.ZoneOverworldHeight || player.ZoneSkyHeight);
 

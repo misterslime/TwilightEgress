@@ -22,7 +22,7 @@
         public override void Update()
         {
             Opacity = Lerp(1f, 0f, LifetimeRatio);
-            Scale = new(Lerp(BaseScale, NewScale, SineOutEasing(LifetimeRatio, 0)));
+            Scale = new(Lerp(BaseScale, NewScale, CascadeUtilities.SineEaseOut(LifetimeRatio)));
         }
 
         public override void Draw(SpriteBatch spriteBatch)

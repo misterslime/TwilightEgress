@@ -1,82 +1,63 @@
-﻿using rail;
-using static Humanizer.In;
+﻿using static Luminance.Common.Utilities.Utilities;
 
 namespace Cascade
 {
-    public static partial class Utilities
+    public static partial class CascadeUtilities
     {
         /// <summary>
-        /// A method used for spawning projectiles that also caters for <see cref="Main.netMode"/> and playing sounds.
+        /// A method used for spawning projectiles that also caters for updating projectiles on the network and playing sounds.
         /// </summary>
         /// <param name="spawnX">The x spawn position of the projectile.</param>
 		/// <param name="spawnY">The y spawn position of the projectile.</param>
 		/// <param name="velocityX">The x velocity of the projectile.</param>
 		/// <param name="velocityY">The y velocity of the projectile.</param>
 		/// <param name="type">The id of the projectile type that is being summoned.</param>
-		/// <param name="damage">The damage of the projectile that is being summoned.</param>
-		/// <param name="knockback">The knockback of the projectile that is being summoned.</param>
-        /// <param name="playSound">Whether or not a sound should be played.</param>
-        /// <param name="sound">The ID of the SoundStyle that should be played.</param>
+        /// <param name="damage">The damage of the projectile that is being summoned.</param>
+        /// <param name="knockback">The knockback of the projectile that is being summoned.</param>
+        /// <param name="sound">The SoundStyle ID of the sound that should be played. Defaults to null.</param>
+        /// <param name="source">The <see cref="IEntitySource"/> of the projectile being spawned. This parameter is optional and will default
+        /// to <see cref="Entity.GetSource_FromAI(string?)"/> if left null.</param>
         /// <param name="owner">The owner of the projectile that is being summond. Defaults to Main.myPlayer.</param>
 		/// <param name="ai0">An optional <see cref="Projectile.ai"/>[0] fill value. Defaults to 0.</param>
 		/// <param name="ai1">An optional <see cref="Projectile.ai"/>[1] fill value. Defaults to 0.</param>
-        public static int SpawnProjectile(this Projectile projectile, float spawnX, float spawnY, float velocityX, float velocityY, int type, int damage, float knockback, bool playSound = false, SoundStyle sound = default, int owner = -1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
+        /// <param name="ai2">An optional <see cref="Projectile.ai"/>[2] fill value. Defaults to 0.</param>
+        /// <returns>The index of the projectile being spawned.</returns>
+        public static int BetterNewProjectile(this Projectile projectile, float spawnX, float spawnY, float velocityX, float velocityY, int type, int damage, float knockback, SoundStyle? sound = null, IEntitySource source = null, int owner = -1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
         {
             int p = 0;
             if (owner == -1)
                 owner = Main.myPlayer;
 
-            if (playSound)
+            if (sound.HasValue)
                 SoundEngine.PlaySound(sound, projectile.Center);
 
-            if (Main.netMode != NetmodeID.MultiplayerClient)
-            {
-                p = Projectile.NewProjectile(projectile.GetSource_FromAI(), spawnX, spawnY, velocityX, velocityY, type, damage, knockback, owner, ai0, ai1, ai2);
-            }
+            p = Projectile.NewProjectile(source ?? projectile.GetSource_FromAI(), spawnX, spawnY, velocityX, velocityY, type, damage, knockback, owner, ai0, ai1, ai2);
+            if (Main.projectile.IndexInRange(p))
+                Main.projectile[p].netUpdate = true;
 
             return p;
         }
 
         /// <summary>
-        /// A method used for spawning projectiles that also caters for <see cref="Main.netMode"/> and playing sounds.
+        /// A method used for spawning projectiles that also caters for updating projectiles on the network and playing sounds.
+        /// This iteration in particular accepts a Vector2 for both the spawn position and velocity paramters.
         /// </summary>
         /// <param name="center">The spawn positon of the projectile.</param>
         /// <param name="velocity">The velocity of the projectile.</param>
         /// <param name="type">The id of the projectile type that is being summoned.</param>
         /// <param name="damage">The damage of the projectile that is being summoned.</param>
         /// <param name="knockback">The knockback of the projectile that is being summoned.</param>
-        /// <param name="playSound">Whether or not a sound should be played.</param>
-        /// <param name="sound">The ID of the SoundStyle that should be played.</param>
+        /// <param name="sound">The SoundStyle ID of the sound that should be played. Defaults to null.</param>
+        /// <param name="source">The <see cref="IEntitySource"/> of the projectile being spawned. This parameter is optional and will default
+        /// to <see cref="Entity.GetSource_FromAI(string?)"/> if left null.</param>
         /// <param name="owner">The owner of the projectile that is being summond. Defaults to Main.myPlayer.</param>
 		/// <param name="ai0">An optional <see cref="Projectile.ai"/>[0] fill value. Defaults to 0.</param>
 		/// <param name="ai1">An optional <see cref="Projectile.ai"/>[1] fill value. Defaults to 0.</param>
-        public static int SpawnProjectile(this Projectile projectile, Vector2 center, Vector2 velocity, int type, int damage, float knockback, bool playSound = false, SoundStyle sound = default, int owner = -1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
+        /// <param name="ai2">An optional <see cref="Projectile.ai"/>[2] fill value. Defaults to 0.</param>
+        /// <returns>The index of the projectile being spawned.</returns>
+        public static int BetterNewProjectile(this Projectile projectile, Vector2 center, Vector2 velocity, int type, int damage, float knockback, SoundStyle? sound = null, IEntitySource source = null, int owner = -1, float ai0 = 0, float ai1 = 0, float ai2 = 0)
         {
-            return projectile.SpawnProjectile(center.X, center.Y, velocity.X, velocity.Y, type, damage, knockback, playSound, sound, owner, ai0, ai1, ai2);
-        }
-
-        /// <summary>
-        /// Moves the projctile towards a Vector2.
-        /// </summary>
-        /// <param name="projectile">The projectile using this method.</param>
-        /// <param name="targetPosition">The position or Vector2 of the position to move to.</param>
-        /// <param name="moveSpeed">The maximum movement speed.</param>
-        /// <param name="turnResistance">The turn resistance of the movement. This affects how quickly it takes the projectile to adjust direction.</param>
-        public static void SimpleMove(this Projectile projectile, Vector2 targetPosition, float moveSpeed, float turnResistance = 10f)
-        {
-            Vector2 move = targetPosition - projectile.Center;
-            float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
-            if (magnitude > moveSpeed)
-            {
-                move *= moveSpeed / magnitude;
-            }
-            move = (projectile.velocity * turnResistance + move) / (turnResistance + 1f);
-            magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
-            if (magnitude > moveSpeed)
-            {
-                move *= moveSpeed / magnitude;
-            }
-            projectile.velocity = move;
+            return projectile.BetterNewProjectile(center.X, center.Y, velocity.X, velocity.Y, type, damage, knockback, sound, source, owner, ai0, ai1, ai2);
         }
 
         /// <summary>
@@ -118,66 +99,6 @@ namespace Cascade
                 projectile.height = idealHeight;
                 projectile.position.X -= projectile.width / 2;
                 projectile.position.Y -= projectile.height / 2;
-            }
-        }
-
-        public static void UpdatePlayerVariablesForHeldProjectile(this Projectile projectile, Player owner, bool updateDirectionByRotation = false)
-        {
-            owner.heldProj = projectile.whoAmI;
-            if (updateDirectionByRotation)
-                owner.direction = Sign(projectile.rotation.ToRotationVector2().X);
-            else
-                owner.direction = Sign(projectile.velocity.X);
-            owner.itemRotation = projectile.rotation;
-            if (owner.direction != 1)
-            {
-                owner.itemRotation -= Pi;
-            }
-            owner.itemRotation = WrapAngle(projectile.rotation);
-        }   
-
-        public static void SearchForViableTargetsForMinion(this Projectile projectile, Player owner, float maxSearchDistance, float maxSearchDistanceThroughWalls, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter) 
-        {
-            distanceFromTarget = maxSearchDistance;
-            targetCenter = projectile.position;
-            foundTarget = false;
-
-            // Ensures minions using this will still target accordingly if the minion is compatible with the right-click targeting feature.
-            if (owner.HasMinionAttackTargetNPC)
-            {
-                NPC target = Main.npc[owner.MinionAttackTargetNPC];
-                float distanceBetweem = Vector2.Distance(target.Center, projectile.Center);
-
-                if (distanceBetweem < maxSearchDistance)
-                {
-                    distanceFromTarget = distanceBetweem;
-                    targetCenter = target.Center;
-                    foundTarget = true;
-                }
-            }
-
-            // Usual targetting code.
-            if (!foundTarget)
-            {
-                for (int i = 0; i < Main.maxNPCs; i++)
-                {
-                    NPC target = Main.npc[i];
-                    if (target.CanBeChasedBy())
-                    {
-                        float distanceBetween = Vector2.Distance(target.Center, projectile.Center);
-                        bool closestToProjectile = Vector2.Distance(projectile.Center, target.Center) > distanceBetween;
-                        bool inRangeOfProjectile = distanceBetween < maxSearchDistance;
-                        bool lineOfSight = Collision.CanHitLine(projectile.position, projectile.width, projectile.height, target.position, target.width, target.height);
-                        bool closestTargetThroughWalls = distanceBetween < maxSearchDistanceThroughWalls;
-
-                        if (((closestToProjectile && inRangeOfProjectile) || !foundTarget) || (lineOfSight || closestTargetThroughWalls))
-                        {
-                            distanceFromTarget = distanceBetween;
-                            targetCenter = target.Center;
-                            foundTarget = true;
-                        }
-                    }
-                }
             }
         }
 

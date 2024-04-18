@@ -52,8 +52,8 @@ namespace Cascade.Content.Projectiles.Rogue
             // Scale up.
             if (Timer <= 20f)
             {
-                Projectile.scale = Lerp(Projectile.scale, RandomNewScale, SineInOutEasing(Timer / 20f, 0));
-                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / 20f, 0));
+                Projectile.scale = Lerp(Projectile.scale, RandomNewScale, CascadeUtilities.SineEaseInOut(Timer / 20f));
+                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 20f));
             }
 
             if (Timer >= 30f)
@@ -100,7 +100,7 @@ namespace Cascade.Content.Projectiles.Rogue
             {
                 Vector2 snowflakeVelocity = Vector2.UnitX.RotatedBy(TwoPi * i / 6) * 16f;
                 int damage = Projectile.damage.GetPercentageOfInteger(0.65f);
-                Projectile.SpawnProjectile(Projectile.Center, snowflakeVelocity, ModContent.ProjectileType<HolidayHalberdIceShockSnowflake>(), damage, 
+                Projectile.BetterNewProjectile(Projectile.Center, snowflakeVelocity, ModContent.ProjectileType<HolidayHalberdIceShockSnowflake>(), damage, 
                     Projectile.knockBack, owner: Projectile.owner, ai0: snowflakeAngularVelocity);
             }
         }
@@ -122,9 +122,9 @@ namespace Cascade.Content.Projectiles.Rogue
             Texture2D glowTexture = ModContent.Request<Texture2D>("Cascade/Content/Projectiles/Rogue/HolidayHalberdIceShock_Glow").Value;
 
             // Backglow.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.LightSkyBlue * 0.45f), 3f);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // White overlay.
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, texture: glowTexture);

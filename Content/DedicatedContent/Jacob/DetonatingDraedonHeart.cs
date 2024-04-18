@@ -62,7 +62,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
 
             if (Timer <= MaxChargeTime)
             {
-                Projectile.scale = Lerp(Projectile.scale, 1.5f, SineInOutEasing(Timer / MaxChargeTime, 0));
+                Projectile.scale = Lerp(Projectile.scale, 1.5f, CascadeUtilities.SineEaseInOut(Timer / MaxChargeTime));
             }
 
             if (Timer >= MaxChargeTime && Timer <= MaxChargeTime + DetonationDelay + (int)RandomizedExplosionDelay && Timer % 5 == 0)
@@ -82,8 +82,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
                 }
 
                 // Backglow visuals.
-                heartBackglowOpacity = Lerp(heartBackglowOpacity, 1f, SineInOutEasing(Timer / 30 + RandomizedExplosionDelay, 0));
-                heartBackglowRadius = Lerp(0f, 5f, SineInOutEasing(Timer / 30 + RandomizedExplosionDelay, 0));
+                heartBackglowOpacity = Lerp(heartBackglowOpacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 30 + RandomizedExplosionDelay));
+                heartBackglowRadius = Lerp(0f, 5f, CascadeUtilities.SineEaseInOut(Timer / 30 + RandomizedExplosionDelay));
 
                 // Decrease the frame speed to make the animation appear faster.
                 FrameSpeed = Clamp(FrameSpeed - 1f, 1f, 10f);
@@ -126,7 +126,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
             for (int i = 0; i < 12; i++)
             {
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Tanksplosion>(), Projectile.damage, Projectile.knockBack);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Tanksplosion>(), Projectile.damage, Projectile.knockBack);
             }
 
             int sparkLifespan = Main.rand.Next(20, 36);
@@ -150,7 +150,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
 
             Texture2D heartGlow = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/DetonatingDraedonHeartGlow").Value;
 
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 8; i++)
             {
                 heartBackglowSpin += TwoPi / 240f;
@@ -158,7 +158,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
                 Color color = Color.Red;
                 Main.EntitySpriteDraw(heartGlow, HeartBackglowDrawPosition, null, color * heartBackglowOpacity, Projectile.rotation, heartGlow.Size() / 2f, Projectile.scale * 1.085f, SpriteEffects.None, 0);
             }
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
             return false;

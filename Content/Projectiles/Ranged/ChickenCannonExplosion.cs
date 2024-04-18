@@ -8,7 +8,7 @@ namespace Cascade.Content.Projectiles.Ranged
 
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public override string Texture => Utilities.EmptyPixelPath;
+        public override string Texture => CascadeUtilities.EmptyPixelPath;
 
         public override void SetDefaults()
         {
@@ -54,7 +54,7 @@ namespace Cascade.Content.Projectiles.Ranged
         {
             Vector2 center = Projectile.Center;
             Vector2 size = Projectile.Size;
-            return CircularHitboxCollision(center, size.Length() / 2f, targetHitbox);
+            return CalamityUtils.CircularHitboxCollision(center, size.Length() / 2f, targetHitbox);
         }
 
         public override void AI()
@@ -63,12 +63,11 @@ namespace Cascade.Content.Projectiles.Ranged
             if (Timer % 2 == 0)
             {
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<ChickenCannonMiniBoom>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, owner: Projectile.owner);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<ChickenCannonMiniBoom>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, owner: Projectile.owner);
             }
 
             Timer++;
-            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 15f;
-            ScreenShakeSystem.StartShake(15f, shakeStrengthDissipationIncrement: 0.185f);
+            ScreenShakeSystem.StartShakeAtPoint(Projectile.Center, 15f, shakeStrengthDissipationIncrement: 0.185f);
         }
     }
 }

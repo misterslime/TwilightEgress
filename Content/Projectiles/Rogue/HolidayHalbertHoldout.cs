@@ -82,8 +82,8 @@ namespace Cascade.Content.Projectiles.Rogue
             {
                 Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * 30f * Projectile.scale;
                 Vector2 spawnPosition = Projectile.Center + Projectile.SafeDirectionTo(Main.MouseWorld) * 5f;
-                int p = Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HolidayHalberdThrown>(), Projectile.damage,
-                    Projectile.knockBack, true, CommonCalamitySounds.LouderSwingWoosh, Projectile.owner);
+                int p = Projectile.BetterNewProjectile(spawnPosition, velocity, ModContent.ProjectileType<HolidayHalberdThrown>(), Projectile.damage,
+                    Projectile.knockBack, CommonCalamitySounds.LouderSwingWoosh, null, Projectile.owner);
 
                 if (Main.projectile.IndexInRange(p))
                 {
@@ -141,8 +141,8 @@ namespace Cascade.Content.Projectiles.Rogue
 
         public Color GetHalberdVisualColors()
         {
-            Color mainColor = ColorSwap(Color.Red, Color.Lime, 2f);
-            Color stealthColor = MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f, Color.Cyan, Color.LightCyan, Color.LightSkyBlue, Color.LightBlue);
+            Color mainColor = Utilities.ColorSwap(Color.Red, Color.Lime, 2f);
+            Color stealthColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f, Color.Cyan, Color.LightCyan, Color.LightSkyBlue, Color.LightBlue);
             if (Owner.Calamity().rogueStealth > 0f)
                 mainColor = Color.Lerp(mainColor, stealthColor, Owner.Calamity().rogueStealth / Owner.Calamity().rogueStealthMax);
 
@@ -163,13 +163,13 @@ namespace Cascade.Content.Projectiles.Rogue
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw backglow effects. 
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * 3f;
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, null, Projectile.GetAlpha(GetHalberdVisualColors()), drawRotation, origin, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);

@@ -11,7 +11,7 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            item.InsertNewTooltipLine(tooltips, "Tooltip0", "BeeFlightEffect", "10% increased flight time");
+            Utilities.EditTooltipByNum(0, item, tooltips, (t) => t.Text += "\nIncreases wing flight time by 10%");
         }
     }
 }

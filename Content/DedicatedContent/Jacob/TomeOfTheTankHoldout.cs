@@ -109,8 +109,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
                 // Start to make the ritual circle visible after 3 seconds.
                 if (ChargeTimer >= 60)
                 {
-                    ritualCircleScale = Lerp(0f, 1f, SineInOutEasing(ChargeTimer / 175f, 0));
-                    ritualCircleOpacity = Lerp(0f, 1f, SineInOutEasing(ChargeTimer / 175f, 0));
+                    ritualCircleScale = Lerp(0f, 1f, CascadeUtilities.SineEaseInOut(ChargeTimer / 175f));
+                    ritualCircleOpacity = Lerp(0f, 1f, CascadeUtilities.SineEaseInOut(ChargeTimer / 175f));
                 }
             }
 
@@ -121,7 +121,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
                     Owner.ConsumeManaManually(300);
                     Vector2 spawnPosition = Owner.Center + Vector2.UnitY.RotatedByRandom(TwoPi) * 250f;
                     Vector2 velocity = -spawnPosition.DirectionTo(Owner.Center).SafeNormalize(Vector2.UnitY) * 5f;
-                    Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<Rampart>(), Projectile.damage, Projectile.knockBack, true, SoundID.Item105);
+                    Projectile.BetterNewProjectile(spawnPosition, velocity, ModContent.ProjectileType<Rampart>(), Projectile.damage, Projectile.knockBack, SoundID.Item105);
                 }
             }
 
@@ -136,9 +136,9 @@ namespace Cascade.Content.DedicatedContent.Jacob
             // Only draw the ritual circle if necessary.
             if (ritualCircleOpacity > 0 && ritualCircleScale > 0)
             {
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 DrawRitualCircle();
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.ResetToDefault();
             }
             DrawBook(lightColor);
             return false;
@@ -158,8 +158,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
             Vector2 mainRitualDrawPosition = Owner.Center + Vector2.UnitY * Owner.gfxOffY - Main.screenPosition;
             float scale = ritualCircleScale * Projectile.scale;
 
-            Color outerRitualColor = ColorSwap(Color.CornflowerBlue, Color.Goldenrod, 1.5f) * ritualCircleOpacity;
-            Color innerRitualColor = ColorSwap(Color.Crimson, Color.DarkSlateBlue, 3f) * ritualCircleOpacity;
+            Color outerRitualColor = Utilities.ColorSwap(Color.CornflowerBlue, Color.Goldenrod, 1.5f) * ritualCircleOpacity;
+            Color innerRitualColor = Utilities.ColorSwap(Color.Crimson, Color.DarkSlateBlue, 3f) * ritualCircleOpacity;
 
             Main.EntitySpriteDraw(outerCircle, mainRitualDrawPosition, null, Projectile.GetAlpha(outerRitualColor), Projectile.rotation, outerCircle.Size() / 2f, scale, SpriteEffects.None);
             Main.EntitySpriteDraw(innerCircle, mainRitualDrawPosition, null, Projectile.GetAlpha(innerRitualColor), -Projectile.rotation, innerCircle.Size() / 2f, scale, SpriteEffects.None);

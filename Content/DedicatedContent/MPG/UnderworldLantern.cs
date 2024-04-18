@@ -223,9 +223,9 @@ namespace Cascade.Content.DedicatedContent.MPG
                 // Ease back to the player and fade out.
                 if (Timer <= returnTime)
                 {
-                    Projectile.Opacity = Lerp(Projectile.Opacity, 0f, Utilities.SineEaseInOut(Timer / returnTime));
-                    Projectile.scale = Lerp(Projectile.scale, 1f, Utilities.SineEaseInOut(Timer / returnTime));
-                    Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Center, Utilities.SineEaseInOut(Timer / returnTime));
+                    Projectile.Opacity = Lerp(Projectile.Opacity, 0f, CascadeUtilities.SineEaseInOut(Timer / returnTime));
+                    Projectile.scale = Lerp(Projectile.scale, 1f, CascadeUtilities.SineEaseInOut(Timer / returnTime));
+                    Projectile.Center = Vector2.Lerp(Projectile.Center, Owner.Center, CascadeUtilities.SineEaseInOut(Timer / returnTime));
                 }
 
                 // Head back to usual idle AI.
@@ -310,7 +310,7 @@ namespace Cascade.Content.DedicatedContent.MPG
 
             Rectangle spiritRec = spiritTexture.Frame(1, 4, 0, (int)(undeadSpiritFrame % 4));
 
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < ProjectileID.Sets.TrailCacheLength[Type]; i++)
             {
                 Vector2 drawPosition = Projectile.oldPos[i] + Projectile.Size / 2f - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
@@ -321,7 +321,7 @@ namespace Cascade.Content.DedicatedContent.MPG
                 else
                     Main.EntitySpriteDraw(baseTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.rotation, projRec.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             return false;
         }

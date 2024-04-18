@@ -6,11 +6,6 @@
 
         public override string Texture => "CalamityMod/Projectiles/Summon/SmallAresArms/MinionPlasmaGas";
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Thunderous Mist");
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 50;
@@ -50,9 +45,9 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.Goldenrod), Projectile.rotation, Projectile.scale, animated: true);
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
             return false;
         }
     }

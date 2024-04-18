@@ -123,7 +123,7 @@
         public void DoBehavior_Idle()
         {
             Vector2 idlePosition = Owner.Center + Vector2.UnitX * 175f;
-            idlePosition.Y += Lerp(-15f, 15f, SineInOutEasing(Timer / 240f, 0));
+            idlePosition.Y += Lerp(-15f, 15f, CascadeUtilities.SineEaseInOut(Timer / 240f));
 
             float speed = 25f;
             Vector2 idealVelocity = idlePosition - Projectile.Center;
@@ -133,7 +133,7 @@
             {
                 // Teleport when the player is too far away.
                 Projectile.Center = Owner.Center;
-                Utilities.CreateRandomizedDustExplosion(36, Projectile.Center, DustID.GoldCoin, 10f);
+                CascadeUtilities.CreateRandomizedDustExplosion(36, Projectile.Center, DustID.GoldCoin, 10f);
             }
 
             if (distance > 70f)
@@ -173,7 +173,7 @@
                 for (int i = 0; i < 2; i++)
                 {
                     int weaponType = i;
-                    Projectile.SpawnProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticallyControlledWeapon>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, true, SoundID.DD2_DarkMageCastHeal, Projectile.owner, ai2: weaponType);
+                    Projectile.BetterNewProjectile(Projectile.Center, Vector2.Zero, ModContent.ProjectileType<TelekineticallyControlledWeapon>(), (int)(Projectile.damage * 0.65f), Projectile.knockBack, SoundID.DD2_DarkMageCastHeal, null, Projectile.owner, ai2: weaponType);
                 }
                 Projectile.netUpdate = true;
             }
@@ -189,7 +189,7 @@
             Rectangle projRec = new Rectangle(0, currentYFrame, glowTexture.Width, individualFrameHeight);
 
             // Draw the afterimagee trail.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < Projectile.oldPos.Length; i++)
             {
                 SpriteEffects effects = Projectile.oldSpriteDirection[i] < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
@@ -197,7 +197,7 @@
                 Color trailColor = Color.Lerp(Color.Magenta, Color.White, 0.7f) * 0.75f * ((float)(Projectile.oldPos.Length - i) / Projectile.oldPos.Length);
                 Main.EntitySpriteDraw(glowTexture, drawPosition, projRec, Projectile.GetAlpha(trailColor), Projectile.oldRot[i], glowTexture.Size() / 2f, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main texture.
             SpriteEffects spriteEffects = Projectile.spriteDirection < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;

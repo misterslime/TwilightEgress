@@ -71,8 +71,8 @@ namespace Cascade.Core.Players.BuffHandlers
                     float abberationInterpolant = Lerp(0f, 25f, BellbirdStunTimeRatio);
                     ChromaticAbberationRenderer.ApplyChromaticAbberation(Main.LocalPlayer.Center, abberationInterpolant, 240);
 
-                    float vignettePowerInterpolant = Lerp(20f, 2f, SineInOutEasing(BellbirdStunTimeRatio, 0));
-                    float vignetteBrightnessInterpolant = Lerp(0f, 3f, SineInOutEasing(BellbirdStunTimeRatio, 0));
+                    float vignettePowerInterpolant = Lerp(20f, 2f, CascadeUtilities.SineEaseInOut(BellbirdStunTimeRatio));
+                    float vignetteBrightnessInterpolant = Lerp(0f, 3f, CascadeUtilities.SineEaseInOut(BellbirdStunTimeRatio));
                     DarkVignetteRenderer.ApplyDarkVignette(Main.LocalPlayer.Center, vignettePowerInterpolant, vignetteBrightnessInterpolant, 180);
                 }
 

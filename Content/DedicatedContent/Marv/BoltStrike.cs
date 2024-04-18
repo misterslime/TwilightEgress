@@ -89,7 +89,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                             //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
                             ScreenShakeSystem.StartShake(7f * Projectile.scale, shakeStrengthDissipationIncrement: 0.185f);
 
-                            Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
+                            Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
                             int lifespan = (int)Lerp(10, 45, Timer / 480);
                             new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
                             Projectile.netUpdate = true;
@@ -106,7 +106,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                     //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 7f * Projectile.scale;
                     ScreenShakeSystem.StartShake(7f * Projectile.scale, shakeStrengthDissipationIncrement: 0.185f);
 
-                    Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
+                    Color shockwaveColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
                     new RoaringShockwaveParticle(45, Projectile.Center, Vector2.Zero, shockwaveColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
                     Projectile.netUpdate = true;
                 }
@@ -141,7 +141,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 }
 
                 // Particles.
-                Color particleColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
+                Color particleColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
                 if (Timer % 10 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
                 {
                     int lifespan = (int)Lerp(45, 100, Timer / 480);
@@ -186,7 +186,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f);
                 Dust d = Dust.NewDustPerfect(Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height), DustID.TintableDustLighted, speed * Main.rand.NextFloat(2f, 6f));
                 d.noGravity = true;
-                d.color = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
+                d.color = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
             }
 
             Projectile.rotation += Pi / 30f;
@@ -235,7 +235,7 @@ namespace Cascade.Content.DedicatedContent.Marv
                 chargingParticles.ParticleSpawnRate = (int)spawnRateCompletion;
                 chargingParticles.SpawnAreaCompactness = 200f;
                 chargingParticles.chargeProgress = chargeCompletion;
-                chargingParticles.ParticleColor = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1));
+                chargingParticles.ParticleColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
 
                 if (timer % 15 == 0f)
                     chargingParticles.AddPulse(chargeCompletion * 12f);
@@ -249,7 +249,7 @@ namespace Cascade.Content.DedicatedContent.Marv
 
         public Color SetTrailColor(float completionRatio)
         {
-            return Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1)) * Projectile.Opacity;
+            return Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480)) * Projectile.Opacity;
         }
 
         public void DrawPrims()
@@ -281,7 +281,7 @@ namespace Cascade.Content.DedicatedContent.Marv
             int currentYFrame = individualFrame * Projectile.frame;
             Rectangle rec = new Rectangle(0, currentYFrame, texture.Width, individualFrame);
 
-            Color color = Color.Lerp(Color.Yellow, Color.Cyan, SineInOutEasing(ColorTimer / 480, 1)) * Projectile.Opacity;
+            Color color = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480)) * Projectile.Opacity;
 
             // Vortex 1.
             Main.EntitySpriteDraw(Vortex, drawPosition, Vortex.Frame(), Projectile.GetAlpha(color), rotation, Vortex.Size() / 2f, Projectile.scale * 3f, SpriteEffects.None, 0);
@@ -291,12 +291,12 @@ namespace Cascade.Content.DedicatedContent.Marv
             // Draw pulsing backglow effects.
             for (int i = 0; i < 4; i++)
             {
-                float backglowRadius = Lerp(2f, 5f, SineInOutEasing((float)(Main.timeForVisualEffects / 30f), 1));
+                float backglowRadius = Lerp(2f, 5f, CascadeUtilities.SineEaseInOut((float)(Main.timeForVisualEffects / 30f)));
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * backglowRadius;
 
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, rec, Projectile.GetAlpha(color), rotation, rec.Size() / 2f, Projectile.scale, effects, 0);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.ResetToDefault();
             }
 
             // Draw the prim trail.

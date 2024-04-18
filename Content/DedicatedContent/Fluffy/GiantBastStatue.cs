@@ -66,14 +66,14 @@
             for (int i = 0; i < 12; i++)
             {
                 Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
-                Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Bastsplosion>(), Projectile.damage, Projectile.knockBack);
+                Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<Bastsplosion>(), Projectile.damage, Projectile.knockBack);
             }
 
             // kibby
             for (int i = 0; i < KibbyCount; i++)
             {
                 Vector2 kibbyVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(13f, 19f);
-                Projectile.SpawnProjectile(Projectile.Center, kibbyVelocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.damage, Projectile.knockBack);
+                Projectile.BetterNewProjectile(Projectile.Center, kibbyVelocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.damage, Projectile.knockBack);
             }
         }
 
@@ -116,10 +116,12 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
+
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Gold * 0.45f), 2f);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Gold));
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Gold));
+
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.scale, animated: true);
             return false;

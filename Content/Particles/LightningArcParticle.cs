@@ -40,7 +40,7 @@
             if (!Initialized)
             {
                 Initialized = true;
-                LightningPoints = Utilities.CreateLightningBoltPoints(Position, EndPosition, PointDisplacementVariance, JaggednessNumerator);
+                LightningPoints = CascadeUtilities.CreateLightningBoltPoints(Position, EndPosition, PointDisplacementVariance, JaggednessNumerator);
             }
 
             LightningLengthFactor = Clamp(LightningLengthFactor + 0.15f, 0f, 1f);

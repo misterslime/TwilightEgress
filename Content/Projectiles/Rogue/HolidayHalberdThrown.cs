@@ -50,9 +50,9 @@ namespace Cascade.Content.Projectiles.Rogue
             {
                 // Spawn two waves of baubles similarly to Berdly's Halberd Attack.
                 Vector2 baubleVelocity = Vector2.Normalize(Projectile.velocity).RotatedBy(PiOver2);
-                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
+                Projectile.BetterNewProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
                 Vector2 baubleVelocity2 = Vector2.Normalize(Projectile.velocity).RotatedBy(-PiOver2);
-                Projectile.SpawnProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
+                Projectile.BetterNewProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
             }
 
             if (Main.rand.NextBool(3))
@@ -76,7 +76,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 for (int i = 0; i < 3; i++)
                 {
                     Vector2 spawnPosition = target.Center + Vector2.UnitX.RotatedBy(TwoPi * i / 3) * 50f;
-                    Projectile.SpawnProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                    Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
                 }
             }
         }
@@ -116,8 +116,8 @@ namespace Cascade.Content.Projectiles.Rogue
 
         public Color GetHalberdVisualColors()
         {
-            Color mainColor = ColorSwap(Color.Red, Color.Lime, 2f);
-            Color stealthColor = MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f, Color.Cyan, Color.LightCyan, Color.LightSkyBlue, Color.LightBlue);
+            Color mainColor = Utilities.ColorSwap(Color.Red, Color.Lime, 2f);
+            Color stealthColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly / 2f, Color.Cyan, Color.LightCyan, Color.LightSkyBlue, Color.LightBlue);
             if (Owner.Calamity().rogueStealth > 0f)
                 mainColor = Color.Lerp(mainColor, stealthColor, Owner.Calamity().rogueStealth / Owner.Calamity().rogueStealthMax);
 
@@ -138,13 +138,13 @@ namespace Cascade.Content.Projectiles.Rogue
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw backglow effects. 
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(i * TwoPi / 4) * 3f;
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, null, Projectile.GetAlpha(GetHalberdVisualColors()), drawRotation, origin, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);

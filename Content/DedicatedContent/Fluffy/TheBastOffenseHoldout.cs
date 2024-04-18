@@ -120,7 +120,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
                     // Play a different sound and a spawn a dust circle to indicate it's done charging.
                     if (bastCatCount == maxBastCatCount)
                     {
-                        Utilities.CreateDustCircle(30, Projectile.Center, DustID.Firework_Yellow, 10f, shouldDefyGravity: true);
+                        CascadeUtilities.CreateDustCircle(30, Projectile.Center, DustID.Firework_Yellow, 10f, shouldDefyGravity: true);
                         SoundEngine.PlaySound(SoundID.ResearchComplete with { MaxInstances = 0 }, Projectile.Center);
                     }
                     bastIncreaseDelay = (int)Clamp(bastIncreaseDelay - 2f, 5f, 60f);
@@ -191,7 +191,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
                     {
                         Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY).RotatedByRandom(ToRadians(25f)) * Main.rand.NextFloat(13f, 19f);
                         Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f;
-                        Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                        Projectile.BetterNewProjectile(spawnPosition, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, SoundID.Item62, null, Projectile.owner);
                     }
 
                     Owner.velocity = -Owner.SafeDirectionTo(Main.MouseWorld) * Lerp(2f, 12f, bastCatCount / 200f);
@@ -205,7 +205,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
                 ResetAnimationTimer++;
                 if (ResetAnimationTimer <= 45f)
                 {
-                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-85f) * Owner.direction * recoilStrength, ExpOutEasing(ResetAnimationTimer / 25f, 0));
+                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-85f) * Owner.direction * recoilStrength, CascadeUtilities.ExpoEaseOut(ResetAnimationTimer / 25f));
                 }
 
                 if (ResetAnimationTimer >= 45f)
@@ -242,7 +242,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
                     Owner.velocity = -Owner.SafeDirectionTo(Main.MouseWorld) * 15f;
 
                     Vector2 bastStatueMegaVelocity = Projectile.SafeDirectionTo(Main.MouseWorld, Vector2.UnitY) * 10f;
-                    Projectile.SpawnProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.originalDamage.GetPercentageOfInteger(4f), Projectile.knockBack, true, SoundID.Item62, Projectile.owner);
+                    Projectile.BetterNewProjectile(Projectile.Center + Projectile.rotation.ToRotationVector2() * 50f, bastStatueMegaVelocity, ModContent.ProjectileType<GiantBastStatue>(), Projectile.originalDamage.GetPercentageOfInteger(4f), Projectile.knockBack, SoundID.Item62, null, Projectile.owner);
                 }
                 ChargeTimer++;
             }
@@ -258,7 +258,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
                 // Recoil animation.
                 ResetAnimationTimer++;
                 if (ResetAnimationTimer <= 45f)
-                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-135f) * Owner.direction, ExpOutEasing(ResetAnimationTimer / 35f, 0));
+                    Projectile.rotation = Lerp(Projectile.rotation, oldRotation + ToRadians(-135f) * Owner.direction, CascadeUtilities.ExpoEaseOut(ResetAnimationTimer / 35f));
 
                 if (ResetAnimationTimer >= 45f)
                     Projectile.Kill();
@@ -283,7 +283,7 @@ namespace Cascade.Content.DedicatedContent.Fluffy
             for (int i = 0; i < bastCatCount; i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(Tau) * Main.rand.NextFloat(10f, 15f);
-                Projectile.SpawnProjectile(Projectile.Center, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, true, CascadeSoundRegistry.KibbyExplosion, Projectile.owner);
+                Projectile.BetterNewProjectile(Projectile.Center, velocity, ModContent.ProjectileType<HomingBastStatue>(), Projectile.originalDamage, Projectile.knockBack, CascadeSoundRegistry.KibbyExplosion, null, Projectile.owner);
             }
 
             // Particle effects.
@@ -342,12 +342,12 @@ namespace Cascade.Content.DedicatedContent.Fluffy
             for (int i = 0; i < 4; i++)
             {
                 backglowRotation += TwoPi / 300f;
-                float backglowRadius = Lerp(2f, 5f, SineInOutEasing((float)(Main.timeForVisualEffects / 30f), 1));
+                float backglowRadius = Lerp(2f, 5f, CascadeUtilities.SineEaseInOut((float)(Main.timeForVisualEffects / 30f)));
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(backglowRotation + TwoPi * i / 4) * backglowRadius;
 
-                Main.spriteBatch.SetBlendState(BlendState.Additive);
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, texture.Frame(), Projectile.GetAlpha(Color.LightYellow), rotation, texture.Size() / 2f, Projectile.scale, effects, 0);
-                Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+                Main.spriteBatch.ResetToDefault();
             }
 
             // Draw the main sprite.

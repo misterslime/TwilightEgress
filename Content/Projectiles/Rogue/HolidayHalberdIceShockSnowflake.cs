@@ -42,14 +42,14 @@
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(SoundID.Shatter, Projectile.Center);
-            Utilities.CreateRandomizedDustExplosion(12, Projectile.Center, DustID.IceTorch, dustScale: 5f);
+            CascadeUtilities.CreateRandomizedDustExplosion(12, Projectile.Center, DustID.IceTorch, dustScale: 5f);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.White));
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.White));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.White * 0.45f), 3f);
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.scale, animated: true);

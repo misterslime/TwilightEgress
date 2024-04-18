@@ -46,8 +46,8 @@
             if (Timer <= fadeinTime)
             {
                 Projectile.velocity *= 0.9f;
-                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, SineInOutEasing(Timer / fadeinTime, 0));
-                Projectile.scale = Lerp(Projectile.scale, 1f, SineInOutEasing(Timer / fadeinTime, 0));
+                Projectile.Opacity = Lerp(Projectile.Opacity, 1f, CascadeUtilities.SineEaseInOut(Timer / fadeinTime));
+                Projectile.scale = Lerp(Projectile.scale, 1f, CascadeUtilities.SineEaseInOut(Timer / fadeinTime));
             }
 
             // Move towards nearby targets.
@@ -56,7 +56,7 @@
                 Projectile.SimpleMove(closestTarget.Center, 20f, 60f);
 
                 Vector2 dustPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
-                Utilities.CreateDustLoop(2, dustPosition, Vector2.Zero, DustID.Shadowflame);
+                CascadeUtilities.CreateDustLoop(2, dustPosition, Vector2.Zero, DustID.Shadowflame);
             }
 
             Timer++;
@@ -66,16 +66,16 @@
 
         public override void OnKill(int timeLeft)
         {
-            Utilities.CreateRandomizedDustExplosion(20, Projectile.Center, DustID.Shadowflame);
+            CascadeUtilities.CreateRandomizedDustExplosion(20, Projectile.Center, DustID.Shadowflame);
             SoundEngine.PlaySound(SoundID.DD2_ExplosiveTrapExplode, Projectile.Center);
         }
 
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.White * 0.45f), 2f);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Magenta));
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Magenta));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
             return false;

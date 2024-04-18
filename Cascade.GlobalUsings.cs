@@ -26,7 +26,6 @@ global using ReLogic.Content;
 
 global using CalamityMod;
 global using CalamityMod.Sounds;
-global using static CalamityMod.CalamityUtils;
 
 global using Cascade.Assets.Sounds;
 global using Cascade.Assets.ExtraTextures;

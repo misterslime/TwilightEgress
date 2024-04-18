@@ -58,9 +58,10 @@
         public override bool PreDraw(ref Color lightColor)
         {
             Color drawColor = Projectile.frame == 0 ? Color.Red : Color.Green;
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(drawColor));
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(drawColor));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawBackglow(Projectile.GetAlpha(drawColor * 0.45f), 3f);
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(lightColor), Projectile.rotation, Projectile.scale, animated: true);

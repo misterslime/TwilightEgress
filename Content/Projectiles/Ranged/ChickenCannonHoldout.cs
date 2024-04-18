@@ -84,7 +84,7 @@ namespace Cascade.Content.Projectiles.Ranged
                     Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f;
                     Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * 15f;
 
-                    Projectile.SpawnProjectile(spawnPosition, velocity, ModContent.ProjectileType<ChickenRocket>(), Projectile.damage, Projectile.knockBack, true, CommonCalamitySounds.LargeWeaponFireSound, Projectile.owner);
+                    Projectile.BetterNewProjectile(spawnPosition, velocity, ModContent.ProjectileType<ChickenRocket>(), Projectile.damage, Projectile.knockBack, CommonCalamitySounds.LargeWeaponFireSound, null, Projectile.owner);
                 }
             }
 
@@ -125,16 +125,16 @@ namespace Cascade.Content.Projectiles.Ranged
             Rectangle projRec = new Rectangle(0, currentYFrame, texture.Width, individualFrameHeight);
 
             // Draw pulsing backglow effects.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 backglowRotation += TwoPi / 300f;
-                float backglowRadius = Lerp(2f, 5f, SineInOutEasing((float)(Main.timeForVisualEffects / 30f), 1));
+                float backglowRadius = Lerp(2f, 5f, CascadeUtilities.SineEaseInOut((float)(Main.timeForVisualEffects / 30f)));
                 Vector2 backglowDrawPositon = drawPosition + Vector2.UnitY.RotatedBy(backglowRotation + TwoPi * i / 4) * backglowRadius;
 
                 Main.EntitySpriteDraw(texture, backglowDrawPositon, projRec, Projectile.GetAlpha(Color.Orange), rotation, projRec.Size() / 2f, Projectile.scale, effects, 0);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, projRec, Projectile.GetAlpha(lightColor), rotation, projRec.Size() / 2f, Projectile.scale, effects, 0);

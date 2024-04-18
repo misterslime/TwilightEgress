@@ -62,21 +62,21 @@ namespace Cascade.Content.DedicatedContent.Jacob
             if (Timer <= MaxChargeTime)
             {
                 Projectile.velocity *= 0.9f;
-                Projectile.Opacity = Lerp(0f, 1f, SineInOutEasing(Timer / MaxChargeTime, 0));
+                Projectile.Opacity = Lerp(0f, 1f, CascadeUtilities.SineEaseInOut(Timer / MaxChargeTime));
                 Projectile.rotation += TwoPi / 120f * RotationDirection;
 
                 // Backglow visuals.
                 if (Timer <= 100)
                 {
-                    rampartBackglowOpacity = Lerp(rampartBackglowOpacity, 1f, SineInOutEasing(Timer / 100f, 0));
-                    rampartBackglowRadius = Lerp(175f, 3f, SineInOutEasing(Timer / 100f, 0));
+                    rampartBackglowOpacity = Lerp(rampartBackglowOpacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 100f));
+                    rampartBackglowRadius = Lerp(175f, 3f, CascadeUtilities.SineEaseInOut(Timer / 100f));
                 }
 
                 // Handle the anvil and summoning circle drawing.
                 if (Timer <= 30f)
-                    anvilAndSummoningCricleOpacity = Lerp(anvilAndSummoningCricleOpacity, 1f, SineInOutEasing(Timer / 30f, 0));
+                    anvilAndSummoningCricleOpacity = Lerp(anvilAndSummoningCricleOpacity, 1f, CascadeUtilities.SineEaseInOut(Timer / 30f));
                 if (Timer >= MaxChargeTime - 25 && Timer <= MaxChargeTime)
-                    anvilAndSummoningCricleOpacity = Lerp(anvilAndSummoningCricleOpacity, 0f, SineInOutEasing(Timer / 25f, 0));
+                    anvilAndSummoningCricleOpacity = Lerp(anvilAndSummoningCricleOpacity, 0f, CascadeUtilities.SineEaseInOut(Timer / 25f));
 
                 // Dust visuals.
                 if (Timer <= MaxChargeTime - 45)
@@ -95,7 +95,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
                 if (Timer == MaxChargeTime)
                 {
                     int dustType = Utils.SelectRandom(Main.rand, DustID.BlueTorch, DustID.Enchanted_Gold);
-                    Utilities.CreateDustCircle(36, Projectile.Center, dustType, 10f, dustScale: 3f);
+                    CascadeUtilities.CreateDustCircle(36, Projectile.Center, dustType, 10f, dustScale: 3f);
                     SoundEngine.PlaySound(CascadeSoundRegistry.AnvilHit, Projectile.Center);
                 }
             }
@@ -129,7 +129,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
             for (int i = 0; i < bombCount; i++)
             {
                 Vector2 bombVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(4f, 25f);
-                Projectile.SpawnProjectile(Projectile.Center, bombVelocity, ModContent.ProjectileType<DetonatingDraedonHeart>(), (int)(Projectile.damage * 0.45f), Projectile.knockBack);
+                Projectile.BetterNewProjectile(Projectile.Center, bombVelocity, ModContent.ProjectileType<DetonatingDraedonHeart>(), (int)(Projectile.damage * 0.45f), Projectile.knockBack);
             }
 
             // Some particles to mimic an explosion like effect.
@@ -173,7 +173,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
 
             Texture2D rampartGlow = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/RampartGlow").Value;
 
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 8; i++)
             {
                 rampartBackglowSpin += TwoPi / 600f;
@@ -183,8 +183,8 @@ namespace Cascade.Content.DedicatedContent.Jacob
                     color = Color.Cyan;
                 Main.EntitySpriteDraw(rampartGlow, rampartBackglowDrawPosition, null, color * rampartBackglowOpacity, Projectile.rotation, rampartGlow.Size() / 2f, Projectile.scale * 1.075f, SpriteEffects.None, 0);
             }
-            DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Cyan));
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+            Utilities.DrawAfterimagesCentered(Projectile, 0, Projectile.GetAlpha(Color.Cyan));
+            Main.spriteBatch.ResetToDefault();
 
             Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale);
         }
@@ -205,20 +205,20 @@ namespace Cascade.Content.DedicatedContent.Jacob
             Main.EntitySpriteDraw(blurredSummoningCircle, summoningCircleDrawPosition, null, Color.White, 0f, blurredSummoningCircle.Size() / 2f, Projectile.scale * 1.45f, SpriteEffects.None, 0);
             ApplyShader(summoningCircle, anvilAndSummoningCricleOpacity, Projectile.rotation, -Vector2.UnitY.ToRotation(), Color.CornflowerBlue, Color.Purple, BlendState.AlphaBlend);
             Main.EntitySpriteDraw(summoningCircle, summoningCircleDrawPosition, null, Color.White, 0f, summoningCircle.Size() / 2f, Projectile.scale * 1.25f, SpriteEffects.None, 0);
-            CalamityUtils.ExitShaderRegion(Main.spriteBatch);
+            Main.spriteBatch.ResetToDefault();
 
             // Cosmic Anvil.
             Vector2 cosmicAnvilDrawPosition = summoningCircleDrawPosition + new Vector2(10f, -20f);
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 cosmicAnvilBackglowSpin += TwoPi / 300f;
                 Vector2 cosmicAnvilOrbitingBackglowDrawPosition = cosmicAnvilDrawPosition + Vector2.UnitY.RotatedBy(cosmicAnvilBackglowSpin + TwoPi * i / 4f) * 10f;
-                Color cosmicAnvilBackglowColor = ColorSwap(Color.Magenta, Color.Fuchsia, 1f) * anvilAndSummoningCricleOpacity;
+                Color cosmicAnvilBackglowColor = Utilities.ColorSwap(Color.Magenta, Color.Fuchsia, 1f) * anvilAndSummoningCricleOpacity;
 
                 Main.EntitySpriteDraw(cosmicAnvil, cosmicAnvilOrbitingBackglowDrawPosition, null, cosmicAnvilBackglowColor, 0f, cosmicAnvil.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
             }
-            CalamityUtils.SetBlendState(Main.spriteBatch, BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             Main.EntitySpriteDraw(cosmicAnvil, cosmicAnvilDrawPosition, null, Color.White * anvilAndSummoningCricleOpacity, 0f, cosmicAnvil.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
         }
@@ -227,7 +227,7 @@ namespace Cascade.Content.DedicatedContent.Jacob
         {
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, blendMode, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-            CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
+            CalamityUtils.CalculatePerspectiveMatricies(out var viewMatrix, out var projectionMatrix);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseColor(startingColor);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSecondaryColor(endingColor);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].UseSaturation(directionRotation);
@@ -238,7 +238,6 @@ namespace Cascade.Content.DedicatedContent.Jacob
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["overallImageSize"].SetValue(texture.Size());
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Shader.Parameters["uWorldViewProjection"].SetValue(viewMatrix * projectionMatrix);
             GameShaders.Misc["CalamityMod:RancorMagicCircle"].Apply();
-
         }
     }
 }
