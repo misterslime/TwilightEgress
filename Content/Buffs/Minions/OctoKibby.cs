@@ -1,4 +1,4 @@
-﻿using Cascade.Content.DedicatedContent.Octo;
+﻿using Cascade.Content.Items.Dedicated.Octo;
 
 namespace Cascade.Content.Buffs.Minions
 {
