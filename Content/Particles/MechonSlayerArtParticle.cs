@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class MechonSlayerArtParticle : Particle
+    public class MechonSlayerArtParticle : CasParticle
     {
         private readonly float BaseScale;
 
@@ -8,7 +8,7 @@
 
         private readonly int ArtType;
 
-        public override string AtlasTextureName => "Cascade.EmptyPixel";
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
         public MechonSlayerArtParticle(Vector2 position, float baseScale, float newScale, int artType, int lifespan)
         {
@@ -32,11 +32,11 @@
 
             List<string> ArtTexturePaths = new()
             {
-                "Cascade/Content/DedicatedContent/Enchilada/ArmorArt",
-                "Cascade/Content/DedicatedContent/Enchilada/EaterArt",
-                "Cascade/Content/DedicatedContent/Enchilada/EnchantArt",
-                "Cascade/Content/DedicatedContent/Enchilada/PurgeArt",
-                "Cascade/Content/DedicatedContent/Enchilada/SpeedArt",
+                "Cascade/Content/Items/Dedicated/Enchilada/ArmorArt",
+                "Cascade/Content/Items/Dedicated/Enchilada/EaterArt",
+                "Cascade/Content/Items/Dedicated/Enchilada/EnchantArt",
+                "Cascade/Content/Items/Dedicated/Enchilada/PurgeArt",
+                "Cascade/Content/Items/Dedicated/Enchilada/SpeedArt",
             };
 
             Texture2D artTexture = ModContent.Request<Texture2D>(ArtTexturePaths[ArtType]).Value;

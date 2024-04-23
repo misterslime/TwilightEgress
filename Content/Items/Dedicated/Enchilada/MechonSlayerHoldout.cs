@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Particles;
-using EasingType = Luminance.Common.Easings.EasingType;
+﻿using EasingType = Luminance.Common.Easings.EasingType;
 
 namespace Cascade.Content.Items.Dedicated.Enchilada
 {
@@ -58,8 +56,8 @@ namespace Cascade.Content.Items.Dedicated.Enchilada
                 for (int i = 0; i < 15; i++)
                 {
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 8f);
-                    GenericSparkle sparkle = new(Owner.RotatedRelativePoint(Owner.MountedCenter), velocity, GetArtColor(Color.Cyan), GetArtColor(Color.Cyan) * 0.75f, Main.rand.NextFloat(0.65f, 1.25f), Main.rand.Next(30, 45), 0.03f);
-                    GeneralParticleHandler.SpawnParticle(sparkle);
+                    SparkleParticle sparkle = new(Owner.RotatedRelativePoint(Owner.MountedCenter), velocity, GetArtColor(Color.Cyan), GetArtColor(Color.Cyan) * 0.75f, Main.rand.NextFloat(0.65f, 1.25f), Main.rand.Next(30, 45), 0.03f);
+                    sparkle.SpawnCasParticle();
                 }
 
                 for (int i = 0; i < 10; i++)
@@ -67,15 +65,15 @@ namespace Cascade.Content.Items.Dedicated.Enchilada
                     Vector2 basePosition = Owner.RotatedRelativePoint(Owner.MountedCenter);
                     Vector2 endPosition = basePosition + Main.rand.NextVector2CircularEdge(200f, 200f);
                     float scale = Main.rand.NextFloat(15f, 20f);
-                    new LightningArcParticle(basePosition, endPosition, 80f, 1f, scale, GetArtColor(Color.Cyan), 25, true, true).Spawn();
+                    LightningArcParticle lightningAcrs = new(basePosition, endPosition, 80f, 1f, scale, GetArtColor(Color.Cyan), 25, true, true);
+                    lightningAcrs.SpawnCasParticle();
                 }
 
-                new MechonSlayerArtParticle(Owner.RotatedRelativePoint(Owner.MountedCenter), 0.65f, 3f, (int)WeaponState, 60).Spawn();
+                MechonSlayerArtParticle artSymbol = new(Owner.RotatedRelativePoint(Owner.MountedCenter), 0.65f, 3f, (int)WeaponState, 60);
+                artSymbol.SpawnCasParticle();
+                PulseRingParticle pulseRing = new(Owner.RotatedRelativePoint(Owner.MountedCenter), Vector2.Zero, GetArtColor(Color.Cyan), 0f, 2f, 45);
+                pulseRing.SpawnCasParticle();
 
-                PulseRing pulseRing = new(Owner.RotatedRelativePoint(Owner.MountedCenter), Vector2.Zero, GetArtColor(Color.Cyan), 0f, 2f, 45);
-                GeneralParticleHandler.SpawnParticle(pulseRing);
-
-                //CascadeCameraSystem.Screenshake(3, 10, Owner.Center);
                 ScreenShakeSystem.StartShakeAtPoint(Owner.Center, 3f, shakeStrengthDissipationIncrement: 0.3f, intensityTaperEndDistance: 2000);
                 SoundEngine.PlaySound(CommonCalamitySounds.LaserCannonSound, Projectile.Center);
             }
@@ -149,7 +147,7 @@ namespace Cascade.Content.Items.Dedicated.Enchilada
         public void DrawBlade()
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
-            Texture2D baseMechonSlayerSprite = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Enchilada/MechonSlayer").Value;
+            Texture2D baseMechonSlayerSprite = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Enchilada/MechonSlayer").Value;
 
             float baseDrawAngle = Projectile.rotation;
             float drawRotation = baseDrawAngle + PiOver4;

@@ -10,7 +10,7 @@
 
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Fluffy/HomingBastStatue";
+        public override string Texture => "Cascade/Content/Items/Dedicated/Fluffy/HomingBastStatue";
 
         public override void SetStaticDefaults()
         {

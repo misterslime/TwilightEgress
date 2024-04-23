@@ -1,6 +1,4 @@
-﻿using Terraria.Graphics.Shaders;
-
-namespace Cascade.Content.Skies
+﻿namespace Cascade.Content.Skies
 {
     public class IceQueenScreenShaderData : ScreenShaderData
     {

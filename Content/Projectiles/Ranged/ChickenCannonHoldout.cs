@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Weapons.Ranged;
-using CalamityMod.Particles;
 using CalamityMod.Projectiles.Ranged;
 
 namespace Cascade.Content.Projectiles.Ranged
@@ -69,7 +68,8 @@ namespace Cascade.Content.Projectiles.Ranged
                 {
                     float maxScale = Timer == ChargeUpTime ? 0.01f : 1.25f;
                     float newScale = Timer == ChargeUpTime ? 5f : 0.01f;
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f, Vector2.Zero, Color.Orange, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
+                    PulseRingParticle chargeUpRing = new(Projectile.Center + Projectile.rotation.ToRotationVector2() * 60f, Vector2.Zero, Color.Orange, maxScale + Main.rand.NextFloat(0.3f), newScale, new Vector2(0.5f, 1f), Projectile.rotation, 30);
+                    chargeUpRing.SpawnCasParticle();
 
                     // Play a different yharon sound at every interval.
                     SoundStyle sound = CascadeSoundRegistry.YharonHurt;

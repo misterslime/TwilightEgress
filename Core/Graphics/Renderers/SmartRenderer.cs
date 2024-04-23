@@ -1,6 +1,4 @@
-﻿using Terraria.GameContent.RGB;
-
-namespace Cascade.Core.Graphics.Renderers
+﻿namespace Cascade.Core.Graphics.Renderers
 {
     public abstract class SmartRenderer : ModType
     {

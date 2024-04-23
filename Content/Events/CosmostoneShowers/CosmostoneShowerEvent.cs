@@ -1,9 +1,5 @@
 ﻿using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Projectiles.Magic;
 using Cascade.Content.NPCs.CosmostoneShowers;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
@@ -252,6 +248,18 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private void Visuals_SpawnAmbientSkyEntities()
         {
+            if (Main.rand.NextBool(3))
+            {
+                Vector2 lightBallSpawnPos = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(Main.screenWidth, Main.screenHeight);
+                Vector2 velocity = Vector2.One.RotatedByRandom(Tau) * Main.rand.NextFloat(-0.3f, 0.3f);
+                float scale = Main.rand.NextFloat(0.08f, 0.25f);
+                float parallaxStrength = Main.rand.NextFloat(1f, 5f);
+                int lifetime = Main.rand.Next(120, 180);
+
+                AmbientLightBallParticle lightBall = new(lightBallSpawnPos, velocity, scale, 0f, 1f, parallaxStrength, lifetime, Color.CornflowerBlue);
+                lightBall.SpawnCasParticle();
+            }
+
             int totalStarLayers = 7;
             int totalAsteroidsLayers = 5;
             VirtualCamera virtualCamera = new(Main.LocalPlayer);

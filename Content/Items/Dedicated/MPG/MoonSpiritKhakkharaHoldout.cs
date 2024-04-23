@@ -49,7 +49,7 @@ namespace Cascade.Content.Items.Dedicated.MPG
 
         public new string LocalizationCategory => "Projectiles.Summon";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/MPG/MoonSpiritKhakkhara";
+        public override string Texture => "Cascade/Content/Items/Dedicated/MPG/MoonSpiritKhakkhara";
 
         public override void SetStaticDefaults()
         {

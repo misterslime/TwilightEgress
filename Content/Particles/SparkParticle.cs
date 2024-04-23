@@ -1,0 +1,38 @@
+﻿namespace Cascade.Content.Particles
+{
+    public class SparkParticle : CasParticle
+    {
+        public float InitialOpacity;
+
+        public bool AffectedByGravity;
+
+        public override string AtlasTextureName => "Cascade.LightStreak.png";
+
+        public override BlendState BlendState => BlendState.Additive;
+
+        public SparkParticle(Vector2 position, Vector2 velocity, Color drawColor, float scale, int lifetime, bool affectedByGravity = false)
+        {
+            Position = position;
+            Velocity = velocity;
+            DrawColor = drawColor;
+            Scale = new(scale);
+            Lifetime = lifetime;
+            AffectedByGravity = affectedByGravity;
+        }
+
+        public override void Update()
+        {
+            Scale *= 0.95f;
+            Opacity = Lerp(InitialOpacity, 0f, Pow(LifetimeRatio, 4f));
+
+            Velocity *= 0.95f;
+            if (Velocity.Length() < 12f && AffectedByGravity)
+            {
+                Velocity.X *= 0.94f;
+                Velocity.Y += 0.25f;
+            }
+
+            Rotation = Velocity.ToRotation() + PiOver2;
+        }
+    }
+}

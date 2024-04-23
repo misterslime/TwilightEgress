@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Raesh
+﻿namespace Cascade.Content.Items.Dedicated.Raesh
 {
     public class DroseraeDictionaryHoldout : ModProjectile, ILocalizedModType
     {
@@ -99,8 +97,8 @@ namespace Cascade.Content.Items.Dedicated.Raesh
             int lifespan = Main.rand.Next(30, 45);
             float scale = Main.rand.NextFloat(0.65f, 1f);
 
-            SparkParticle magicSparks = new(spawnPosition, velocity, false, lifespan, scale, Color.Crimson);
-            GeneralParticleHandler.SpawnParticle(magicSparks);
+            SparkParticle magicSparks = new(spawnPosition, velocity, Color.Crimson, scale, lifespan);
+            magicSparks.SpawnCasParticle();
         }
 
         public void ParticleBurst()
@@ -113,8 +111,8 @@ namespace Cascade.Content.Items.Dedicated.Raesh
                 int lifespan = Main.rand.Next(30, 45);
                 float scale = Main.rand.NextFloat(0.65f, 1f);
 
-                SparkParticle magicSparks = new(Projectile.Center, velocity, false, lifespan, scale, Color.Crimson);
-                GeneralParticleHandler.SpawnParticle(magicSparks);
+                SparkParticle magicSparks = new(Projectile.Center, velocity, Color.Crimson, scale, lifespan);
+                magicSparks.SpawnCasParticle();
             }
         }
 

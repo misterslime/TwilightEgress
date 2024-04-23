@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
 
 namespace Cascade.Content.Projectiles.Rogue
 {
@@ -68,8 +67,8 @@ namespace Cascade.Content.Projectiles.Rogue
                     Color color = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat());
                     float scale = Main.rand.NextFloat(0.2f, 0.8f) * Projectile.scale;
                     int lifespan = Main.rand.Next(15, 30);
-                    GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, color, color * 0.35f, scale, lifespan, 0.25f, 1.25f);
-                    GeneralParticleHandler.SpawnParticle(sparkleParticle);
+                    SparkleParticle sparkleParticle = new(spawnPosition, Vector2.Zero, color, color * 0.35f, scale, lifespan, 0.25f, 1.25f);
+                    sparkleParticle.SpawnCasParticle();
                 }
             }
             
@@ -81,9 +80,9 @@ namespace Cascade.Content.Projectiles.Rogue
                     Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.width);
                     Color initialColor = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat()) * Main.rand.NextFloat(0.45f, 0.75f);
                     float scale = Main.rand.NextFloat(0.75f, 2f) * Projectile.scale;
-                    float opacity = Main.rand.NextFloat(180f, 240f);
-                    MediumMistParticle deathSmoke = new MediumMistParticle(spawnPosition, velocity, initialColor, initialColor * 0.45f, scale, opacity, 0.03f);
-                    GeneralParticleHandler.SpawnParticle(deathSmoke);
+                    float opacity = Main.rand.NextFloat(0.6f, 1f);
+                    MediumMistParticle deathSmoke = new(spawnPosition, velocity, initialColor, initialColor * 0.45f, scale, opacity, Main.rand.Next(180, 240), 0.03f);
+                    deathSmoke.SpawnCasParticle();
                 }
             }        
 

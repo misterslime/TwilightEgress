@@ -1,6 +1,5 @@
 ﻿using Cascade.Content.Buffs.Debuffs;
 using Cascade.Content.Buffs.Pets;
-using Cascade.Content.Particles;
 
 namespace Cascade.Content.Items.Dedicated.Lynel
 {

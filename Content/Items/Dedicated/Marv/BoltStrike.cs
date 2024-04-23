@@ -1,7 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Marv
+﻿namespace Cascade.Content.Items.Dedicated.Marv
 {
     public class BoltStrike : ModProjectile, ILocalizedModType
     {
@@ -15,11 +12,9 @@ namespace Cascade.Content.Items.Dedicated.Marv
 
         public ref float ColorTimer => ref Projectile.localAI[1];
 
-        public AresCannonChargeParticleSet ChargingParticles = new AresCannonChargeParticleSet(-1, 15, 100f, Color.LightSkyBlue);
-
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Marv/ElectricSkyBoltExplosion";
+        public override string Texture => "Cascade/Content/Items/Dedicated/Marv/ElectricSkyBoltExplosion";
 
         public override void SetStaticDefaults()
         {
@@ -64,16 +59,10 @@ namespace Cascade.Content.Items.Dedicated.Marv
                     {
                         // Slowly increase scale and opacity over time.
                         // Color is also adjusted accordingly in the Drawcode below.
-                        HandleParticleDrawers(ChargingParticles, Timer, MaxChargeTime, true);
                         ScaleControl = 2f * Utils.GetLerpValue(0.1f, 1f, Timer / MaxChargeTime, true);
                         Projectile.Opacity = Lerp(0f, 1f, Timer / 60);
                         Timer++;
                         ColorTimer++;
-                    }
-                    else
-                    {
-                        // Stop particles from spawning.
-                        ChargingParticles.ParticleSpawnRate = int.MaxValue;
                     }
 
                     for (int i = 0; i < Main.maxProjectiles; i++)
@@ -142,27 +131,28 @@ namespace Cascade.Content.Items.Dedicated.Marv
 
                 // Particles.
                 Color particleColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
-                if (Timer % 10 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
+                if (Timer % 10 == 0)
                 {
                     int lifespan = (int)Lerp(45, 100, Timer / 480);
-                    new RoaringShockwaveParticle(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi)).Spawn();
+                    RoaringShockwaveParticle shockwaveParticle = new(lifespan, Projectile.Center, Vector2.Zero, particleColor, 0.1f, Main.rand.NextFloat(TwoPi));
+                    shockwaveParticle.SpawnCasParticle();
                 }
 
-                if (Timer % 3 == 0 && Main.netMode != NetmodeID.MultiplayerClient)
+                if (Timer % 3 == 0)
                 {
                     int sparkLifespan = Main.rand.Next(20, 36);
                     float sparkScale = Main.rand.NextFloat(0.75f, 1.25f);
                     for (int i = 0; i < 5; i++)
                     {
                         Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(6f, 55f);
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                        SparkParticle electricSpark = new(Projectile.Center, sparkVelocity, particleColor, sparkScale, sparkLifespan);
+                        electricSpark.SpawnCasParticle();
                     }
                 }
 
                 Timer++;
                 Projectile.velocity *= 0.3f;
-                //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 5f;
-                ScreenShakeSystem.StartShake(5f, shakeStrengthDissipationIncrement: 0.185f);
+                ScreenShakeSystem.StartShakeAtPoint(Projectile.Center, 5f, shakeStrengthDissipationIncrement: 0.185f);
             }
 
             Projectile.scale = ScaleControl;
@@ -222,23 +212,6 @@ namespace Cascade.Content.Items.Dedicated.Marv
                     Dust d = Dust.NewDustPerfect(Projectile.Center, DustID.YellowStarDust, speed * 5f);
                     d.noGravity = true;
                 }
-            }
-        }
-
-        public void HandleParticleDrawers(AresCannonChargeParticleSet chargingParticles, float timer, float chargeDelay, bool charging = false)
-        {
-            chargingParticles.ParticleSpawnRate = int.MaxValue;
-            if (charging)
-            {
-                float chargeCompletion = Clamp(timer / chargeDelay, 0f, 1f);
-                float spawnRateCompletion = Lerp(5f, 1f, timer / chargeDelay);
-                chargingParticles.ParticleSpawnRate = (int)spawnRateCompletion;
-                chargingParticles.SpawnAreaCompactness = 200f;
-                chargingParticles.chargeProgress = chargeCompletion;
-                chargingParticles.ParticleColor = Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480));
-
-                if (timer % 15 == 0f)
-                    chargingParticles.AddPulse(chargeCompletion * 12f);
             }
         }
 
@@ -305,20 +278,6 @@ namespace Cascade.Content.Items.Dedicated.Marv
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, rec, Projectile.GetAlpha(color), rotation, rec.Size() / 2f, Projectile.scale, effects, 0);
             return false;
-        }
-
-        public override void PostDraw(Color lightColor)
-        {
-            // Draw the particle set.
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
-
-            ChargingParticles.DrawBloom(Projectile.Center);
-            ChargingParticles.DrawPulses(Projectile.Center);
-            ChargingParticles.DrawSet(Projectile.Center);
-
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
 }

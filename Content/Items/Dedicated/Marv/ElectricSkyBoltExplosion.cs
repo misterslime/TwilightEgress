@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Marv
+﻿namespace Cascade.Content.Items.Dedicated.Marv
 {
     public class ElectricSkyBoltExplosion : ModProjectile, ILocalizedModType
     {
@@ -48,7 +46,8 @@ namespace Cascade.Content.Items.Dedicated.Marv
                     for (int i = 0; i < 50; i++)
                     {
                         Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
+                        SparkParticle electricSpark = new(Projectile.Center, sparkVelocity, sparkColor, sparkScale, sparkLifespan);
+                        electricSpark.SpawnCasParticle();
                     }
                 }
             }
@@ -61,8 +60,7 @@ namespace Cascade.Content.Items.Dedicated.Marv
             }
 
             Timer++;
-            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 4f;
-            ScreenShakeSystem.StartShake(4f, shakeStrengthDissipationIncrement: 0.185f);
+            ScreenShakeSystem.StartShakeAtPoint(Projectile.Center, 4f, shakeStrengthDissipationIncrement: 0.185f);
             Projectile.rotation += Pi / 30f;
             Lighting.AddLight(Projectile.Center, Color.Goldenrod.ToVector3() * 0.65f);
         }

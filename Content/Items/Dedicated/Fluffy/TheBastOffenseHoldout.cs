@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Fluffy
+﻿namespace Cascade.Content.Items.Dedicated.Fluffy
 {
     public class TheBastOffenseHoldout : ModProjectile, ILocalizedModType
     {
@@ -34,7 +32,7 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
 
         public new string LocalizationCategory => "Projectiles.Ranged";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Fluffy/TheBastOffense";
+        public override string Texture => "Cascade/Content/Items/Dedicated/Fluffy/TheBastOffense";
 
         public override void SetDefaults()
         {
@@ -115,8 +113,10 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                 // and the delay is decreased by 1, making it charge faster over time.
                 if (ChargeTimer >= increaseBastInterval + bastIncreaseDelay && bastCatCount <= maxBastCatCount)
                 {
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 1.25f + Main.rand.NextFloat(0.3f), 0.01f, 30));
+                    PulseRingParticle chargeRing = new(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, 1.25f, 0.01f, new Vector2(0.5f, 1f), Projectile.rotation, 30);
+                    chargeRing.SpawnCasParticle();
                     SoundEngine.PlaySound(SoundID.Item149 with { MaxInstances = 0 }, Projectile.Center);
+
                     // Play a different sound and a spawn a dust circle to indicate it's done charging.
                     if (bastCatCount == maxBastCatCount)
                     {
@@ -143,7 +143,7 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                     int smokeLifespan = Main.rand.Next(30, 60);
 
                     TimedSmokeParticle smoke = new(smokeSpawnPosition, smokeVelocity, Color.Lerp(Color.DarkGray, Color.Black, 0.75f), Color.Gray, smokeScale, smokeOpacity, smokeLifespan, 0.02f);
-                    GeneralParticleHandler.SpawnParticle(smoke);
+                    smoke.SpawnCasParticle();
                 }
 
                 if (Owner.PlayerIsChannelingWithItem(ModContent.ItemType<TheBastOffense>()))
@@ -179,7 +179,7 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                         int smokeLifespan = Main.rand.Next(30, 60);
 
                         TimedSmokeParticle smoke = new(smokeSpawnPosition, smokeVelocity, Color.Black, Color.Orange, smokeScale, smokeOpacity, smokeLifespan, 0.02f);
-                        GeneralParticleHandler.SpawnParticle(smoke);
+                        smoke.SpawnCasParticle();
                     }
                     Projectile.netUpdate = true;
                 }
@@ -198,7 +198,8 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
 
                     ChargeTimer = 0f;
                     bastCatCount = 0f;
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, 0.01f + Main.rand.NextFloat(0.3f), recoilStrength, 30));
+                    PulseRingParticle fireRing = new(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, 0.01f, recoilStrength, new Vector2(0.5f, 1f), Projectile.rotation, 60);
+                    fireRing.SpawnCasParticle();
                 }
 
                 // Recoil animation.
@@ -228,7 +229,8 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                     {
                         float maxScale = ChargeTimer == chargeTime ? 0.01f : 1.25f;
                         float newScale = ChargeTimer == chargeTime ? 5f : 0.01f;
-                        GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, new Vector2(0.5f, 1f), Projectile.rotation, maxScale + Main.rand.NextFloat(0.3f), newScale, 30));
+                        PulseRingParticle fireRing = new(Projectile.Center + Projectile.rotation.ToRotationVector2() * 35f, Vector2.Zero, Color.Gold, maxScale, newScale, new Vector2(0.5f, 1f), Projectile.rotation, 60);
+                        fireRing.SpawnCasParticle();
                         SoundEngine.PlaySound(SoundID.Item75, Projectile.Center);
                     }
                 }
@@ -293,9 +295,9 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                 Color initialColor = Color.Lerp(Color.WhiteSmoke, Color.Orange, Main.rand.NextFloat());
                 Color fadeColor = Color.DarkGray;
                 float scale = Main.rand.NextFloat(6f, 8f);
-                float opacity = Main.rand.NextFloat(180f, 240f);
-                MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                GeneralParticleHandler.SpawnParticle(deathSmoke);
+                float opacity = Main.rand.NextFloat(0.6f, 1f);
+                MediumMistParticle deathSmoke = new(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(180, 240), 0.03f);
+                deathSmoke.SpawnCasParticle();
             }
 
             for (int i = 0; i < 15; i++)
@@ -304,10 +306,11 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(7f, 15f);
                 float scale = Main.rand.NextFloat(5f, 7f);
                 HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, fireColor, Main.rand.Next(120, 150), scale, Main.rand.NextFloat(0.7f, 1.75f), 0.06f, true, 0);
-                GeneralParticleHandler.SpawnParticle(heavySmoke);
+                heavySmoke.SpawnCasParticle();
             }
 
-            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.White, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 8f, 75));
+            PulseRingParticle deathRing = new(Projectile.Center, Vector2.Zero, Color.White, 0.01f, 8f, 75);
+            deathRing.SpawnCasParticle();
         }
 
         public void Reset()

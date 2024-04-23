@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Core.Players
+﻿namespace Cascade.Core.Players
 {
     public class ResplendentRoarPlayer : ModPlayer
     {
@@ -43,8 +41,8 @@ namespace Cascade.Core.Players
                     Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
                     Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
-                    DirectionalPulseRing pulseRing = new(Player.Center, Vector2.Zero, fireColor, new(1f, 1f), 0f, 0.01f, 5f, 60);
-                    GeneralParticleHandler.SpawnParticle(pulseRing);
+                    PulseRingParticle completionPulseRing = new(Player.Center, Vector2.Zero, fireColor, 0.01f, 5f, 60);
+                    completionPulseRing.SpawnCasParticle();
 
                     FinishedChargingResplendentRaze = true;
                 }

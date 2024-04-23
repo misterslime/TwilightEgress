@@ -1,7 +1,6 @@
 ﻿using CalamityMod.Items;
 using CalamityMod.Items.Materials;
 using CalamityMod.Items.Weapons.Melee;
-using CalamityMod.Projectiles.Melee;
 using CalamityMod.Rarities;
 
 namespace Cascade.Content.Items.Dedicated.Enchilada

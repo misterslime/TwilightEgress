@@ -1,8 +1,4 @@
-﻿using CalamityMod.Particles;
-using Terraria;
-using Particle = CalamityMod.Particles.Particle;
-
-namespace Cascade.Content.Items.Dedicated.MPG
+﻿namespace Cascade.Content.Items.Dedicated.MPG
 {
     public class MassiveUnderworldLantern : ModProjectile, ILocalizedModType
     {
@@ -97,8 +93,8 @@ namespace Cascade.Content.Items.Dedicated.MPG
                         Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(15f, 25f);
                         Color color = Color.Lerp(Color.Cyan, Color.CornflowerBlue, Main.rand.NextFloat());
                         float scale = Main.rand.NextFloat(3f, 6f);
-                        HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                        GeneralParticleHandler.SpawnParticle(heavySmoke);
+                        HeavySmokeParticle deathSmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
+                        deathSmoke.SpawnCasParticle();
                     }
 
                     for (int i = 0; i < 20; i++)
@@ -108,8 +104,8 @@ namespace Cascade.Content.Items.Dedicated.MPG
                         Color bloomColor = Color.Lerp(Color.PowderBlue, Color.LightSkyBlue, Main.rand.NextFloat());
                         float scale = Main.rand.NextFloat(0.45f, 4f);
                         int lifespan = Main.rand.Next(15, 45);
-                        Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
-                        GeneralParticleHandler.SpawnParticle(sparkle);
+                        SparkleParticle sparkle = new(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
+                        sparkle.SpawnCasParticle();
                     }
                 }
             }
@@ -131,20 +127,7 @@ namespace Cascade.Content.Items.Dedicated.MPG
             Projectile.AdjustProjectileHitboxByScale(48f, 56f);
         }
 
-        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
-        {
-            HitCounter++;
-            // Release some particles in the direction of the hit.
-            for (int i = 0; i < 20; i++)
-            {
-                Vector2 velocity = Projectile.DirectionTo(target.Center).RotatedByRandom(ToRadians(75f)) * Main.rand.NextFloat(10f, 25f);
-                Color color = Color.Lerp(Color.Cyan, Color.CornflowerBlue, Main.rand.NextFloat());
-                float scale = Main.rand.NextFloat(0.45f, 2f);
-                int lifespan = Main.rand.Next(45, 90);
-                Particle sparkle = new SquishyLightParticle(Projectile.Center, velocity, scale, color, lifespan);
-                GeneralParticleHandler.SpawnParticle(sparkle);
-            }
-        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) => HitCounter++;
 
         public override bool PreDraw(ref Color lightColor)
         {

@@ -1,5 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Items.Weapons.Rogue;
+﻿using Cascade.Content.Items.Weapons.Rogue;
 
 namespace Cascade.Content.Projectiles.Rogue
 {
@@ -109,8 +108,8 @@ namespace Cascade.Content.Projectiles.Rogue
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 78f + Main.rand.NextVector2Circular(65f, 65f) * Projectile.scale;
                 float scale = Main.rand.NextFloat(0.2f, 0.8f) * Projectile.scale;
                 int lifespan = Main.rand.Next(15, 30);
-                GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
-                GeneralParticleHandler.SpawnParticle(sparkleParticle);
+                SparkleParticle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
+                sparkleParticle.SpawnCasParticle();
             }
         }
 

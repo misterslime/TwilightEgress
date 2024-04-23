@@ -1,6 +1,4 @@
-﻿using static Luminance.Common.Utilities.Utilities;
-
-namespace Cascade
+﻿namespace Cascade
 {
     public static partial class CascadeUtilities
     {

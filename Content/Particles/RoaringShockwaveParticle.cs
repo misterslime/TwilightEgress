@@ -1,12 +1,8 @@
-﻿using System.Threading;
-
-namespace Cascade.Content.Particles
+﻿namespace Cascade.Content.Particles
 {
-    public class RoaringShockwaveParticle : Particle
+    public class RoaringShockwaveParticle : CasParticle
     {
-        //public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/DistortedShockwave2";
-
-        public override string AtlasTextureName => "Cascade.DistortedShockwave2";
+        public override string AtlasTextureName => "Cascade.DistortedShockwave2.png";
 
         public RoaringShockwaveParticle(int lifespan, Vector2 position, Vector2 velocity, Color color, float scale, float rotation = 1f)
         {

@@ -1,7 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Marv
+﻿namespace Cascade.Content.Items.Dedicated.Marv
 {
     public class ThunderousFuryHoldout : ModProjectile, ILocalizedModType
     {
@@ -39,7 +36,7 @@ namespace Cascade.Content.Items.Dedicated.Marv
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Marv/ThunderousFury";
+        public override string Texture => "Cascade/Content/Items/Dedicated/Marv/ThunderousFury";
 
         public override void SetDefaults()
         {
@@ -99,7 +96,8 @@ namespace Cascade.Content.Items.Dedicated.Marv
                 for (int i = 0; i < 50; i++)
                 {
                     Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                    SparkParticle electricSpark = new(Projectile.Center, sparkVelocity, particleColor, sparkScale, sparkLifespan);
+                    electricSpark.SpawnCasParticle();
                 }
             }
 
@@ -128,7 +126,8 @@ namespace Cascade.Content.Items.Dedicated.Marv
                 for (int i = 0; i < 50; i++)
                 {
                     Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                    GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, particleColor));
+                    SparkParticle electricSpark = new(Projectile.Center, sparkVelocity, particleColor, sparkScale, sparkLifespan);
+                    electricSpark.SpawnCasParticle();
                 }
             }
 

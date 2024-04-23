@@ -1,6 +1,5 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
 using System.Runtime.Serialization;
-using Luminance.Common.Utilities;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {

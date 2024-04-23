@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Fluffy
+﻿namespace Cascade.Content.Items.Dedicated.Fluffy
 {
     public class HomingBastStatue : ModProjectile, ILocalizedModType
     {
@@ -152,6 +150,7 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                     ClosestTeamPlayer.AddBuff(BuffID.CatBast, 300);
 
                 SoundEngine.PlaySound(SoundID.ResearchComplete, Projectile.Center);
+
                 // Particle creation.
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
@@ -161,7 +160,9 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
                     for (int i = 0; i < 5; i++)
                     {
                         Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 8f);
-                        GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
+                        SparkParticle deathSpark = new(Projectile.Center, sparkVelocity, sparkColor, sparkScale, sparkLifespan);
+                        deathSpark.SpawnCasParticle();
+
                     }
                 }
             }

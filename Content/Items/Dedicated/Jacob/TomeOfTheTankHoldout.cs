@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Jacob
+﻿namespace Cascade.Content.Items.Dedicated.Jacob
 {
     public class TomeOfTheTankHoldout : ModProjectile, ILocalizedModType
     {
@@ -20,7 +18,7 @@ namespace Cascade.Content.Items.Dedicated.Jacob
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
-        public override string Texture => "Cascade/Content/DedicatedContent/Jacob/TomeOfTheTank";
+        public override string Texture => "Cascade/Content/Items/Dedicated/Jacob/TomeOfTheTank";
 
         public override void SetStaticDefaults()
         {
@@ -92,7 +90,9 @@ namespace Cascade.Content.Items.Dedicated.Jacob
                 if (ChargeTimer % 15 == 0f)
                 {
                     pulseRingInitialScale = Clamp(pulseRingInitialScale + 0.25f, 0.5f, 3.5f);
-                    GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Owner.Center, Vector2.Zero, Color.CornflowerBlue, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
+                    PulseRingParticle chargeUpRing = new(Owner.Center, Vector2.Zero, Color.CornflowerBlue, pulseRingInitialScale, 0.01f, 45);
+                    chargeUpRing.SpawnCasParticle();
+
                     SoundEngine.PlaySound(SoundID.Item9, Projectile.Center);
 
                     for (int i = 0; i < 36; i++)
@@ -150,8 +150,8 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             ref float ritualCircleOpacity = ref Projectile.Cascade().ExtraAI[RitualCircleOpacityIndex];
             ref float orbitingSummoningCircleRotation = ref Projectile.Cascade().ExtraAI[OrbitingSummoningCircleRotationIndex];
 
-            Texture2D outerCircle = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/TankGodRitualCircle").Value;
-            Texture2D innerCircle = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/TankGodRitualCircleInner").Value;
+            Texture2D outerCircle = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Jacob/TankGodRitualCircle").Value;
+            Texture2D innerCircle = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Jacob/TankGodRitualCircleInner").Value;
             Texture2D orbitingCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircle").Value;
             Texture2D blurredOrbitingCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircleGlowmask").Value;
 

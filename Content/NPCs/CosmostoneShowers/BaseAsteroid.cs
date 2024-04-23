@@ -1,6 +1,4 @@
-﻿using Cascade.Content.Items.Materials;
-
-namespace Cascade.Content.NPCs.CosmostoneShowers
+﻿namespace Cascade.Content.NPCs.CosmostoneShowers
 {
     public abstract class BaseAsteroid : ModNPC
     {

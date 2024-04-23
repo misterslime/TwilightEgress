@@ -1,7 +1,6 @@
 using CalamityMod.Items;
 using CalamityMod.Items.Weapons.Ranged;
 using Cascade.Content.Items.Materials;
-using Terraria.ID;
 
 namespace Cascade.Content.Items.Weapons.Ranged
 {

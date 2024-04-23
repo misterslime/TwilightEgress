@@ -1,7 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Buffs.Minions;
-using Cascade.Content.Particles;
-using System.Runtime;
+﻿using Cascade.Content.Buffs.Minions;
 
 namespace Cascade.Content.Items.Dedicated.MPG
 {
@@ -274,8 +271,8 @@ namespace Cascade.Content.Items.Dedicated.MPG
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(2f, 8f);
                 Color color = Color.Lerp(Color.Cyan, Color.CornflowerBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(0.25f, 1.25f);
-                HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                GeneralParticleHandler.SpawnParticle(heavySmoke);
+                HeavySmokeParticle deathSmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
+                deathSmoke.SpawnCasParticle();
             }
         }
 

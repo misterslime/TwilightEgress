@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Jacob
+﻿namespace Cascade.Content.Items.Dedicated.Jacob
 {
     public class DetonatingDraedonHeart : ModProjectile, ILocalizedModType
     {
@@ -68,7 +66,9 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             if (Timer >= MaxChargeTime && Timer <= MaxChargeTime + DetonationDelay + (int)RandomizedExplosionDelay && Timer % 5 == 0)
             {
                 pulseRingInitialScale = Clamp(pulseRingInitialScale + 0.5f, 0.5f, 3.5f);
-                GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), pulseRingInitialScale, 0.01f, 45));
+                PulseRingParticle detonantionRing = new(Projectile.Center, Vector2.Zero, Color.Red, pulseRingInitialScale, 0.01f, 45);
+                detonantionRing.SpawnCasParticle();
+
                 SoundEngine.PlaySound(CascadeSoundRegistry.AsrielTargetBeep, Projectile.Center);
 
                 for (int i = 0; i < 36; i++)
@@ -120,7 +120,8 @@ namespace Cascade.Content.Items.Dedicated.Jacob
         public override void OnKill(int timeLeft)
         {
             SoundEngine.PlaySound(CommonCalamitySounds.ExoPlasmaExplosionSound, Projectile.Center);
-            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, Color.Red, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 10f, 75));
+            PulseRingParticle explosionRing = new(Projectile.Center, Vector2.Zero, Color.Red, 0.01f, 10f, 75);
+            explosionRing.SpawnCasParticle();
 
             // K  A  B  O  O  M two, electric boogaloo.
             for (int i = 0; i < 12; i++)
@@ -135,10 +136,10 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             for (int i = 0; i < 25; i++)
             {
                 Vector2 sparkVelocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(9f, 16f);
-                GeneralParticleHandler.SpawnParticle(new SparkParticle(Projectile.Center, sparkVelocity, false, sparkLifespan, sparkScale, sparkColor));
+                SparkParticle deathSparks = new(Projectile.Center, sparkVelocity, sparkColor, sparkScale, sparkLifespan);
+                deathSparks.SpawnCasParticle();
             }
 
-            //Main.LocalPlayer.Calamity().GeneralScreenShakePower = 10f;
             ScreenShakeSystem.StartShake(10f, shakeStrengthDissipationIncrement: 0.185f);
         }
 
@@ -148,15 +149,15 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             ref float heartBackglowRadius = ref Projectile.Cascade().ExtraAI[HeartBackglowRadiusIndex];
             ref float heartBackglowSpin = ref Projectile.Cascade().ExtraAI[HeartBackglowSpinIndex];
 
-            Texture2D heartGlow = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/DetonatingDraedonHeartGlow").Value;
+            Texture2D heartGlow = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Jacob/DetonatingDraedonHeartGlow").Value;
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 8; i++)
             {
                 heartBackglowSpin += TwoPi / 240f;
-                Vector2 HeartBackglowDrawPosition = Projectile.Center + Vector2.UnitY.RotatedBy(heartBackglowSpin + TwoPi * i / 8f) * heartBackglowRadius + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
+                Vector2 heartBackglowDrawPosition = Projectile.Center + Vector2.UnitY.RotatedBy(heartBackglowSpin + TwoPi * i / 8f) * heartBackglowRadius + Vector2.UnitY * Projectile.gfxOffY - Main.screenPosition;
                 Color color = Color.Red;
-                Main.EntitySpriteDraw(heartGlow, HeartBackglowDrawPosition, null, color * heartBackglowOpacity, Projectile.rotation, heartGlow.Size() / 2f, Projectile.scale * 1.085f, SpriteEffects.None, 0);
+                Main.EntitySpriteDraw(heartGlow, heartBackglowDrawPosition, null, color * heartBackglowOpacity, Projectile.rotation, heartGlow.Size() / 2f, Projectile.scale * 1.085f, SpriteEffects.None, 0);
             }
             Main.spriteBatch.ResetToDefault();
 

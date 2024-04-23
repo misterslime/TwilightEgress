@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.Items.Dedicated.Jacob
+﻿namespace Cascade.Content.Items.Dedicated.Jacob
 {
     public class Rampart : ModProjectile, ILocalizedModType
     {
@@ -122,7 +120,8 @@ namespace Cascade.Content.Items.Dedicated.Jacob
         {
             SoundEngine.PlaySound(CommonCalamitySounds.OtherwordlyHitSound, Projectile.Center);
             Color pulseRingColor = Color.Lerp(Color.Goldenrod, Color.CornflowerBlue, Main.rand.NextFloat());
-            GeneralParticleHandler.SpawnParticle(new DirectionalPulseRing(Projectile.Center, Vector2.Zero, pulseRingColor, new Vector2(1f, 1f), Main.rand.NextFloat(TwoPi), 0.01f, 6f, 75));
+            PulseRingParticle deathRing = new(Projectile.Center, Vector2.Zero, pulseRingColor, 0.01f, 6f, 75);
+            deathRing.SpawnCasParticle();
 
             // Deploy the bombs.
             int bombCount = Main.rand.Next(6, 14);
@@ -138,8 +137,8 @@ namespace Cascade.Content.Items.Dedicated.Jacob
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(15f, 25f);
                 Color color = Color.Lerp(Color.Goldenrod, Color.CornflowerBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(1.25f, 3f);
-                HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                GeneralParticleHandler.SpawnParticle(heavySmoke);
+                HeavySmokeParticle deathSmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
+                deathSmoke.SpawnCasParticle();
             }
 
             for (int i = 0; i < 20; i++)
@@ -149,8 +148,8 @@ namespace Cascade.Content.Items.Dedicated.Jacob
                 Color bloomColor = Color.Lerp(Color.PaleGoldenrod, Color.LightSkyBlue, Main.rand.NextFloat());
                 float scale = Main.rand.NextFloat(0.45f, 4f);
                 int lifespan = Main.rand.Next(15, 45);
-                CalamityMod.Particles.Particle sparkle = new GenericSparkle(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
-                GeneralParticleHandler.SpawnParticle(sparkle);
+                SparkleParticle deathSparkles = new(Projectile.Center, velocity, normalColor, bloomColor, scale, lifespan, 0.25f, bloomScale: scale);
+                deathSparkles.SpawnCasParticle();
             }
         }
 
@@ -171,7 +170,7 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             ref float rampartBackglowRadius = ref Projectile.Cascade().ExtraAI[RampartBackglowRadiusIndex];
             ref float rampartBackglowSpin = ref Projectile.Cascade().ExtraAI[RampartBackglowSpinIndex];
 
-            Texture2D rampartGlow = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/RampartGlow").Value;
+            Texture2D rampartGlow = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Jacob/RampartGlow").Value;
 
             Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 8; i++)
@@ -194,7 +193,7 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             ref float anvilAndSummoningCricleOpacity = ref Projectile.Cascade().ExtraAI[AnvilAndSummoningCricleOpacityIndex];
             ref float cosmicAnvilBackglowSpin = ref Projectile.Cascade().ExtraAI[CosmicAnvilBackglowSpinIndex];
 
-            Texture2D cosmicAnvil = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Jacob/CosmicAnvil").Value;
+            Texture2D cosmicAnvil = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Jacob/CosmicAnvil").Value;
             Texture2D summoningCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircle").Value;
             Texture2D blurredSummoningCircle = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Magic/RancorMagicCircleGlowmask").Value;
 

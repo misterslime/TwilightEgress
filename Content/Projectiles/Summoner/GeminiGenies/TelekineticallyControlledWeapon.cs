@@ -1,8 +1,4 @@
-﻿using System.CodeDom;
-using System.Collections.Generic;
-using static Humanizer.In;
-
-namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
+﻿namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
 {
     public class TelekineticallyControlledWeapon : ModProjectile, ILocalizedModType
     {

@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class LightningArcParticle : Particle
+    public class LightningArcParticle : CasParticle
     {
         private float LightningLengthFactor;
 
@@ -20,7 +20,7 @@
 
         public Vector2 EndPosition { get; set; }
 
-        public override string AtlasTextureName => "Cascade.EmptyPixel";
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
         public LightningArcParticle(Vector2 basePosition, Vector2 endPosition, float pointDisplacementVariance, float jaggednessNumerator, float scale, Color color, int lifespan, bool useSmoothening = false, bool additiveBlending = true)
         {

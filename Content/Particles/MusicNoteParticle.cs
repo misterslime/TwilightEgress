@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class MusicNoteParticle : Particle
+    public class MusicNoteParticle : CasParticle
     {
         private const int MusicNoteScaleChangeThreshold = 30;
 
@@ -8,7 +8,7 @@
 
         private Texture2D MusicNoteTexture;
 
-        public override string AtlasTextureName => "Cascade.EmptyPixel";
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
         /// <param name="lifespan">The lifespan of this particle defaults to 180 ticks (3 seconds).
         /// Modifying this value will simply add to that value.</param>

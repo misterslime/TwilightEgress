@@ -1,5 +1,4 @@
 ﻿using Cascade.Core.BaseEntities.ModNPCs;
-using Cascade.Core.Systems;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {

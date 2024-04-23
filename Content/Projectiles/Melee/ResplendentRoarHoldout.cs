@@ -1,7 +1,5 @@
 ﻿using Cascade.Content.Items.Weapons.Melee;
 using CalamityMod.Buffs.DamageOverTime;
-using EasingType = Luminance.Common.Easings.EasingType;
-using CalamityMod.Particles;
 
 namespace Cascade.Content.Projectiles.Melee
 {
@@ -242,8 +240,8 @@ namespace Cascade.Content.Projectiles.Melee
                         Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                         float scale = i == 2 ? 9f : i == 1f ? 6f : 3f;
-                        DirectionalPulseRing pulseRing = new(Owner.Center, Vector2.Zero, fireColor, new(1f, 1f), 0f, 0.01f, scale, 60);
-                        GeneralParticleHandler.SpawnParticle(pulseRing);
+                        PulseRingParticle yharonRoar = new(Owner.Center, Vector2.Zero, fireColor,0.01f, scale, 60);
+                        yharonRoar.SpawnCasParticle();
                     }
 
                     Projectile.netUpdate = true;
@@ -300,7 +298,7 @@ namespace Cascade.Content.Projectiles.Melee
                     float opacity = Main.rand.NextFloat(0.9f, 4f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 1f;
 
                     HeavySmokeParticle flames = new(spawnPosition, Vector2.Zero, fireColor, lifespan, scale, opacity, 0.03f, true);
-                    GeneralParticleHandler.SpawnParticle(flames);
+                    flames.SpawnCasParticle();
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -316,8 +314,8 @@ namespace Cascade.Content.Projectiles.Melee
                     float scale = Main.rand.NextFloat(0.45f, 1f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 3f;
                     float opacity = Main.rand.NextFloat(0.65f, 2f) * (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f) - 1f;
 
-                    GenericSparkle sparkle = new(spawnPosition, Vector2.Zero, sparkleColor * opacity, sparkleColor * 1.05f * opacity, scale, lifespan);
-                    GeneralParticleHandler.SpawnParticle(sparkle);
+                    SparkleParticle sparkles = new(spawnPosition, Vector2.Zero, sparkleColor * opacity, sparkleColor * 1.05f * opacity, scale, lifespan);
+                    sparkles.SpawnCasParticle();
                 }
             }
         }
@@ -348,8 +346,8 @@ namespace Cascade.Content.Projectiles.Melee
                 Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
                 Color sparkColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
-                SparkParticle sparks = new(target.Center, velocity, false, lifespan, scale, sparkColor);
-                GeneralParticleHandler.SpawnParticle(sparks);
+                SparkParticle sparks = new(target.Center, velocity, sparkColor, scale, lifespan);
+                sparks.SpawnCasParticle();
             }
 
             if (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge >= 75f)
@@ -365,7 +363,7 @@ namespace Cascade.Content.Projectiles.Melee
                     Color flameColor = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.5f, colorGroup, secondColorGroup);
 
                     HeavySmokeParticle flames = new(target.Center, velocity, flameColor, lifespan, scale, 1f, 0.03f, true);
-                    GeneralParticleHandler.SpawnParticle(flames);
+                    flames.SpawnCasParticle();
                 }
             }
         }

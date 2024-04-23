@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-using Cascade.Content.Buffs.Debuffs;
-using rail;
+﻿using Cascade.Content.Buffs.Debuffs;
 
 namespace Cascade.Content.Projectiles.Misc
 {
@@ -82,8 +80,8 @@ namespace Cascade.Content.Projectiles.Misc
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(2f, 8f);
                 Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
                 float scale = Main.rand.NextFloat(0.25f, 1.25f);
-                HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true, 0);
-                GeneralParticleHandler.SpawnParticle(heavySmoke);
+                HeavySmokeParticle heavySmoke = new(Projectile.Center, velocity, color, Main.rand.Next(75, 140), scale, Main.rand.NextFloat(0.35f, 1f), 0.06f, true);
+                heavySmoke.SpawnCasParticle();
             }
         }
 

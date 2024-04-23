@@ -1,6 +1,4 @@
-﻿using CalamityMod.Particles;
-
-namespace Cascade.Content.NPCs.CosmostoneShowers
+﻿namespace Cascade.Content.NPCs.CosmostoneShowers
 {
     public class ExodiumAsteroid : BaseAsteroid, ILocalizedModType
     {
@@ -61,9 +59,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 Color initialColor = Color.Lerp(Color.DarkGray, Color.SlateGray, Main.rand.NextFloat());
                 Color fadeColor = Color.SaddleBrown;
                 float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
-                float opacity = Main.rand.NextFloat(180f, 240f);
-                MediumMistParticle deathSmoke = new MediumMistParticle(NPC.Bottom, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                GeneralParticleHandler.SpawnParticle(deathSmoke);
+                float opacity = Main.rand.NextFloat(0.6f, 1f);
+                MediumMistParticle deathSmoke = new(NPC.Bottom, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(180, 240), 0.03f);
+                deathSmoke.SpawnCasParticle();
             }
         }
 
@@ -107,9 +105,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                     Color initialColor = Color.Lerp(Color.DarkGray, Color.SlateGray, Main.rand.NextFloat());
                     Color fadeColor = Color.SaddleBrown;
                     float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
-                    float opacity = Main.rand.NextFloat(180f, 240f);
-                    MediumMistParticle deathSmoke = new MediumMistParticle(NPC.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.NextFloat(0.1f, 0.4f));
-                    GeneralParticleHandler.SpawnParticle(deathSmoke);
+                    float opacity = Main.rand.NextFloat(0.6f, 1f);
+                    MediumMistParticle deathSmoke = new(NPC.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(180, 240), Main.rand.NextFloat(0.1f, 0.4f));
+                    deathSmoke.SpawnCasParticle();
                 }
             }
             else

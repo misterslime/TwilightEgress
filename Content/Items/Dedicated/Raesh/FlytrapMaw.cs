@@ -129,7 +129,7 @@
 
         public void DrawPrims()
         {
-            Asset<Texture2D> trailTexture = ModContent.Request<Texture2D>("Cascade/Content/DedicatedContent/Raesh/FlytrapMaw_Chain");
+            Asset<Texture2D> trailTexture = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Raesh/FlytrapMaw_Chain");
             /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
 
             Main.spriteBatch.EnterShaderRegion();

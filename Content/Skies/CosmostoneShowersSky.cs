@@ -1,7 +1,4 @@
-﻿using Cascade.Content.Skies.SkyEntities;
-using Terraria.Graphics;
-
-namespace Cascade.Content.Skies
+﻿namespace Cascade.Content.Skies
 {
     public class CosmostoneShowersSceneEffect : ModSceneEffect
     {

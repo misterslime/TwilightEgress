@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class SwordSlashParticle : Particle
+    public class SwordSlashParticle : CasParticle
     {
         private float BaseScale;
 
@@ -10,7 +10,9 @@
 
         private Color BloomColor;
 
-        public override string AtlasTextureName => "Cascade.EmptyPixel";
+        public override string AtlasTextureName => "Cascade.LightStreak.png";
+
+        public override BlendState BlendState => BlendState.Additive;
 
         public SwordSlashParticle(Vector2 position, Color slashColor, Color bloomColor, float rotation, Vector2 stretchFactor, float scale, int lifespan)
         {
@@ -31,15 +33,11 @@
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D slashTexture = TextureAssets.Extra[98].Value;
             Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
-
             Vector2 drawPosition = Position - Main.screenPosition;
 
-            spriteBatch.SetBlendState(BlendState.Additive);
             spriteBatch.Draw(bloomTexture, drawPosition, null, BloomColor * BloomOpacity, Rotation, bloomTexture.Size() / 2f, Scale, SpriteEffects.None, 0f);  
-            spriteBatch.Draw(slashTexture, drawPosition, null, DrawColor, Rotation, slashTexture.Size() / 2f, Scale * StretchFactor, SpriteEffects.None, 0f);
-            spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            spriteBatch.Draw(Texture, drawPosition, null, DrawColor, Rotation, Texture.Frame.Size() / 2f, Scale * StretchFactor, SpriteEffects.None);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Items.Accessories;
-using Terraria.ModLoader.Exceptions;
 
 namespace Cascade.Core.Systems
 {

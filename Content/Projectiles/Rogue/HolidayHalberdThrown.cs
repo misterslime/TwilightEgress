@@ -1,7 +1,4 @@
-﻿using CalamityMod.Buffs.StatDebuffs;
-using CalamityMod.Particles;
-
-namespace Cascade.Content.Projectiles.Rogue
+﻿namespace Cascade.Content.Projectiles.Rogue
 {
     public class HolidayHalberdThrown : ModProjectile, ILocalizedModType
     {
@@ -60,8 +57,8 @@ namespace Cascade.Content.Projectiles.Rogue
                 Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 75f + Main.rand.NextVector2Circular(35f, 35f);
                 float scale = Main.rand.NextFloat(0.2f, 0.8f);
                 int lifespan = Main.rand.Next(15, 30);
-                GenericSparkle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
-                GeneralParticleHandler.SpawnParticle(sparkleParticle);
+                SparkleParticle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
+                sparkleParticle.SpawnCasParticle();
             }
 
             Timer++;
@@ -92,10 +89,10 @@ namespace Cascade.Content.Projectiles.Rogue
                     initialColor = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat()) * Main.rand.NextFloat(0.2f, 0.75f);
 
                 Color fadeColor = Color.WhiteSmoke;
-                float scale = Main.rand.NextFloat(0.75f, 2f);
-                float opacity = Main.rand.NextFloat(180f, 240f);
-                MediumMistParticle deathSmoke = new MediumMistParticle(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                GeneralParticleHandler.SpawnParticle(deathSmoke);
+                float scale = Main.rand.NextFloat(1f, 3f);
+                float opacity = Main.rand.NextFloat(0.8f, 1.75f);
+                MediumMistParticle deathSmoke = new(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(60, 120), 0.03f);
+                deathSmoke.SpawnCasParticle();
             }
         }
 

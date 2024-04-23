@@ -1,6 +1,4 @@
-﻿using CalamityMod.Items.Pets;
-using CalamityMod.Particles;
-using Cascade.Core.Graphics.Renderers.ScreenRenderers;
+﻿using Cascade.Core.Graphics.Renderers.ScreenRenderers;
 
 namespace Cascade.Core.Players.BuffHandlers
 {
@@ -42,9 +40,9 @@ namespace Cascade.Core.Players.BuffHandlers
                         Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(-5f, -2f);
                         Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
                         float scale = Main.rand.NextFloat(0.65f, 1.75f);
-                        float opacity = Main.rand.NextFloat(180f, 240f);
-                        MediumMistParticle mist = new(spawnPosition, velocity, color, color, scale, opacity, 0.03f);
-                        GeneralParticleHandler.SpawnParticle(mist);
+                        float opacity = Main.rand.NextFloat(0.65f, 1f);
+                        MediumMistParticle necromaticSmoke = new(spawnPosition, velocity, color, color, scale, opacity, Main.rand.Next(120, 180), 0.03f);
+                        necromaticSmoke.SpawnCasParticle();
                     }
                 }
             }
