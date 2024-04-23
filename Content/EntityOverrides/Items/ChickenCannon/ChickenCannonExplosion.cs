@@ -1,4 +1,4 @@
-﻿namespace Cascade.Content.Projectiles.Ranged
+﻿namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
 {
     public class ChickenCannonExplosion : ModProjectile, ILocalizedModType
     {
@@ -25,7 +25,7 @@
         public override void OnSpawn(IEntitySource source)
         {
             // Send out a huge spread of particles.
-            PulseRingParticle explosionRing = new(Projectile.Center, Vector2.Zero, Color.White,0.01f, 8f, 75);
+            PulseRingParticle explosionRing = new(Projectile.Center, Vector2.Zero, Color.White, 0.01f, 8f, 75);
             explosionRing.SpawnCasParticle();
 
             for (int i = 0; i < 25; i++)
@@ -41,7 +41,7 @@
 
             for (int i = 0; i < 50; i++)
             {
-                Color fireColor = Color.Lerp(Color.Yellow, Color.Red, Main.rand.NextFloat(0.2f, 0.8f)) * Main.rand.NextFloat(0.2f, 0.5f); 
+                Color fireColor = Color.Lerp(Color.Yellow, Color.Red, Main.rand.NextFloat(0.2f, 0.8f)) * Main.rand.NextFloat(0.2f, 0.5f);
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(35f, 100f);
                 float scale = Main.rand.NextFloat(4f, 6f);
                 HeavySmokeParticle flames = new(Projectile.Center, velocity, fireColor, Main.rand.Next(120, 150), scale, Main.rand.NextFloat(0.7f, 1.75f), 0.06f, true, 0);

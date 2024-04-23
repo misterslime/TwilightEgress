@@ -1,4 +1,4 @@
-﻿namespace Cascade.Content.Projectiles.Rogue
+﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
     public class HolidayHalberdIceShockSnowflake : ModProjectile, ILocalizedModType
     {

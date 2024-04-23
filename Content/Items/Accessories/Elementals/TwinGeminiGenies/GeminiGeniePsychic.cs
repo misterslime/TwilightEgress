@@ -1,11 +1,11 @@
-﻿namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
+﻿namespace Cascade.Content.Items.Accessories.Elementals.TwinGeminiGenies
 {
     public class GeminiGeniePsychic : ModProjectile, ILocalizedModType
     {
         private enum AIStates
         {
             Idle,
-            Attacking        
+            Attacking
         }
 
         private Player Owner => Main.player[Projectile.owner];
@@ -105,7 +105,7 @@
             }
 
             SpawnInWeapons();
-           
+
             // AI State control.
             switch ((AIStates)AttackState)
             {

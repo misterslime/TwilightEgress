@@ -1,15 +1,13 @@
-﻿using CalamityMod.Items.Weapons.Ranged;
+﻿using ChickenCannonItem = CalamityMod.Items.Weapons.Ranged.ChickenCannon;
 using CalamityMod.Projectiles.Ranged;
 
-namespace Cascade.Content.Projectiles.Ranged
+namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
 {
     public class ChickenCannonHoldout : ModProjectile, ILocalizedModType
     {
         private Player Owner => Main.player[Projectile.owner];
 
         private ref float Timer => ref Projectile.ai[0];
-
-        private bool ShouldDespawn => Owner.dead || Owner.CCed || !Owner.active || Owner.HeldItem.type != ModContent.ItemType<ChickenCannon>();
 
         private const int ChargeUpTime = 180;
 
@@ -41,7 +39,7 @@ namespace Cascade.Content.Projectiles.Ranged
 
         public override void AI()
         {
-            bool isChanneling = Owner.active && Owner.channel && Owner.HeldItem.type == ModContent.ItemType<ChickenCannon>();
+            bool isChanneling = Owner.active && Owner.channel && Owner.HeldItem.type == ModContent.ItemType<ChickenCannonItem>();
             if (!isChanneling)
             {
                 Projectile.Kill();

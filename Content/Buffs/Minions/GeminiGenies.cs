@@ -1,4 +1,4 @@
-﻿using Cascade.Content.Projectiles.Summoner.GeminiGenies;
+﻿using Cascade.Content.Items.Accessories.Elementals.TwinGeminiGenies;
 
 namespace Cascade.Content.Buffs.Minions
 {

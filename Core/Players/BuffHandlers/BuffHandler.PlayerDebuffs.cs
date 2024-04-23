@@ -37,11 +37,10 @@ namespace Cascade.Core.Players.BuffHandlers
                     for (int i = 0; i < 2; i++)
                     {
                         Vector2 spawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
-                        Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(-5f, -2f);
                         Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
-                        float scale = Main.rand.NextFloat(0.65f, 1.75f);
-                        float opacity = Main.rand.NextFloat(0.65f, 1f);
-                        MediumMistParticle necromaticSmoke = new(spawnPosition, velocity, color, color, scale, opacity, Main.rand.Next(120, 180), 0.03f);
+                        float scale = Main.rand.NextFloat(0.65f, 0.85f);
+                        float opacity = Main.rand.NextFloat(0.6f, 0.8f);
+                        MediumMistParticle necromaticSmoke = new(spawnPosition, Vector2.Zero, color, Color.Violet, scale, opacity, Main.rand.Next(60, 120), 0.03f);
                         necromaticSmoke.SpawnCasParticle();
                     }
                 }

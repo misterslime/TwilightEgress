@@ -1,6 +1,6 @@
 ﻿using ReLogic.Utilities;
 
-namespace Cascade.Content.Projectiles.Summoner.GeminiGenies
+namespace Cascade.Content.Items.Accessories.Elementals.TwinGeminiGenies
 {
     public class Sandnado : ModProjectile, ILocalizedModType
     {

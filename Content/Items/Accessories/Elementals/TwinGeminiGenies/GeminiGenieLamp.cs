@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Items;
 using Cascade.Content.Buffs.Minions;
-using Cascade.Content.Projectiles.Summoner.GeminiGenies;
 
-namespace Cascade.Content.Items.Accessories.Summoner
+namespace Cascade.Content.Items.Accessories.Elementals.TwinGeminiGenies
 {
     public class GeminiGenieLamp : ModItem, ILocalizedModType
     {

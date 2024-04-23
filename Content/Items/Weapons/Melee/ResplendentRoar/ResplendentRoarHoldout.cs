@@ -1,7 +1,6 @@
-﻿using Cascade.Content.Items.Weapons.Melee;
-using CalamityMod.Buffs.DamageOverTime;
+﻿using CalamityMod.Buffs.DamageOverTime;
 
-namespace Cascade.Content.Projectiles.Melee
+namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
 {
     public class ResplendentRoarHoldout : ModProjectile, ILocalizedModType
     {
@@ -39,7 +38,7 @@ namespace Cascade.Content.Projectiles.Melee
 
         private const float LargeSwingAngle = -(Pi + PiOver4);
 
-        private const int SmallSwingMaxTime = 35;   
+        private const int SmallSwingMaxTime = 35;
 
         private const int LargeSwingMaxTime = 45;
 
@@ -111,7 +110,7 @@ namespace Cascade.Content.Projectiles.Melee
                     break;
 
                 case AttackTypes.FinalDyingRoar:
-                    FinalDyingRoar(); 
+                    FinalDyingRoar();
                     break;
             }
 
@@ -155,7 +154,7 @@ namespace Cascade.Content.Projectiles.Melee
             Projectile.rotation = Lerp(startingAngle, endingAngle, SwingRatio(true));
 
             float distanceToMiddle = Distance(SwingRatio(true), 0.5f);
-            if (Timer == (SmallSwingMaxTime / 2))
+            if (Timer == SmallSwingMaxTime / 2)
             {
                 SoundEngine.PlaySound(CascadeSoundRegistry.YharonHurt with { PitchVariance = 1f }, Projectile.Center);
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderSwingWoosh, Projectile.Center);
@@ -183,7 +182,7 @@ namespace Cascade.Content.Projectiles.Melee
             Projectile.rotation = Lerp(startingAngle, endingAngle, SwingRatio(false));
 
             float distanceToMiddle = Distance(SwingRatio(false), 0.5f);
-            if (Timer == (LargeSwingMaxTime / 2))
+            if (Timer == LargeSwingMaxTime / 2)
             {
                 SoundEngine.PlaySound(CascadeSoundRegistry.YharonRoarShort with { PitchVariance = 0.15f }, Projectile.Center);
                 SoundEngine.PlaySound(CommonCalamitySounds.LouderPhantomPhoenix, Projectile.Center);
@@ -222,12 +221,12 @@ namespace Cascade.Content.Projectiles.Melee
                     yharonFrameCounter = 0f;
                 }
 
-                float maximumOpacity = 1f * Utils.GetLerpValue(0f, 1f, (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f), true);
-                float maximumScale = 1.35f * Utils.GetLerpValue(0f, 1f, (Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f), true);
+                float maximumOpacity = 1f * Utils.GetLerpValue(0f, 1f, Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f, true);
+                float maximumScale = 1.35f * Utils.GetLerpValue(0f, 1f, Owner.Cascade_ResplendentRoar().ResplendentRazeCharge / 100f, true);
                 yharonOpacity = Lerp(yharonOpacity, maximumOpacity, Timer / 90f);
                 yharonScale = Lerp(yharonScale, maximumScale, Timer / 90f);
 
-                if ((Timer >= 90f && !IsChannelingRMB) || Timer >= 600f)
+                if (Timer >= 90f && !IsChannelingRMB || Timer >= 600f)
                 {
                     AIState = 1f;
                     Timer = 0f;
@@ -240,14 +239,14 @@ namespace Cascade.Content.Projectiles.Melee
                         Color fireColor = Color.Lerp(colorGroup, secondColorGroup, Main.rand.NextFloat(0.2f, 0.8f));
 
                         float scale = i == 2 ? 9f : i == 1f ? 6f : 3f;
-                        PulseRingParticle yharonRoar = new(Owner.Center, Vector2.Zero, fireColor,0.01f, scale, 60);
+                        PulseRingParticle yharonRoar = new(Owner.Center, Vector2.Zero, fireColor, 0.01f, scale, 60);
                         yharonRoar.SpawnCasParticle();
                     }
 
                     Projectile.netUpdate = true;
                 }
             }
-           
+
             if (AIState == 1f)
             {
                 yharonFrame = 6;
@@ -403,7 +402,7 @@ namespace Cascade.Content.Projectiles.Melee
 
             SpriteEffects effects = shouldFlipSprite ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-            float extraAngle = (shouldFlipSprite ? PiOver2 : 0f);
+            float extraAngle = shouldFlipSprite ? PiOver2 : 0f;
             float baseDrawAngle = Projectile.rotation;
             float drawRotation = baseDrawAngle + PiOver4 + extraAngle;
 

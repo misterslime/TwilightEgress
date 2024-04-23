@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using Cascade.Content.Projectiles.Ranged;
 
 namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
 {

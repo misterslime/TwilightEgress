@@ -1,6 +1,6 @@
 ﻿using CalamityMod.Buffs.StatDebuffs;
 
-namespace Cascade.Content.Projectiles.Rogue
+namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
     public class HolidayHalberdIceShock : ModProjectile, ILocalizedModType
     {
@@ -35,7 +35,7 @@ namespace Cascade.Content.Projectiles.Rogue
         {
             RandomNewScale = Main.rand.NextFloat(1f, 1.75f);
             Projectile.rotation = Main.rand.NextFloat(TwoPi);
-            SoundEngine.PlaySound(CascadeSoundRegistry.IceShock, Projectile.Center);         
+            SoundEngine.PlaySound(CascadeSoundRegistry.IceShock, Projectile.Center);
         }
 
         public override void AI()
@@ -71,7 +71,7 @@ namespace Cascade.Content.Projectiles.Rogue
                     sparkleParticle.SpawnCasParticle();
                 }
             }
-            
+
             if (Main.rand.NextBool(5))
             {
                 for (int i = 0; i < 2; i++)
@@ -84,7 +84,7 @@ namespace Cascade.Content.Projectiles.Rogue
                     MediumMistParticle deathSmoke = new(spawnPosition, velocity, initialColor, initialColor * 0.45f, scale, opacity, Main.rand.Next(180, 240), 0.03f);
                     deathSmoke.SpawnCasParticle();
                 }
-            }        
+            }
 
             Timer++;
             Projectile.AdjustProjectileHitboxByScale(92f, 92f);
@@ -99,7 +99,7 @@ namespace Cascade.Content.Projectiles.Rogue
             {
                 Vector2 snowflakeVelocity = Vector2.UnitX.RotatedBy(TwoPi * i / 6) * 16f;
                 int damage = Projectile.damage.GetPercentageOfInteger(0.65f);
-                Projectile.BetterNewProjectile(Projectile.Center, snowflakeVelocity, ModContent.ProjectileType<HolidayHalberdIceShockSnowflake>(), damage, 
+                Projectile.BetterNewProjectile(Projectile.Center, snowflakeVelocity, ModContent.ProjectileType<HolidayHalberdIceShockSnowflake>(), damage,
                     Projectile.knockBack, owner: Projectile.owner, ai0: snowflakeAngularVelocity);
             }
         }
@@ -112,7 +112,7 @@ namespace Cascade.Content.Projectiles.Rogue
                 target.AddBuff(ModContent.BuffType<GlacialState>(), 180);
                 SoundEngine.PlaySound(CascadeSoundRegistry.IceShockPetrify, Projectile.Center);
             }
-            
+
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -1,8 +1,7 @@
 ﻿using CalamityMod.Items;
 using CalamityMod.Rarities;
-using Cascade.Content.Projectiles.Melee;
 
-namespace Cascade.Content.Items.Weapons.Melee
+namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
 {
     public class ResplendentRoar : ModItem, ILocalizedModType
     {

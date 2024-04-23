@@ -1,125 +1,99 @@
-﻿using Cascade.Content.Items.Weapons.Rogue;
-
-namespace Cascade.Content.Projectiles.Rogue
+﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
-    public class HolidayHalbertHoldout : ModProjectile, ILocalizedModType
+    public class HolidayHalberdThrown : ModProjectile, ILocalizedModType
     {
-        private Player Owner => Main.player[Projectile.owner];
-
         private ref float Timer => ref Projectile.ai[0];
 
-        private bool ShouldDespawn => Owner.dead || !Owner.channel || !Owner.active || Owner.CCed || Owner.HeldItem.type != ModContent.ItemType<HolidayHalberd>();
+        private ref float HalberdPowerScale => ref Projectile.ai[1];
 
-        private const int MaxSpinTimeThreshold = 50;
-
-        private const int RotationSpeedIndex = 0;
+        private Player Owner => Main.player[Projectile.owner];
 
         public new string LocalizationCategory => "Projectiles.Rogue";
 
-        public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd";
+        public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd/HolidayHalberd";
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
-            ProjectileID.Sets.TrailingMode[Type] = 2;
+            ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Projectile.width = 32;
-            Projectile.height = 32;
+            Projectile.width = Projectile.height = 32;
             Projectile.aiStyle = -1;
-            Projectile.penetrate = -1;
+            Projectile.penetrate = 3;
             Projectile.ignoreWater = true;
+            Projectile.tileCollide = Projectile.timeLeft <= 180;
             Projectile.friendly = true;
-            Projectile.tileCollide = false;
-            Projectile.scale = 0f;
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
             Projectile.DamageType = ModContent.GetInstance<RogueDamageClass>();
+            Projectile.timeLeft = 240;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 16;
         }
 
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            // idk wtf collision point does personally, don't ask me
-            // - fryzahh
             float collisionPoint = 0f;
-
-            // Get the length we want for our collision line. In this casee it should match the weapon.
             float lineLength = 78f * Projectile.scale;
-            // We get the position where the blade is being held.
             Vector2 startPoint = Projectile.Center + Projectile.rotation.ToRotationVector2();
-            // And finally, return a line collision check.
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), startPoint, startPoint + Projectile.rotation.ToRotationVector2() * lineLength, 32, ref collisionPoint);
         }
 
         public override void AI()
         {
-            if (ShouldDespawn)
+            // Projectiles.
+            if (Timer % 4 == 0)
             {
-                Projectile.Kill();
-                return;
+                // Spawn two waves of baubles similarly to Berdly's Halberd Attack.
+                Vector2 baubleVelocity = Vector2.Normalize(Projectile.velocity).RotatedBy(PiOver2);
+                Projectile.BetterNewProjectile(Projectile.Center, baubleVelocity, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
+                Vector2 baubleVelocity2 = Vector2.Normalize(Projectile.velocity).RotatedBy(-PiOver2);
+                Projectile.BetterNewProjectile(Projectile.Center, baubleVelocity2, ModContent.ProjectileType<HolidayHalberdAcceleratingBauble>(), Projectile.damage.GetPercentageOfInteger(0.35f), Projectile.knockBack, owner: Projectile.owner);
             }
 
-            Timer++;
-            AttackBehavior();
-            UpdatePlayerVariables();
-        }
-
-        public void AttackBehavior()
-        {
-            ref float rotationSpeed = ref Projectile.Cascade().ExtraAI[RotationSpeedIndex];
-
-            // Increase the spin speed over time.
-            if (Timer <= 30f)
-                rotationSpeed = Lerp(45f, 8f, Timer / 30f);
-
-
-            // Fire and kill.
-            if (Timer >= MaxSpinTimeThreshold)
-            {
-                Vector2 velocity = Projectile.SafeDirectionTo(Main.MouseWorld) * 30f * Projectile.scale;
-                Vector2 spawnPosition = Projectile.Center + Projectile.SafeDirectionTo(Main.MouseWorld) * 5f;
-                int p = Projectile.BetterNewProjectile(spawnPosition, velocity, ModContent.ProjectileType<HolidayHalberdThrown>(), Projectile.damage,
-                    Projectile.knockBack, CommonCalamitySounds.LouderSwingWoosh, null, Projectile.owner);
-
-                if (Main.projectile.IndexInRange(p))
-                {
-                    if (Owner.Calamity().StealthStrikeAvailable())
-                    {
-                        Main.projectile[p].Calamity().stealthStrike = true;
-                        Main.projectile[p].damage = Projectile.damage.GetPercentageOfInteger(0.25f);
-                        Owner.ConsumeStealthManually();
-                    }
-                }
-
-                Projectile.Kill();
-                return;
-            }
-
-            Projectile.Center = Owner.MountedCenter;
-            Projectile.rotation += Pi / rotationSpeed * Owner.direction;
-            Projectile.scale = Clamp(Projectile.scale + 0.05f, 0f, 1f);
-
-            // Particles.
             if (Main.rand.NextBool(3))
             {
-                Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 78f + Main.rand.NextVector2Circular(65f, 65f) * Projectile.scale;
-                float scale = Main.rand.NextFloat(0.2f, 0.8f) * Projectile.scale;
+                Vector2 spawnPosition = Projectile.Center + Projectile.rotation.ToRotationVector2() * 75f + Main.rand.NextVector2Circular(35f, 35f);
+                float scale = Main.rand.NextFloat(0.2f, 0.8f);
                 int lifespan = Main.rand.Next(15, 30);
                 SparkleParticle sparkleParticle = new(spawnPosition, Vector2.Zero, GetHalberdVisualColors(), GetHalberdVisualColors() * 0.35f, scale, lifespan, 0.25f, 1.25f);
                 sparkleParticle.SpawnCasParticle();
             }
+
+            Timer++;
+            Projectile.rotation = Projectile.velocity.ToRotation();
         }
 
-        public void UpdatePlayerVariables()
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            Owner.heldProj = Projectile.whoAmI;
-            Owner.itemTime = 2;
-            Owner.itemAnimation = 2;
-            Owner.direction = Main.MouseWorld.X < Owner.Center.X ? -1 : 1;
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Projectile.rotation - PiOver2);
+            // Deltarune reference noway
+            if (Projectile.Calamity().stealthStrike && Main.myPlayer == Projectile.owner)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    Vector2 spawnPosition = target.Center + Vector2.UnitX.RotatedBy(TwoPi * i / 3) * 50f;
+                    Projectile.BetterNewProjectile(spawnPosition, Vector2.Zero, ModContent.ProjectileType<HolidayHalberdIceShock>(), Projectile.damage, Projectile.knockBack, owner: Projectile.owner);
+                }
+            }
+        }
+
+        public override void OnKill(int timeLeft)
+        {
+
+            for (int i = 0; i < 12; i++)
+            {
+                Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 10f);
+                Color initialColor = Color.Lerp(Color.Red, Color.Lime, Main.rand.NextFloat()) * Main.rand.NextFloat(0.2f, 0.75f);
+                if (Owner.Calamity().rogueStealth > 0f)
+                    initialColor = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat()) * Main.rand.NextFloat(0.2f, 0.75f);
+
+                Color fadeColor = Color.WhiteSmoke;
+                float scale = Main.rand.NextFloat(1f, 3f);
+                float opacity = Main.rand.NextFloat(0.8f, 1.75f);
+                MediumMistParticle deathSmoke = new(Projectile.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(60, 120), 0.03f);
+                deathSmoke.SpawnCasParticle();
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)
@@ -133,7 +107,6 @@ namespace Cascade.Content.Projectiles.Rogue
                 Projectile.oldPos[i] = Projectile.position + localRotation.ToRotationVector2() * 78f * Projectile.scale;
             }
 
-            DrawPrimTrail();
             DrawHalberd();
             return false;
         }
@@ -154,11 +127,11 @@ namespace Cascade.Content.Projectiles.Rogue
             SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
             // This is all explained in MSK's file if you're having trouble understanding.
-            float extraAngle = (Owner.direction < 0 ? PiOver2 : 0f);
+            float extraAngle = Owner.direction < 0 ? PiOver2 : 0f;
             float baseDrawAngle = Projectile.rotation;
             float drawRotation = baseDrawAngle + PiOver4 + extraAngle;
 
-            Vector2 origin = new Vector2((Owner.direction < 0) ? texture.Width : 0f, texture.Height);
+            Vector2 origin = new Vector2(Owner.direction < 0 ? texture.Width : 0f, texture.Height);
             Vector2 drawPosition = Projectile.Center + baseDrawAngle.ToRotationVector2() - Main.screenPosition;
 
             // Draw backglow effects. 
@@ -179,7 +152,7 @@ namespace Cascade.Content.Projectiles.Rogue
             return 30f * Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * Projectile.scale;
         }
 
-        public Color SetTrailColor(float completionRatio) => GetHalberdVisualColors();      
+        public Color SetTrailColor(float completionRatio) => GetHalberdVisualColors();
 
         public void DrawPrimTrail()
         {
@@ -187,15 +160,15 @@ namespace Cascade.Content.Projectiles.Rogue
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
-            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition; 
+            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
 
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 36);
+            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 65);
             Main.spriteBatch.ExitShaderRegion();*/
 
             Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
             ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
             PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 36);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 65);
         }
     }
 }

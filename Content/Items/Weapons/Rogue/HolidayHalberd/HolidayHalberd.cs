@@ -1,6 +1,4 @@
-﻿using Cascade.Content.Projectiles.Rogue;
-
-namespace Cascade.Content.Items.Weapons.Rogue
+﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
     public class HolidayHalberd : ModItem, ILocalizedModType
     {
@@ -26,7 +24,7 @@ namespace Cascade.Content.Items.Weapons.Rogue
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {          
+        {
             Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI);
             return false;
         }
