@@ -32,8 +32,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             Vector2 spawnPosition = Projectile.Center + Main.rand.NextVector2Circular(Projectile.width, Projectile.height);
             Color inkColor = Color.Lerp(Color.DarkBlue, Color.MidnightBlue, Main.rand.NextFloat(0.1f, 0.9f));
 
-            ManaInkParticle ink = new(Projectile.Center, inkColor, Projectile.scale, 0.6f, 20);
-            GeneralParticleHandler.SpawnParticle(ink);
+            new ManaInkParticle(spawnPosition, inkColor, Projectile.scale, 0.6f, 20).Spawn();
 
             Timer++;
         }

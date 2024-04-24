@@ -1,4 +1,6 @@
-﻿using Terraria.ModLoader.IO;
+﻿using CalamityMod;
+using CalamityMod.Particles;
+using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 {
@@ -282,7 +284,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                         NPC.velocity = velocity;
 
                     // Spawn some lil' visual particles everytime it ejects.
-                    Utilities.CreateRandomizedDustExplosion(15, NPC.Center, DustID.BlueFairy);
+                    CascadeUtilities.CreateRandomizedDustExplosion(15, NPC.Center, DustID.BlueFairy);
                     DirectionalPulseRing pulseRing = new(NPC.Center - NPC.SafeDirectionTo(NPC.Center) * 60f, NPC.SafeDirectionTo(NPC.Center) * -5f, Color.DeepSkyBlue, new Vector2(0.5f, 2f), NPC.velocity.ToRotation(), 0f, 0.3f, 45);
                     GeneralParticleHandler.SpawnParticle(pulseRing);
 
@@ -363,8 +365,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             }
 
             // Squash and stretch the sprite passively.
-            spriteStretchX = Lerp(1f, 1.10f, Utilities.SineEaseInOut(Timer / 160f));
-            spriteStretchY = Lerp(1f, 0.8f, Utilities.SineEaseInOut(Timer / 120f));
+            spriteStretchX = Lerp(1f, 1.10f, CascadeUtilities.SineEaseInOut(Timer / 160f));
+            spriteStretchY = Lerp(1f, 0.8f, CascadeUtilities.SineEaseInOut(Timer / 120f));
 
             //SwitchBehavior_Attacking(target);
             SwitchBehavior_Latching(target);
@@ -475,7 +477,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 Vector2 spawnPosition = NPC.Center + Vector2.UnitY.RotatedBy(NPC.rotation) * 30f;
                 Vector2 inkVelocity = (target.Center - NPC.Center).SafeNormalize(Vector2.UnitX) * 14f + NPC.velocity;
 
-                NPC.SpawnProjectile(spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f, false, default);
+                //NPC.SpawnProjectile(spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f, false, default);
+                Utilities.NewProjectileBetter(NPC.GetSource_FromAI(), spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f);
             }
 
             SwitchBehavior_Fleeing(target);
