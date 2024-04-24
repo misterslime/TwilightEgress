@@ -3,6 +3,7 @@
     public abstract class Planetoid : Entity
     {
         public int ID;
+        public float rotation;
         public virtual float Gravity { get; set; } = 0.0f;
         public virtual bool doesCollide { get; set; }
 
