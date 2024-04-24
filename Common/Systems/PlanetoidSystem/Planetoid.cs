@@ -23,9 +23,7 @@
         }
 
         public sealed override void SetupContent()
-        {
-            CascadeTextureRegistry.Planetoids[ID] = ModContent.Request<Texture2D>(Texture);
-        }
+            => CascadeTextureRegistry.Planetoids[ID] = ModContent.Request<Texture2D>(Texture);
 
         public virtual void Update() { }
         public virtual void Collision(Player player) { }

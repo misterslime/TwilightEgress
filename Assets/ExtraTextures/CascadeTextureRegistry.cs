@@ -5,7 +5,7 @@ namespace Cascade.Assets.ExtraTextures
     public static class CascadeTextureRegistry
     {
         #region Objects
-        public static readonly Asset<Texture2D> EmptyPixel = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/EmptyPixel");
+        public static readonly LazyAsset<Texture2D> EmptyPixel = MiscTexturesRegistry.InvisiblePixel;
 
         public static readonly Asset<Texture2D> SoftStar = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar");
 
