@@ -12,8 +12,6 @@ namespace Cascade.Assets.ExtraTextures
         public static readonly Asset<Texture2D> GreyscaleVortex = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/GreyscaleVortex");
 
         #region Lists
-        public static Asset<Texture2D>[] Planetoids = new Asset<Texture2D>[PlanetoidSystem.planetoidsByType.Count];
-
         public static readonly List<string> FourPointedStars = new()
         {
             "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Small",

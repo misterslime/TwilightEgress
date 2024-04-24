@@ -18,12 +18,17 @@
 
         protected sealed override void Register()
         {
-            ID = PlanetoidSystem.planetoidsByType.Count;
-            PlanetoidSystem.planetoidsByType.Add(GetType(), this);
+            ID = PlanetoidSystem.PlanetoidsByType.Count;
+            PlanetoidSystem.PlanetoidsByType.Add(GetType(), this);
         }
 
-        public sealed override void SetupContent()
-            => CascadeTextureRegistry.Planetoids[ID] = ModContent.Request<Texture2D>(Texture);
+        public sealed override void SetupContent() => SetStaticDefaults();
+
+        public override void SetStaticDefaults()
+        {
+            PlanetoidSystem.AddTexture(ModContent.Request<Texture2D>(Texture));
+            base.SetStaticDefaults();
+        }
 
         public virtual void Update() { }
         public virtual void Collision(Player player) { }

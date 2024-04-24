@@ -4,8 +4,15 @@ namespace Cascade.Core.Systems.PlanetoidSystem
 {
     public class PlanetoidSystem : ModSystem
     {
-        public static Dictionary<Type, Planetoid> planetoidsByType = new();
+        public static Dictionary<Type, Planetoid> PlanetoidsByType = new();
+        public static Asset<Texture2D>[] PlanetoidTextures = [];
         public PlanetoidSystem() { }
+
+        public static void AddTexture(Asset<Texture2D> texture)
+        {
+            Array.Resize(ref PlanetoidTextures, PlanetoidTextures.Length + 1);
+            PlanetoidTextures[PlanetoidTextures.Length - 1] = texture;
+        }
 
         public override void Load()
         {
@@ -16,7 +23,15 @@ namespace Cascade.Core.Systems.PlanetoidSystem
         public override void Unload()
         {
             On_Player.DryCollision -= UpdateVelocityNearPlanetoidEntities;
+            PlanetoidTextures = null;
+            PlanetoidsByType = null;
             base.Unload();
+        }
+
+        public override void SetupContent()
+        {
+            PlanetoidTextures = new Asset<Texture2D>[PlanetoidsByType.Count];
+            base.SetupContent();
         }
 
         private void UpdateVelocityNearPlanetoidEntities(On_Player.orig_DryCollision orig, Player self, bool fallThrough, bool ignorePlats)
@@ -28,13 +43,5 @@ namespace Cascade.Core.Systems.PlanetoidSystem
 
             orig.Invoke(self, fallThrough, ignorePlats);
         }
-    }
-
-    public class PlanetoidPlayer : ModPlayer
-    {
-        public Planetoid planetoid = null;
-        public float angle = 0;
-
-        public PlanetoidPlayer() { }
     }
 }

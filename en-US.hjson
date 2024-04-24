@@ -1,0 +1,12 @@
+Mods: {
+	Cascade: {
+		Items: {
+			BurningQuasar: {
+				DisplayName: Burning Quasar
+				Tooltip: ""
+			}
+		}
+
+		NPCs.Manaphage.DisplayName: Manaphage
+	}
+}
