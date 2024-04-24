@@ -141,7 +141,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 return false;
             }
 
-            Utilities.AdvancedNPCTargetSearching(NPC, playerSearchFilter, npcSearchFilter);
+            // This utility below needs to be rewritten entirely. Don't bother with it for now.
+            // fryzahh.
+            //Utilities.AdvancedNPCTargetSearching(NPC, playerSearchFilter, npcSearchFilter);
+
             NPCAimedTarget target = NPC.GetTargetData();
 
             // Don't bother targetting any asteroids at 60% and above mana capacity.
@@ -255,8 +258,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 if (Timer <= jellyfishMovementInterval)
                 {
                     float stretchInterpolant = Utils.GetLerpValue(0f, 1f, (float)(Timer / jellyfishMovementInterval), true);
-                    spriteStretchX = Lerp(spriteStretchX, 1.25f, (float)(Timer / jellyfishMovementInterval));
-                    spriteStretchY = Lerp(spriteStretchY, 0.75f, (float)(Timer / jellyfishMovementInterval));
+                    spriteStretchX = Lerp(spriteStretchX, 1.25f, CascadeUtilities.SineEaseInOut(stretchInterpolant));
+                    spriteStretchY = Lerp(spriteStretchY, 0.75f, CascadeUtilities.SineEaseInOut(stretchInterpolant));
                 }
 
                 // Pick a random angle to move towards before propelling forward.
@@ -266,27 +269,15 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 // Move forward every few seconds.
                 if (Timer == jellyfishMovementInterval)
                 {
-                    Vector2 velocity = Vector2.One.RotatedBy(jellyfishMovementAngle) * Main.rand.NextFloat(3f, 4f);
+                    //Vector2 velocity = Vector2.One.RotatedBy(jellyfishMovementAngle) * Main.rand.NextFloat(3f, 4f);
 
-                    // Avoid leaving the world and avoid running into tiles.
-                    Vector2 centerAhead = NPC.Center + NPC.velocity * 40f;
-                    bool leavingWorldBounds = centerAhead.X >= Main.maxTilesX * 16f - 700f || centerAhead.X < 700f || centerAhead.Y < Main.maxTilesY * 0.3f;
-                    bool shouldTurnAround = leavingWorldBounds;
-
-                    Vector2 velocityAhead = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedBy(NPC.rotation);
-                    if (!Collision.CanHit(NPC.Center, 1, 1, NPC.Center + velocityAhead * 75f, 1, 1))
-                        shouldTurnAround = true;
-
-                    // Either turn around or continue forward as normal.
-                    if (shouldTurnAround)
-                        NPC.TurnAroundMovement(centerAhead, leavingWorldBounds);
-                    else
-                        NPC.velocity = velocity;
+                    // BEHAVIOR FOR TURNING AROUND WHEN NEARING TILES OR NEARING THE EDGE OF THE WORLD GOES HERE.
+                    // - fryzahh
 
                     // Spawn some lil' visual particles everytime it ejects.
                     CascadeUtilities.CreateRandomizedDustExplosion(15, NPC.Center, DustID.BlueFairy);
-                    DirectionalPulseRing pulseRing = new(NPC.Center - NPC.SafeDirectionTo(NPC.Center) * 60f, NPC.SafeDirectionTo(NPC.Center) * -5f, Color.DeepSkyBlue, new Vector2(0.5f, 2f), NPC.velocity.ToRotation(), 0f, 0.3f, 45);
-                    GeneralParticleHandler.SpawnParticle(pulseRing);
+                    PulseRingParticle propulsionRing = new(NPC.Center - NPC.SafeDirectionTo(NPC.Center) * 60f, NPC.SafeDirectionTo(NPC.Center) * -5f, Color.DeepSkyBlue, 0f, 0.3f, new Vector2(0.5f, 2f), NPC.velocity.ToRotation(), 45);
+                    propulsionRing.SpawnCasParticle();
 
                     // Unstretch the sprite.
                     spriteStretchX = 0.8f;
@@ -331,19 +322,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 idleMovementDirection = Main.rand.NextBool().ToDirectionInt();
             }
 
-            // Avoid leaving the world and avoid running into tiles.
-            Vector2 centerAhead = NPC.Center + NPC.velocity * 40f;
-            bool leavingWorldBounds = centerAhead.X >= Main.maxTilesX * 16f - 700f || centerAhead.X < 700f || centerAhead.Y < Main.maxTilesY * 0.3f;
-            bool shouldTurnAround = leavingWorldBounds;
-
-            Vector2 velocityAhead = NPC.velocity.SafeNormalize(Vector2.Zero).RotatedBy(Pi);
-            if (!Collision.CanHit(NPC.Center, 1, 1, NPC.Center + velocityAhead * 75f, 1, 1))
-                shouldTurnAround = true;
-
-            // Either turn around or continue forward as normal.
-            if (shouldTurnAround)
-                NPC.TurnAroundMovement(centerAhead, leavingWorldBounds);
-
+            // BEHAVIOR FOR TURNING AROUND WHEN NEARING TILES OR NEARING THE EDGE OF THE WORLD GOES HERE.
+            // - fryzahh
+            
             if (Timer % lazeMovementInterval == 0)
             {
                 Vector2 velocity = Vector2.One.RotatedByRandom(TwoPi) * Main.rand.NextFloat(0.1f, 0.13f);
@@ -477,8 +458,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 Vector2 spawnPosition = NPC.Center + Vector2.UnitY.RotatedBy(NPC.rotation) * 30f;
                 Vector2 inkVelocity = (target.Center - NPC.Center).SafeNormalize(Vector2.UnitX) * 14f + NPC.velocity;
 
-                //NPC.SpawnProjectile(spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f, false, default);
-                Utilities.NewProjectileBetter(NPC.GetSource_FromAI(), spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f);
+                NPC.BetterNewProjectile(spawnPosition, inkVelocity, ModContent.ProjectileType<ManaInk>(), NPC.defDamage.GetPercentageOfInteger(0.45f), 0f);
             }
 
             SwitchBehavior_Fleeing(target);
@@ -542,6 +522,17 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 LocalAIState = 0f;
                 NPC.netUpdate = true;
             }
+        }
+
+        public void CheckForTurnAround(out bool turnAround)
+        {
+            turnAround = false;
+
+            // Avoid leaving the world and avoid running into tiles.
+            Vector2 centerAhead = NPC.Center + NPC.velocity * 40f;
+            bool leavingWorldBounds = centerAhead.X >= Main.maxTilesX * 16f - 700f || centerAhead.X < 700f || centerAhead.Y < Main.maxTilesY * 0.3f;
+            if (!Collision.CanHit(NPC.Center, 1, 1, centerAhead.SafeNormalize(Vector2.Zero).RotatedBy(NPC.rotation), 1, 1) || leavingWorldBounds)
+                turnAround = true;
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)

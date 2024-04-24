@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class ManaInkParticle : Particle
+    public class ManaInkParticle : CasParticle
     {
         private readonly float BaseOpacity;
 
