@@ -1,12 +1,9 @@
 ﻿using Cascade.Core.Players;
 
-namespace Cascade.Core.Systems.PlanetoidSystem
+namespace Cascade.Core.Systems
 {
     public class PlanetoidSystem : ModSystem
     {
-        public static Dictionary<Type, Planetoid> planetoidsByType = new();
-        public PlanetoidSystem() { }
-
         public override void Load()
         {
             On_Player.DryCollision += UpdateVelocityNearPlanetoidEntities;
@@ -28,13 +25,5 @@ namespace Cascade.Core.Systems.PlanetoidSystem
 
             orig.Invoke(self, fallThrough, ignorePlats);
         }
-    }
-
-    public class PlanetoidPlayer : ModPlayer
-    {
-        public Planetoid planetoid = null;
-        public float angle = 0;
-
-        public PlanetoidPlayer() { }
     }
 }
