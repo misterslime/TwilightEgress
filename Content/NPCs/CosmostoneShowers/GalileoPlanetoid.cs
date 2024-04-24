@@ -1,5 +1,4 @@
 ﻿using Cascade.Core.BaseEntities.ModNPCs;
-using Cascade.Core.Systems;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
@@ -26,7 +25,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             float totalAttractionRadius = MaximumAttractionRadius + WalkableRadius;
             Vector2 dustPosition = NPC.Center + Main.rand.NextVector2CircularEdge(totalAttractionRadius, totalAttractionRadius);
             if (Main.rand.NextBool(2))
-                Utilities.CreateDustLoop(15, dustPosition, Vector2.UnitX, DustID.Electric);
+                CascadeUtilities.CreateDustLoop(15, dustPosition, Vector2.UnitX, DustID.Electric);
 
             NPC.rotation += Tau / 600f;
             NPC.ShowNameOnHover = false;

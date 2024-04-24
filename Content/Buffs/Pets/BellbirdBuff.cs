@@ -1,4 +1,4 @@
-﻿using Cascade.Content.DedicatedContent.Lynel;
+﻿using Cascade.Content.Items.Dedicated.Lynel;
 
 namespace Cascade.Content.Buffs.Pets
 {

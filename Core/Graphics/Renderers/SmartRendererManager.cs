@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Cascade.Core.Graphics.Renderers
+﻿namespace Cascade.Core.Graphics.Renderers
 {
     public class SmartRendererManager : ModSystem
     {
@@ -66,7 +64,7 @@ namespace Cascade.Core.Graphics.Renderers
                 if (!renderer.ShouldDrawRenderer || renderer.DrawLayer == SmartRendererDrawLayer.BeforeFilters)
                     return;
 
-                renderer.MainTarget.SwapToTarget();
+                renderer.MainTarget.SwapToRenderTarget();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
                 renderer.DrawToTarget(Main.spriteBatch);
                 Main.spriteBatch.End();
@@ -165,12 +163,12 @@ namespace Cascade.Core.Graphics.Renderers
             {                    
                 // Draw the contents of the screen onto our target, then swap back to the screen target,
                 // where our target is then drawn with the screen's contents.
-                renderer.MainTarget.SwapToTarget();
+                renderer.MainTarget.SwapToRenderTarget();
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 Main.spriteBatch.Draw(screenTarget1, Vector2.Zero, Color.White);
                 Main.spriteBatch.End();
 
-                screenTarget1.SwapToTarget();
+                screenTarget1.SwapToRenderTarget();
                 renderer.DrawTarget(Main.spriteBatch);
             }
 

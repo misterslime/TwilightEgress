@@ -1,6 +1,4 @@
-﻿using Cascade.Content.Projectiles.Ranged;
-
-namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
+﻿namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
 {
     public class ChickenCannonOverride : ItemOverride
     {

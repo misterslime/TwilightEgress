@@ -1,9 +1,5 @@
 ﻿using CalamityMod.Events;
-using CalamityMod.Items.Placeables.Banners;
-using CalamityMod.NPCs;
-using CalamityMod.NPCs.Astral;
 using CalamityMod.NPCs.NormalNPCs;
-using CalamityMod.Projectiles.Magic;
 using Cascade.Content.NPCs.CosmostoneShowers;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
@@ -126,7 +122,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             bool shouldIncreaseSpawnRate = LanternNight.NextNightIsLanternNight;
 
             // Start and stop the event.
-            if (Utilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
+            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
                 Main.NewText("The night sky glimmers with cosmic energy...", Color.DeepSkyBlue);
                 CosmostoneShower = true;
@@ -192,7 +188,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     asteroidSpawnPosition = planetoidPositionWithRadius;
                 }
 
-                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
+                if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
                     if (Main.projectile.IndexInRange(p))
@@ -215,7 +211,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     }
                 }
                 
-                if (Utilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
+                if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
                     if (Main.projectile.IndexInRange(p))
@@ -252,6 +248,18 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private void Visuals_SpawnAmbientSkyEntities()
         {
+            if (Main.rand.NextBool(3))
+            {
+                Vector2 lightBallSpawnPos = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(Main.screenWidth, Main.screenHeight);
+                Vector2 velocity = Vector2.One.RotatedByRandom(Tau) * Main.rand.NextFloat(-0.3f, 0.3f);
+                float scale = Main.rand.NextFloat(0.08f, 0.25f);
+                float parallaxStrength = Main.rand.NextFloat(1f, 5f);
+                int lifetime = Main.rand.Next(120, 180);
+
+                AmbientLightBallParticle lightBall = new(lightBallSpawnPos, velocity, scale, 0f, 1f, parallaxStrength, lifetime, Color.CornflowerBlue);
+                lightBall.SpawnCasParticle();
+            }
+
             int totalStarLayers = 7;
             int totalAsteroidsLayers = 5;
             VirtualCamera virtualCamera = new(Main.LocalPlayer);
@@ -270,8 +278,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
                     float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
-                    ShiningStar shiningStar = new(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan);
-                    shiningStar.Spawn();
+                    new ShiningStar(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan).Spawn();
                 }
             }
 
@@ -291,8 +298,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float depth = i + 3f;
                     int lifespan = Main.rand.Next(1200, 1800);
 
-                    TravellingAsteroid asteroid = new(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan);
-                    asteroid.Spawn();
+                    new TravellingAsteroid(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
                 }
             }
 
@@ -309,8 +315,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     int lifespan = Main.rand.Next(600, 1200);
                     float depth = i + 3f;
 
-                    StationaryAsteroid stationaryAsteroid = new(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan);
-                    stationaryAsteroid.Spawn();
+                    new StationaryAsteroid(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
                 }
             }
 
@@ -332,8 +337,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     int lifespan = Main.rand.Next(600, 1200);
                     float depth = Main.rand.NextFloat(5f, 200f);
 
-                    CosmicGas cosmicGas = new(position, ShiningStarColors, maxScale, depth, lifespan);
-                    cosmicGas.Spawn();
+                    new CosmicGas(position, ShiningStarColors, maxScale, depth, lifespan).Spawn();
                 }
             }
 
@@ -346,8 +350,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.08f);
                 Vector2 position = new(x, y);
 
-                Sirius sirius = new(position, Color.SkyBlue, 2f, lifespan);
-                sirius.Spawn();
+                new Sirius(position, Color.SkyBlue, 2f, lifespan).Spawn();
             }
         }
     }

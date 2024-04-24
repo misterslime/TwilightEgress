@@ -57,7 +57,7 @@ namespace Cascade.Content.Skies.SkyEntities
             int timeToDisappear = Lifespan - 120;
             int timeToAppear = 120;
             float appearInterpolant = Time / (float)timeToAppear;
-            float twinkleInterpolant = SineInOutEasing(Time / 120f, 0);
+            float twinkleInterpolant = CascadeUtilities.SineEaseInOut(Time / 120f);
             float disappearInterpolant = (Time - timeToDisappear) / 120f;
 
             Scale = Lerp(MinScale, MaxScale, twinkleInterpolant);

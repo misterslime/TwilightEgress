@@ -1,4 +1,4 @@
-﻿using Cascade.Content.DedicatedContent.MPG;
+﻿using Cascade.Content.Items.Dedicated.MPG;
 
 namespace Cascade.Content.Buffs.Minions
 {

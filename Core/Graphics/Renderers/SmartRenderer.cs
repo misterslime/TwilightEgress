@@ -1,6 +1,4 @@
-﻿using Terraria.GameContent.RGB;
-
-namespace Cascade.Core.Graphics.Renderers
+﻿namespace Cascade.Core.Graphics.Renderers
 {
     public abstract class SmartRenderer : ModType
     {
@@ -17,7 +15,7 @@ namespace Cascade.Core.Graphics.Renderers
         /// <summary>
         /// The main target which you will be drawn.
         /// </summary>
-        public SmartRenderTarget MainTarget { get; private set; }
+        public ManagedRenderTarget MainTarget { get; private set; }
 
         protected sealed override void Register()
         {
@@ -32,7 +30,7 @@ namespace Cascade.Core.Graphics.Renderers
 
         public sealed override void SetupContent() => SetStaticDefaults();
 
-        public sealed override void SetStaticDefaults() => MainTarget = new(SmartTargetManager.CreateCustomRenderTarget, true);
+        public sealed override void SetStaticDefaults() => MainTarget = new(true, ManagedRenderTarget.CreateScreenSizedTarget);
 
         /// <summary>
         /// Override to draw contents onto the <see cref="MainTarget"/>.
@@ -44,7 +42,7 @@ namespace Cascade.Core.Graphics.Renderers
         /// Override to control how the target is drawn. By default, just draws the target.
         /// </summary>
         /// <param name="spriteBatch"></param>
-        public virtual void DrawTarget(SpriteBatch spriteBatch) => spriteBatch.Draw(MainTarget.RenderTarget, Vector2.Zero, Color.White);
+        public virtual void DrawTarget(SpriteBatch spriteBatch) => spriteBatch.Draw(MainTarget.Target, Vector2.Zero, Color.White);
 
         /// <summary>
         /// Override to run any extra code associated with your Renderer. Internally, this runs during <see cref="SmartRendererManager.PreUpdateEntities"/>

@@ -1,5 +1,4 @@
 ﻿using Cascade.Core.Players;
-using Cascade.Core.Systems;
 
 namespace Cascade.Core.BaseEntities.ModNPCs
 {

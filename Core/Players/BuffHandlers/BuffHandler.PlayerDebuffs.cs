@@ -1,5 +1,4 @@
-﻿using CalamityMod.Items.Pets;
-using Cascade.Core.Graphics.Renderers.ScreenRenderers;
+﻿using Cascade.Core.Graphics.Renderers.ScreenRenderers;
 
 namespace Cascade.Core.Players.BuffHandlers
 {
@@ -38,12 +37,11 @@ namespace Cascade.Core.Players.BuffHandlers
                     for (int i = 0; i < 2; i++)
                     {
                         Vector2 spawnPosition = Player.Center + Main.rand.NextVector2Circular(Player.width, Player.height);
-                        Vector2 velocity = Vector2.UnitY * Main.rand.NextFloat(-5f, -2f);
                         Color color = Color.Lerp(Color.MediumPurple, Color.Magenta, 0.4f);
-                        float scale = Main.rand.NextFloat(0.65f, 1.75f);
-                        float opacity = Main.rand.NextFloat(180f, 240f);
-                        MediumMistParticle mist = new(spawnPosition, velocity, color, color, scale, opacity, 0.03f);
-                        GeneralParticleHandler.SpawnParticle(mist);
+                        float scale = Main.rand.NextFloat(0.65f, 0.85f);
+                        float opacity = Main.rand.NextFloat(0.6f, 0.8f);
+                        MediumMistParticle necromaticSmoke = new(spawnPosition, Vector2.Zero, color, Color.Violet, scale, opacity, Main.rand.Next(60, 120), 0.03f);
+                        necromaticSmoke.SpawnCasParticle();
                     }
                 }
             }
@@ -70,8 +68,8 @@ namespace Cascade.Core.Players.BuffHandlers
                     float abberationInterpolant = Lerp(0f, 25f, BellbirdStunTimeRatio);
                     ChromaticAbberationRenderer.ApplyChromaticAbberation(Main.LocalPlayer.Center, abberationInterpolant, 240);
 
-                    float vignettePowerInterpolant = Lerp(20f, 2f, SineInOutEasing(BellbirdStunTimeRatio, 0));
-                    float vignetteBrightnessInterpolant = Lerp(0f, 3f, SineInOutEasing(BellbirdStunTimeRatio, 0));
+                    float vignettePowerInterpolant = Lerp(20f, 2f, CascadeUtilities.SineEaseInOut(BellbirdStunTimeRatio));
+                    float vignetteBrightnessInterpolant = Lerp(0f, 3f, CascadeUtilities.SineEaseInOut(BellbirdStunTimeRatio));
                     DarkVignetteRenderer.ApplyDarkVignette(Main.LocalPlayer.Center, vignettePowerInterpolant, vignetteBrightnessInterpolant, 180);
                 }
 

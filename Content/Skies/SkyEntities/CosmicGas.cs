@@ -29,7 +29,7 @@ namespace Cascade.Content.Skies.SkyEntities
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => Utilities.EmptyPixelPath;
+        public override string TexturePath => CascadeUtilities.EmptyPixelPath;
 
         public override BlendState BlendState => BlendState.Additive;
 

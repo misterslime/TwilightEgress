@@ -62,9 +62,10 @@
         {
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-            var shader = Utilities.TryGetScreenShader("EllipticalVignetteShader");
-            shader.TrySetParameterValue("vignettePower", VignettePower);
-            shader.TrySetParameterValue("vignetteBrightness", VignetteBrightness);
+            //var shader = Utilities.TryGetScreenShader("EllipticalVignetteShader");
+            ManagedScreenFilter shader = ShaderManager.GetFilter("Cascade.EllipticalVignette");
+            shader.TrySetParameter("vignettePower", VignettePower);
+            shader.TrySetParameter("vignetteBrightness", VignetteBrightness);
             shader.Apply();
 
             // This will extend the effect an extra 500 tiles over the screen.
@@ -73,7 +74,7 @@
 
             Vector2 drawPosition = VignettePosition - Main.screenPosition;
             Vector2 origin = VignettePosition + new Vector2(500f) - Main.screenPosition;
-            Main.spriteBatch.Draw(MainTarget.RenderTarget, drawPosition, screenFit, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
+            Main.spriteBatch.Draw(MainTarget.Target, drawPosition, screenFit, Color.White, 0f, origin, 1f, SpriteEffects.None, 0f);
             Main.spriteBatch.End();
         }
     }

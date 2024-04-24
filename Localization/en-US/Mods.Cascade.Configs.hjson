@@ -6,4 +6,9 @@ GraphicalConfig: {
 		Label: Sky Entity Limit
 		Tooltip: ""
 	}
+
+	ParticleLimit: {
+		Label: Particle Limit
+		Tooltip: ""
+	}
 }

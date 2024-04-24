@@ -30,7 +30,7 @@ namespace Cascade.Content.Projectiles.Ranged.Ammo
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * 7f;
                 int damage = (int)Owner.GetTotalDamage(Projectile.DamageType).ApplyTo(3f);
-                Projectile.SpawnProjectile(Projectile.Center, velocity, ModContent.ProjectileType<StingerRoundStinger>(), damage, Projectile.knockBack * 0.45f);
+                Projectile.BetterNewProjectile(Projectile.Center, velocity, ModContent.ProjectileType<StingerRoundStinger>(), damage, Projectile.knockBack * 0.45f);
             }
         }
 

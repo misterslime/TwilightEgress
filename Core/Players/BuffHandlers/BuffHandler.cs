@@ -49,7 +49,7 @@ namespace Cascade.Core.Players.BuffHandlers
             MechonSlayerBuffs[artID] = true;
 
             if (artID != 1)
-                Player.AddCooldown(MechonSlayerArtSelection.ID, SecondsToFrames(30));
+                Player.AddCooldown(MechonSlayerArtSelection.ID, Utilities.SecondsToFrames(30));
             MechonSlayerResetTime = 0;
         }
 

@@ -11,6 +11,13 @@ namespace Cascade.Core.Configs
 
         [Header("Graphics")]
         [BackgroundColor(192, 54, 64, 192)]
+        [Range(1, 5000)]
+        [Slider]
+        [DefaultValue(2500)]
+        public int ParticleLimit { get; set; }
+
+
+        [BackgroundColor(192, 54, 64, 192)]
         [Range(1, 1000)]
         [Slider]
         [DefaultValue(500)]

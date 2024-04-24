@@ -1,5 +1,4 @@
 ﻿using CalamityMod.Projectiles.Ranged;
-using Cascade.Content.Projectiles.Ranged;
 
 namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
 {
@@ -21,11 +20,11 @@ namespace Cascade.Content.EntityOverrides.Items.ChickenCannon
             return base.PreAI(projectile);
         }
 
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             // Spawn the new explosion.
             if (projectile.type == ModContent.ProjectileType<ChickenRocket>())
-                projectile.SpawnProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChickenCannonExplosion>(), projectile.damage, projectile.knockBack, true, SoundID.DD2_KoboldExplosion, projectile.owner);
+                projectile.BetterNewProjectile(projectile.Center, Vector2.Zero, ModContent.ProjectileType<ChickenCannonExplosion>(), projectile.damage, projectile.knockBack, SoundID.DD2_KoboldExplosion, null, projectile.owner);
         }
     }
 }

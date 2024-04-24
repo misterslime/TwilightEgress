@@ -1,5 +1,4 @@
 using CalamityMod.Cooldowns;
-using Cascade.Core.Balancing;
 using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade
@@ -17,7 +16,6 @@ namespace Cascade
 
             // Cascade-specific loading.
             LoadLists();
-            CascadeBalancingChangesManager.Load();
 
             // Mod Calls.
             if (Main.netMode != NetmodeID.Server)
@@ -37,7 +35,6 @@ namespace Cascade
         {
             Instance = null;
             UnloadLists();
-            CascadeBalancingChangesManager.Unload();
             BuffHandler.StuffToUnload();
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Particles
 {
-    public class SwordSlashParticle : Particle
+    public class SwordSlashParticle : CasParticle
     {
         private float BaseScale;
 
@@ -10,16 +10,14 @@
 
         private Color BloomColor;
 
-        public override bool SetLifetime => true;
+        public override string AtlasTextureName => "Cascade.LightStreak.png";
 
-        public override bool UseCustomDraw => true;
-
-        public override string Texture => Utilities.EmptyPixelPath;
+        public override BlendState BlendState => BlendState.Additive;
 
         public SwordSlashParticle(Vector2 position, Color slashColor, Color bloomColor, float rotation, Vector2 stretchFactor, float scale, int lifespan)
         {
             Position = position;
-            Color = slashColor;
+            DrawColor = slashColor;
             BloomColor = bloomColor;
             Rotation = rotation;
             StretchFactor = stretchFactor;
@@ -29,21 +27,17 @@
 
         public override void Update()
         {
-            Scale = Lerp(BaseScale, 0f, LifetimeCompletion);
-            BloomOpacity = Lerp(1f, 0f, LifetimeCompletion);
+            Scale = new(Lerp(BaseScale, 0f, LifetimeRatio));
+            BloomOpacity = Lerp(1f, 0f, LifetimeRatio);
         }
 
-        public override void CustomDraw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D slashTexture = TextureAssets.Extra[98].Value;
             Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
-
             Vector2 drawPosition = Position - Main.screenPosition;
 
-            spriteBatch.SetBlendState(BlendState.Additive);
             spriteBatch.Draw(bloomTexture, drawPosition, null, BloomColor * BloomOpacity, Rotation, bloomTexture.Size() / 2f, Scale, SpriteEffects.None, 0f);  
-            spriteBatch.Draw(slashTexture, drawPosition, null, Color, Rotation, slashTexture.Size() / 2f, Scale * StretchFactor, SpriteEffects.None, 0f);
-            spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            spriteBatch.Draw(Texture, drawPosition, null, DrawColor, Rotation, Texture.Frame.Size() / 2f, Scale * StretchFactor, SpriteEffects.None);
         }
     }
 }

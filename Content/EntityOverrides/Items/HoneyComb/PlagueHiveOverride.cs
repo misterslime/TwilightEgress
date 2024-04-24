@@ -28,8 +28,10 @@ namespace Cascade.Content.EntityOverrides.Items.HoneyComb
 
         public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
         {
-            item.InsertNewTooltipLine(tooltips, "Tooltip2", "HoneyCombEffect", "Douses the user in honey when damaged\nIncreases flight time by 7%");
-            item.InsertNewTooltipLine(tooltips, "Tooltip2", "HivePackEffect", "Increases the strength of friendly bees");
+            Utilities.EditTooltipByNum(2, item, tooltips, (t) => 
+            t.Text += "\nIncreases wing flight time by 7%" +
+            "\nDouses the user in honey when damaged" +
+            "\nIncreases the strength of friendly bees");
         }
     }
 }

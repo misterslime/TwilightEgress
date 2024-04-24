@@ -1,12 +1,10 @@
 ﻿using Cascade.Content.Items.Materials;
-using System.Collections.Generic;
 using Terraria.GameContent.ItemDropRules;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
     public class CosmostoneAsteroid : BaseAsteroid, ILocalizedModType
     {
-        private PrimitiveDrawer TrailDrawer { get; set; }
 
         private List<int> ViableCollisionTypes = new List<int>()
         {
@@ -74,9 +72,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 Color initialColor = Color.Lerp(Color.DarkGray, Color.Cyan, Main.rand.NextFloat());
                 Color fadeColor = Color.SaddleBrown;
                 float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
-                float opacity = Main.rand.NextFloat(180f, 240f);
-                MediumMistParticle deathSmoke = new MediumMistParticle(NPC.Bottom, velocity, initialColor, fadeColor, scale, opacity, 0.03f);
-                GeneralParticleHandler.SpawnParticle(deathSmoke);
+                float opacity = Main.rand.NextFloat(0.6f, 1f);
+                MediumMistParticle deathSmoke = new(NPC.Bottom, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(180, 240), 0.03f);
+                deathSmoke.SpawnCasParticle();
             }
         }
 
@@ -159,9 +157,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                     Color initialColor = Color.Lerp(Color.DarkGray, Color.Cyan, Main.rand.NextFloat());
                     Color fadeColor = Color.SaddleBrown;
                     float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
-                    float opacity = Main.rand.NextFloat(180f, 240f);
-                    MediumMistParticle deathSmoke = new MediumMistParticle(NPC.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.NextFloat(0.1f, 0.4f));
-                    GeneralParticleHandler.SpawnParticle(deathSmoke);
+                    float opacity = Main.rand.NextFloat(0.6f, 1f);
+                    MediumMistParticle deathSmoke = new(NPC.Center, velocity, initialColor, fadeColor, scale, opacity, Main.rand.Next(180, 240), Main.rand.NextFloat(0.1f, 0.4f));
+                    deathSmoke.SpawnCasParticle();
                 }
             }
             else
@@ -195,14 +193,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             Vector2 origin = NPC.frame.Size() / 2f;
 
             // Backglow effects.
-            Main.spriteBatch.SetBlendState(BlendState.Additive);
+            Main.spriteBatch.UseBlendState(BlendState.Additive);
             for (int i = 0; i < 4; i++)
             {
                 float spinAngle = Main.GlobalTimeWrappedHourly * 0.35f;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
                 Main.EntitySpriteDraw(texture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.SetBlendState(BlendState.AlphaBlend);
+            Main.spriteBatch.ResetToDefault();
 
             Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
         }
@@ -219,13 +217,18 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public void DrawTrail()
         {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
             TrailDrawer.DrawPrimitives(NPC.oldPos.ToList(), NPC.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();
+            Main.spriteBatch.ExitShaderRegion();*/
+
+            Vector2 positionToCenterOffset = NPC.Size * 0.5f;
+            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
+            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
+            PrimitiveRenderer.RenderTrail(NPC.oldPos.ToList(), laserSettings, 85);
         }
     }
 }
