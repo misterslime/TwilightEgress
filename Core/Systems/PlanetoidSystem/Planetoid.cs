@@ -1,4 +1,4 @@
-﻿namespace Cascade.Common.Systems.PlanetoidSystem
+﻿namespace Cascade.Core.Systems.PlanetoidSystem
 {
     public abstract class Planetoid : ModType<Entity>, ILocalizedModType
     {

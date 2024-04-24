@@ -1,6 +1,6 @@
 ﻿using Cascade.Core.Players;
 
-namespace Cascade.Common.Systems.PlanetoidSystem
+namespace Cascade.Core.Systems.PlanetoidSystem
 {
     public class PlanetoidSystem : ModSystem
     {
@@ -32,7 +32,7 @@ namespace Cascade.Common.Systems.PlanetoidSystem
 
     public class PlanetoidPlayer : ModPlayer
     {
-        public Planetoid? planetoid = null;
+        public Planetoid planetoid = null;
         public float angle = 0;
 
         public PlanetoidPlayer() { }
