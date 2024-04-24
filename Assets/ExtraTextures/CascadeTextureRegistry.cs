@@ -1,6 +1,4 @@
-﻿using Cascade.Core.Systems.PlanetoidSystem;
-
-namespace Cascade.Assets.ExtraTextures
+﻿namespace Cascade.Assets.ExtraTextures
 {
     public static class CascadeTextureRegistry
     {

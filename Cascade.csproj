@@ -13,7 +13,6 @@
     <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\NoisyVignette.fx" />
     <None Remove="Assets\AutoloadedEffects\Filters\Shapes\BlackHole.fx" />
     <None Remove="Assets\AutoloadedEffects\Shaders\SkyEffects\IceQueenScrollingBackgroundShader.fx" />
-    <None Remove="Content\Planetoids\GalileoPlanetoid.png" />
     <None Remove="Localization\en-US\Mods.Cascade.Buffs.Debuffs.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Buffs.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Configs.hjson" />
