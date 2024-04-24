@@ -6,7 +6,7 @@ namespace Cascade.Core.Systems.PlanetoidSystem
     {
         public static Dictionary<Type, Planetoid> PlanetoidsByType = new();
         public static Asset<Texture2D>[] PlanetoidTextures = [];
-        public PlanetoidSystem() { }
+        public static Planetoid[] planetoids;
 
         public static void AddTexture(Asset<Texture2D> texture)
         {
@@ -17,6 +17,7 @@ namespace Cascade.Core.Systems.PlanetoidSystem
         public override void Load()
         {
             On_Player.DryCollision += UpdateVelocityNearPlanetoidEntities;
+            planetoids = new Planetoid[100];
             base.Load();
         }
 
@@ -25,13 +26,13 @@ namespace Cascade.Core.Systems.PlanetoidSystem
             On_Player.DryCollision -= UpdateVelocityNearPlanetoidEntities;
             PlanetoidTextures = null;
             PlanetoidsByType = null;
+            planetoids = null;
             base.Unload();
         }
 
-        public override void SetupContent()
+        public override void PreUpdateNPCs()
         {
-            PlanetoidTextures = new Asset<Texture2D>[PlanetoidsByType.Count];
-            base.SetupContent();
+            base.PreUpdateNPCs();
         }
 
         private void UpdateVelocityNearPlanetoidEntities(On_Player.orig_DryCollision orig, Player self, bool fallThrough, bool ignorePlats)

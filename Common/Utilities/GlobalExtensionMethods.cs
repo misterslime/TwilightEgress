@@ -2,6 +2,7 @@
 using Cascade.Core.Globals.GlobalNPCs;
 using Cascade.Core.Players;
 using Cascade.Core.Players.BuffHandlers;
+using Cascade.Core.Systems.PlanetoidSystem;
 
 namespace Cascade
 {
@@ -25,6 +26,8 @@ namespace Cascade
         public static BeeFlightTimeBoostPlayer Cascade_BeeFlightTimeBoost(this Player player) => player.GetModPlayer<BeeFlightTimeBoostPlayer>();
 
         public static OrbitalGravityPlayer Cascade_OrbitalGravity(this Player player) => player.GetModPlayer<OrbitalGravityPlayer>();
+
+        public static PlanetoidPlayer Cascade_Planetoid(this Player player) => player.GetModPlayer<PlanetoidPlayer>();
         #endregion
     }
 }
