@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Common.Systems.PlanetoidSystem
 {
-    public abstract class Planetoid : Entity
+    public abstract class Planetoid : ModType<Entity>, ILocalizedModType
     {
         public int ID;
         public float rotation;
@@ -10,10 +10,21 @@
         public abstract float maxAttractionRadius { get; }
         public abstract float walkableRadius { get; }
 
-        public void Init()
+        public virtual string Texture => (GetType().Namespace + "." + Name).Replace('.', '/');
+
+        public virtual string LocalizationCategory => "Planetoids";
+
+        protected sealed override Entity CreateTemplateEntity() => Entity;
+
+        protected sealed override void Register()
         {
             ID = PlanetoidSystem.planetoidsByType.Count;
             PlanetoidSystem.planetoidsByType.Add(GetType(), this);
+        }
+
+        public sealed override void SetupContent()
+        {
+            CascadeTextureRegistry.Planetoids[ID] = ModContent.Request<Texture2D>(Texture);
         }
 
         public virtual void Update() { }
@@ -41,7 +52,7 @@
         }
 
         public virtual bool Colliding(Player player)
-            => player.Hitbox.Intersects(Hitbox);
+            => player.Hitbox.Intersects(Entity.Hitbox);
 
     }
 }

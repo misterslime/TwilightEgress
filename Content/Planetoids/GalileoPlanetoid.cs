@@ -1,9 +1,4 @@
 ﻿using Cascade.Common.Systems.PlanetoidSystem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cascade.Content.Planetoids
 {
@@ -16,7 +11,7 @@ namespace Cascade.Content.Planetoids
         public override void Update()
         {
             float totalAttractionRadius = maxAttractionRadius + walkableRadius;
-            Vector2 dustPosition = Center + Main.rand.NextVector2CircularEdge(totalAttractionRadius, totalAttractionRadius);
+            Vector2 dustPosition = Entity.Center + Main.rand.NextVector2CircularEdge(totalAttractionRadius, totalAttractionRadius);
             if (Main.rand.NextBool(2))
                 CascadeUtilities.CreateDustLoop(15, dustPosition, Vector2.UnitX, DustID.Electric);
 

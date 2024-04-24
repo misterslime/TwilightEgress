@@ -4,7 +4,6 @@ namespace Cascade.Common.Systems.PlanetoidSystem
 {
     public class PlanetoidSystem : ModSystem
     {
-
         public static Dictionary<Type, Planetoid> planetoidsByType = new();
         public PlanetoidSystem() { }
 
