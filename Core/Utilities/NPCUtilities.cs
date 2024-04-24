@@ -102,6 +102,29 @@ namespace Cascade
             return npc.SpawnNPC(spawn.X, spawn.Y, type, Start, ai0, ai1, ai2, ai3, target, velocity);
         }
 
+        /// <summary>
+        /// Moves the NPC towards a Vector2.
+        /// </summary>
+        /// <param name="targetPosition">The position or Vector2 of the position to move to.</param>
+        /// <param name="moveSpeed">The maximum movement speed.</param>
+        /// <param name="turnResistance">The turn resistance of the movement. This affects how quickly it takes the npc to adjust direction.</param>
+        public static void SimpleMove(this NPC npc, Vector2 targetPosition, float moveSpeed, float turnResistance = 10f)
+        {
+            Vector2 move = targetPosition - npc.Center;
+            float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
+            if (magnitude > moveSpeed)
+            {
+                move *= moveSpeed / magnitude;
+            }
+            move = (npc.velocity * turnResistance + move) / (turnResistance + 1f);
+            magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
+            if (magnitude > moveSpeed)
+            {
+                move *= moveSpeed / magnitude;
+            }
+            npc.velocity = move;
+        }
+
         public static void AdjustNPCHitboxToScale(this NPC npc, float originalWidth, float originalHeight)
         {
             int oldWidth = npc.width;
@@ -147,7 +170,7 @@ namespace Cascade
                 turnAroundVelocity = centerAhead.Y < Main.maxTilesY * 0.3f ? Vector2.UnitY * 5f : centerAhead.X >= Main.maxTilesX * 16f - 700f ? Vector2.UnitX * -5f : Vector2.UnitX * 5f;
 
             npc.velocity.MoveTowards(turnAroundVelocity, 0.2f);
-            npc.velocity = Vector2.Lerp(npc.velocity, turnAroundVelocity, 0.2f);
+            npc.velocity = Vector2.Lerp(npc.velocity, turnAroundVelocity, 0.2f) * 2f;
         }
     }
 }

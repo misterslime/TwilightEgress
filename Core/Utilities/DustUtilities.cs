@@ -18,7 +18,7 @@
         {
             for (int i = 0; i < maxDusts; i++)
             {
-                Dust dust = Dust.NewDustPerfect(dustPosition, dustType, dustVelocity, dustAlpha, dustColor, dustScale);
+                Dust dust = Dust.NewDustPerfect(dustPosition, dustType, dustVelocity.SafeNormalize(Vector2.Zero), dustAlpha, dustColor, dustScale);
                 dust.noGravity = shouldDefyGravity;
                 dust.noLight = shouldntEmitLight;
             }

@@ -2,19 +2,14 @@
 {
     public static class CascadeTextureRegistry
     {
-        #region Single Textures
+        #region Objects
         public static readonly Asset<Texture2D> EmptyPixel = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/EmptyPixel");
 
         public static readonly Asset<Texture2D> SoftStar = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar");
 
         public static readonly Asset<Texture2D> GreyscaleVortex = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/GreyscaleVortex");
-        #endregion
 
-        #region Noise
-        public static readonly Asset<Texture2D> GreyscaleSeemlessNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleGradients/GreyscaleSeemlessNoise");
-        #endregion
-
-        #region Texture Paths/Special Cases
+        #region Lists
         public static readonly List<string> FourPointedStars = new()
         {
             "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Small",
@@ -27,9 +22,18 @@
 
         public static readonly List<string> Smokes = new()
         {
-            "Cascade/Assets/ExtraTextures/GreyscaleObjects/Smoke",
-            "Cascade/Assets/ExtraTextures/GreyscaleObjects/Smoke_2",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud2",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud3",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud4",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud5",
+            "Cascade/Assets/ExtraTextures/GreyscaleObjects/SmokeCloud6"
         };
+        #endregion
+        #endregion
+
+        #region Noise
+        public static readonly Asset<Texture2D> GreyscaleSeemlessNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleGradients/GreyscaleSeemlessNoise");
         #endregion
     }
 }

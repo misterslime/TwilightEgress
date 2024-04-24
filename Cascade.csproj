@@ -20,6 +20,7 @@
     <None Remove="Localization\en-US\Mods.Cascade.NPCs.CosmostoneShowers.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.NPCs.Misc.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Ambient.hjson" />
+    <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Hostile.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Magic.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Melee.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Misc.hjson" />

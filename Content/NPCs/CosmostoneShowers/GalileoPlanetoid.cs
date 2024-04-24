@@ -3,8 +3,10 @@ using Cascade.Core.Systems;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
-    public class GalileoPlanetoid : BasePlanetoid
+    public class GalileoPlanetoid : BasePlanetoid, ILocalizedModType
     {
+        public new string LocalizationCategory => "NPCs.Misc";
+
         public override float MaximumAttractionRadius => 150f;
 
         public override float WalkableRadius => 94f;

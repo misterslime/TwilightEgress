@@ -23,7 +23,7 @@ namespace Cascade.Content.Skies.SkyEntities
             Depth = depth;
 
             Opacity = 0f;
-            TextureIndex = Main.rand.Next(2);
+            TextureIndex = Main.rand.Next(CascadeTextureRegistry.Smokes.Count);
             Rotation = Main.rand.NextFloat(TwoPi);
             RotationSpeed = Main.rand.NextFloat(0.001f, 0.003f);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
