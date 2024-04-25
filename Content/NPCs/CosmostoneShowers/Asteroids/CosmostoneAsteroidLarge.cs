@@ -211,18 +211,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
-            shader.TrySetParameter("palette", new Vector4[]
-            {
-                new Color(100, 216, 253).ToVector4(),
-                new Color(1, 158, 252).ToVector4(),
-                new Color(101, 91, 126).ToVector4(),
-                new Color(1, 81, 252).ToVector4(),
-                new Color(24, 10, 230).ToVector4(),
-                new Color(101, 91, 126).ToVector4(),
-                new Color(116, 55, 234).ToVector4(),
-                new Color(199, 47, 228).ToVector4(),
-                new Color(101, 91, 126).ToVector4(),
-            });
+            shader.TrySetParameter("palette", CascadeUtilities.CosmostonePalette);
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();

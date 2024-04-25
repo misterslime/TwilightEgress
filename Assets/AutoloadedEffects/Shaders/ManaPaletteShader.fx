@@ -3,14 +3,14 @@ sampler baseTexture : register(s0);
 float globalTime;
 float flowCompactness;
 float gradientPrecision;
-float4 palette[9];
+float4 palette[7];
 
 float4 PaletteLerp(float interpolant)
 {
-    // These 4s should be 2 less than the length of the palette array.
-    int startIndex = clamp(interpolant * 7, 0, 7);
+    // These 5s should be 2 less than the length of the palette array.
+    int startIndex = clamp(interpolant * 5, 0, 5);
     int endIndex = startIndex + 1;
-    return lerp(palette[startIndex], palette[endIndex], frac(interpolant * 7));
+    return lerp(palette[startIndex], palette[endIndex], frac(interpolant * 5));
 }
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
