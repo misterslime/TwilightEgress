@@ -191,18 +191,17 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
-            /* Backglow effects.
+            // Backglow effects.
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-
-            Main.spriteBatch.PrepareForShaders();
 
             for (int i = 0; i < 4; i++)
             {
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 float spinAngle = Main.GlobalTimeWrappedHourly * 0.35f;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
                 DrawCosmostone(backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.ResetToDefault();*/
+            Main.spriteBatch.ResetToDefault();
 
             DrawCosmostone(drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
         }
@@ -219,15 +218,16 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("globalTime", Main.GlobalTimeWrappedHourly);
-            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("flowCompactness", 2.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
             shader.TrySetParameter("palette", new Vector4[]
             {
-                new Color(121, 201, 238).ToVector4(),
-                new Color(16, 119, 238).ToVector4(),
-                new Color(67, 43, 217).ToVector4(),
-                new Color(126, 71, 237).ToVector4(),
-                new Color(172, 62, 235).ToVector4(),
+                new Color(100, 216, 253).ToVector4(),
+                new Color(1, 162, 252).ToVector4(),
+                new Color(1, 81, 252).ToVector4(),
+                new Color(20, 6, 226).ToVector4(),
+                new Color(111, 54, 231).ToVector4(),
+                new Color(201, 49, 230).ToVector4(),
             });
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);

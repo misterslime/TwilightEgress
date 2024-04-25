@@ -61,15 +61,17 @@ namespace Cascade.Content.Skies.SkyEntities
             Main.spriteBatch.PrepareForShaders();
 
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
-            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("globalTime", Main.GlobalTimeWrappedHourly);
+            shader.TrySetParameter("flowCompactness", 2.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
             shader.TrySetParameter("palette", new Vector4[]
             {
-                new Color(121, 201, 238).ToVector4(),
-                new Color(16, 119, 238).ToVector4(),
-                new Color(67, 43, 217).ToVector4(),
-                new Color(126, 71, 237).ToVector4(),
-                new Color(172, 62, 235).ToVector4(),
+                new Color(100, 216, 253).ToVector4(),
+                new Color(1, 162, 252).ToVector4(),
+                new Color(1, 81, 252).ToVector4(),
+                new Color(20, 6, 226).ToVector4(),
+                new Color(111, 54, 231).ToVector4(),
+                new Color(201, 49, 230).ToVector4(),
             });
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
