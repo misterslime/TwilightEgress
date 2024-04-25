@@ -8,9 +8,9 @@ float4 palette[9];
 float4 PaletteLerp(float interpolant)
 {
     // These 4s should be 2 less than the length of the palette array.
-    int startIndex = clamp(interpolant * 4, 0, 4);
+    int startIndex = clamp(interpolant * 7, 0, 7);
     int endIndex = startIndex + 1;
-    return lerp(palette[startIndex], palette[endIndex], frac(interpolant * 4));
+    return lerp(palette[startIndex], palette[endIndex], frac(interpolant * 7));
 }
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0

@@ -61,7 +61,6 @@ namespace Cascade.Content.Skies.SkyEntities
             Main.spriteBatch.PrepareForShaders();
 
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
-            shader.TrySetParameter("globalTime", Main.GlobalTimeWrappedHourly);
             shader.TrySetParameter("flowCompactness", 2.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
             shader.TrySetParameter("palette", new Vector4[] 

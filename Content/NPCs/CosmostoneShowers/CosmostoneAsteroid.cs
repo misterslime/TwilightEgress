@@ -1,5 +1,7 @@
 ﻿using Cascade.Content.Items.Materials;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.ItemDropRules;
+using static Cascade.Assets.CascadeAssetRegistry;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers
 {
@@ -188,10 +190,11 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public void DrawAsteroid()
         {
+            Texture2D texture = CascadeTextureRegistry.Comet.Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
-            // Backglow effects.
+            /* Backglow effects.
             Main.spriteBatch.UseBlendState(BlendState.Additive);
 
             for (int i = 0; i < 4; i++)
@@ -201,24 +204,20 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
                 DrawCosmostone(backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.ResetToDefault();
+            Main.spriteBatch.ResetToDefault()*/
 
+            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             DrawCosmostone(drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
         }
 
         public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
-
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
             Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
-
-            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
 
             Main.spriteBatch.PrepareForShaders();
 
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
-            shader.TrySetParameter("globalTime", Main.GlobalTimeWrappedHourly);
-            shader.TrySetParameter("flowCompactness", 2.0f);
+            shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
             shader.TrySetParameter("palette", new Vector4[] 
             {
