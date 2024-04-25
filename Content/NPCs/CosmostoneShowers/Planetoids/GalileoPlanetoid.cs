@@ -1,6 +1,6 @@
 ﻿using Cascade.Core.BaseEntities.ModNPCs;
 
-namespace Cascade.Content.NPCs.CosmostoneShowers
+namespace Cascade.Content.NPCs.CosmostoneShowers.Planetoids
 {
     public class GalileoPlanetoid : BasePlanetoid, ILocalizedModType
     {

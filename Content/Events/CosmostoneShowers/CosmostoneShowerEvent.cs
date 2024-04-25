@@ -1,6 +1,7 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.NormalNPCs;
-using Cascade.Content.NPCs.CosmostoneShowers;
+using Cascade.Content.NPCs.CosmostoneShowers.Asteroids;
+using Cascade.Content.NPCs.CosmostoneShowers.Planetoids;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
 using Cascade.Core.Globals.GlobalNPCs;
@@ -177,6 +178,22 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 // Default spawn position.
                 Vector2 asteroidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(1250f, 250f), Main.rand.NextFloat(600f, 200f));
 
+                float cosmostoneChance = 0.4f;
+                float cometstoneChance = 0.6f;
+                float smallAsteroidChance = 0.5f;
+                float mediumAsteroidChance = 0.35f;
+                float largeAsteroidChance = 0.15f;
+
+                Dictionary<int, float> asteroids = new Dictionary<int, float>
+                {
+                    { ModContent.NPCType<CosmostoneAsteroidSmall>(), cosmostoneChance * smallAsteroidChance },
+                    { ModContent.NPCType<CosmostoneAsteroidMedium>(), cosmostoneChance * mediumAsteroidChance },
+                    { ModContent.NPCType<CosmostoneAsteroidLarge>(), cosmostoneChance * largeAsteroidChance },
+                    { ModContent.NPCType<CometstoneAsteroidSmall>(), cometstoneChance * smallAsteroidChance },
+                    { ModContent.NPCType<CometstoneAsteroidMedium>(), cometstoneChance * mediumAsteroidChance },
+                    { ModContent.NPCType<CometstoneAsteroidLarge>(), cometstoneChance * largeAsteroidChance }
+                };
+
                 // Search for any active Planetoids currently viewable on-screen.
                 // Change the spawn position of asteroids to a radius around the center of these Planetoids if there are any active at the time.
                 // This allows most asteroids to not just spawn directly inside of Planetoids or their radius (may be buggy if there are 
@@ -190,7 +207,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
                 if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(asteroidSpawnPosition, 300, 300))
                 {
-                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<CosmostoneAsteroid>());
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), asteroidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, asteroids.RandomElementByWeight(e => e.Value).Key);
                     if (Main.projectile.IndexInRange(p))
                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }

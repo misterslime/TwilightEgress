@@ -1,13 +1,9 @@
-﻿namespace Cascade.Content.NPCs.CosmostoneShowers
+﻿using Cascade.Core.BaseEntities.ModNPCs;
+
+namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
     public class ExodiumAsteroid : BaseAsteroid, ILocalizedModType
     {
-        private List<int> ViableCollisionTypes = new List<int>()
-        {
-            ModContent.NPCType<CosmostoneAsteroid>(),
-            ModContent.NPCType<ExodiumAsteroid>()
-        };
-
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
         public override void SetStaticDefaults()
@@ -68,7 +64,7 @@
         public override void SafeAI()
         {
             // Collision detection.
-            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((NPC npc) => npc.active && npc.whoAmI != NPC.whoAmI && ViableCollisionTypes.Contains(npc.type)).ToList();
+            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((npc) => npc.active && npc.whoAmI != NPC.whoAmI && AsteroidUtil.ViableCollisionTypes.Contains(npc.type)).ToList();
             int count = activeAsteroids.Count;
 
             if (count > 0)

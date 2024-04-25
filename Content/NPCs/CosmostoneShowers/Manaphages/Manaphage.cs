@@ -1,5 +1,6 @@
 ﻿using CalamityMod;
 using CalamityMod.Particles;
+using Cascade.Content.NPCs.CosmostoneShowers.Asteroids;
 using Terraria;
 using Terraria.ModLoader.IO;
 
@@ -149,7 +150,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 => player.WithinRange(NPC.Center, MaximumPlayerSearchDistance);
             bool npcSearchFilter(NPC npc)
             {
-                if (npc.type == ModContent.NPCType<CosmostoneAsteroid>())
+                if (npc.type == ModContent.NPCType<CosmostoneAsteroidSmall>())
                     return ShouldTargetNPCs && npc.WithinRange(NPC.Center, MaximumNPCSearchDistance);
                 return false;
             }
@@ -516,7 +517,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             // If the Manaphage starts becoming low on mana, start looking for nearby Asteroids.
             if (target.Type == Terraria.Enums.NPCTargetType.NPC)
             {
-                List<NPC> cosmostoneAsteroids = Main.npc.Take(Main.maxNPCs).Where(npc => npc.active && npc.type == ModContent.NPCType<CosmostoneAsteroid>() && NPC.Distance(npc.Center) <= 300).ToList();
+                List<NPC> cosmostoneAsteroids = Main.npc.Take(Main.maxNPCs).Where(npc => npc.active && npc.type == ModContent.NPCType<CosmostoneAsteroidSmall>() && NPC.Distance(npc.Center) <= 300).ToList();
                 if (cosmostoneAsteroids.Count <= 0)
                     return;
 

@@ -1,26 +1,15 @@
 ﻿using Cascade.Content.Items.Materials;
-using Microsoft.Xna.Framework.Graphics;
+using Cascade.Core.BaseEntities.ModNPCs;
 using Terraria.GameContent.ItemDropRules;
-using static Cascade.Assets.CascadeAssetRegistry;
 
-namespace Cascade.Content.NPCs.CosmostoneShowers
+namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
-    public class CosmostoneAsteroid : BaseAsteroid, ILocalizedModType
+    public class CosmostoneAsteroidLarge : BaseAsteroid, ILocalizedModType
     {
-
-        private List<int> ViableCollisionTypes = new List<int>()
-        {
-            ModContent.NPCType<CosmostoneAsteroid>(),
-            ModContent.NPCType<ExodiumAsteroid>()
-        };
-
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
-
-        public override string Texture => "Cascade/Content/Projectiles/Ambient/Comet";
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 3;
             NPCID.Sets.TrailCacheLength[Type] = 12;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
@@ -29,8 +18,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public override void SetDefaults()
         {
-            NPC.width = 34;
-            NPC.height = 34;
+            NPC.width = 70;
+            NPC.height = 70;
             NPC.damage = 0;
             NPC.defense = 20;
             NPC.lifeMax = 150;
@@ -50,11 +39,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public override void SafeOnSpawn(IEntitySource source)
         {
+            // Slower rotation
+            RotationSpeedSpawnFactor = Main.rand.NextFloat(300f, 960f) * Utils.SelectRandom(Main.rand, -1, 1);
+
             // Initialize a bunch of fields.
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(1f, 2f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.frame.Y = Main.rand.Next(0, 3) * 38;
+            //NPC.frame.Y = Main.rand.Next(0, 3) * 38;
             NPC.netUpdate = true;
         }
 
@@ -83,7 +75,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
         public override void SafeAI()
         {
             // Collision detection.
-            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((NPC npc) => npc.active && npc.whoAmI != NPC.whoAmI && ViableCollisionTypes.Contains(npc.type)).ToList();
+            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((npc) => npc.active && npc.whoAmI != NPC.whoAmI && AsteroidUtil.ViableCollisionTypes.Contains(npc.type)).ToList();
             int count = activeAsteroids.Count;
 
             if (count > 0)
@@ -132,8 +124,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public override void ModifyNPCLoot(NPCLoot npcLoot)
         {
-            int minimumStack = (int)Round((3 * Lerp(1f, 3f, NPC.scale / 2f)));
-            int maximumStack = (int)Round((5 * Lerp(1f, 3f, NPC.scale / 2f)));
+            int minimumStack = (int)Round(3 * Lerp(1f, 3f, NPC.scale / 2f));
+            int maximumStack = (int)Round(5 * Lerp(1f, 3f, NPC.scale / 2f));
             npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cosmostone>(), default, minimumStack, maximumStack));
         }
 
@@ -184,13 +176,13 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             DrawTrail();
-            DrawAsteroid();
+            DrawAsteroid(drawColor);
             return false;
         }
 
-        public void DrawAsteroid()
+        public void DrawAsteroid(Color drawColor)
         {
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
@@ -206,20 +198,20 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
             }
             Main.spriteBatch.ResetToDefault()*/
 
-            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, /*NPC.GetAlpha(Color.White)*/drawColor, NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             DrawCosmostone(drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
         }
 
         public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D glowmask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidLarge_Glowmask").Value;
 
             Main.spriteBatch.PrepareForShaders();
 
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
-            shader.TrySetParameter("palette", new Vector4[] 
+            shader.TrySetParameter("palette", new Vector4[]
             {
                 new Color(100, 216, 253).ToVector4(),
                 new Color(1, 158, 252).ToVector4(),
@@ -238,7 +230,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public float SetTrailWidth(float completionRatio)
         {
-            return 20f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * NPC.scale * NPC.Opacity;
+            return 70f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * NPC.scale * NPC.Opacity;
         }
 
         public Color SetTrailColor(float completionRatio)
