@@ -230,7 +230,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public float SetTrailWidth(float completionRatio)
         {
-            return 70f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * NPC.scale * NPC.Opacity;
+            return 20f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * NPC.scale * NPC.Opacity;
         }
 
         public Color SetTrailColor(float completionRatio)
