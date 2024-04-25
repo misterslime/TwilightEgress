@@ -188,21 +188,51 @@ namespace Cascade.Content.NPCs.CosmostoneShowers
 
         public void DrawAsteroid()
         {
-            Texture2D texture = TextureAssets.Npc[Type].Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
-            // Backglow effects.
+            /* Backglow effects.
             Main.spriteBatch.UseBlendState(BlendState.Additive);
+
+            Main.spriteBatch.PrepareForShaders();
+
             for (int i = 0; i < 4; i++)
             {
                 float spinAngle = Main.GlobalTimeWrappedHourly * 0.35f;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
-                Main.EntitySpriteDraw(texture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+                DrawCosmostone(backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.ResetToDefault();
+            Main.spriteBatch.ResetToDefault();*/
 
-            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+            DrawCosmostone(drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+        }
+
+        public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
+        {
+
+            Texture2D texture = CascadeTextureRegistry.Comet.Value;
+            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+
+            Main.spriteBatch.PrepareForShaders();
+
+            ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
+            shader.TrySetParameter("globalTime", Main.GlobalTimeWrappedHourly);
+            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("palette", new Vector4[]
+            {
+                new Color(13, 58, 142).ToVector4(),
+                new Color(35, 119, 213).ToVector4(),
+                new Color(106, 162, 235).ToVector4(),
+                new Color(145, 228, 255).ToVector4(),
+                new Color(212, 254, 255).ToVector4(),
+                new Color(130, 78, 235).ToVector4(),
+            });
+            shader.Apply();
+            Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+            Main.spriteBatch.ResetToDefault();
         }
 
         public float SetTrailWidth(float completionRatio)

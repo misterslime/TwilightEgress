@@ -49,7 +49,32 @@ namespace Cascade.Content.Skies.SkyEntities
             Vector2 mainOrigin = frameRectangle.Size() / 2f;
 
             Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + (Depth / 10f)), 0.15f + (Depth / 10f)) * Opacity;
-            spriteBatch.Draw(StoredTexture, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
+            DrawCosmostone(spriteBatch, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
+        }
+
+        public void DrawCosmostone(SpriteBatch spriteBatch, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
+        {
+            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+
+            Main.EntitySpriteDraw(StoredTexture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+
+            Main.spriteBatch.PrepareForShaders();
+
+            ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
+            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("palette", new Vector4[]
+            {
+                new Color(13, 58, 142).ToVector4(),
+                new Color(35, 119, 213).ToVector4(),
+                new Color(106, 162, 235).ToVector4(),
+                new Color(145, 228, 255).ToVector4(),
+                new Color(212, 254, 255).ToVector4(),
+                new Color(130, 78, 235).ToVector4(),
+            });
+            shader.Apply();
+            Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+            Main.spriteBatch.ResetToDefault();
         }
     }
 }

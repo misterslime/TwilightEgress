@@ -1,4 +1,8 @@
-﻿namespace Cascade.Content.Projectiles.Ambient
+﻿using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using static Cascade.Assets.CascadeAssetRegistry;
+
+namespace Cascade.Content.Projectiles.Ambient
 {
     public class Comet : ModProjectile, ILocalizedModType
     {
@@ -89,8 +93,45 @@
             DrawPrims();
 
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Cyan * 0.45f), 2f);
-            Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
+            //Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
+
+            Texture2D texture = CascadeTextureRegistry.Comet.Value;
+            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+
+            int individualFrameHeight = texture.Height / Main.projFrames[Projectile.type];
+            int currentYFrame = individualFrameHeight * Projectile.frame;
+            Rectangle rectangle = new Rectangle(0, currentYFrame, texture.Width, individualFrameHeight);
+
+            Vector2 origin = rectangle.Size() / 2f;
+            DrawCosmostone(Projectile.Center - Main.screenPosition + new Vector2(0f, Projectile.gfxOffY), new Microsoft.Xna.Framework.Rectangle?(rectangle), lightColor, Projectile.rotation, origin, Projectile.scale, SpriteEffects.None, 0);
             return false;
+        }
+
+        public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
+        {
+
+            Texture2D texture = CascadeTextureRegistry.Comet.Value;
+            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+
+            Main.EntitySpriteDraw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+
+            Main.spriteBatch.PrepareForShaders();
+
+            ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
+            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("palette", new Vector4[]
+            {
+                new Color(13, 58, 142).ToVector4(),
+                new Color(35, 119, 213).ToVector4(),
+                new Color(106, 162, 235).ToVector4(),
+                new Color(145, 228, 255).ToVector4(),
+                new Color(212, 254, 255).ToVector4(),
+                new Color(130, 78, 235).ToVector4(),
+            });
+            shader.Apply();
+            Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+            Main.spriteBatch.ResetToDefault();
         }
     }
 }

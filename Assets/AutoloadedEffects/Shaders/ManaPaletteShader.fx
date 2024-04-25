@@ -1,0 +1,33 @@
+sampler baseTexture : register(s0);
+
+float globalTime;
+float flowCompactness;
+float gradientPrecision;
+float4 palette[6];
+
+float4 PaletteLerp(float interpolant)
+{
+    // These 4s should be 2 less than the length of the palette array.
+    int startIndex = clamp(interpolant * 4, 0, 4);
+    int endIndex = startIndex + 1;
+    return lerp(palette[startIndex], palette[endIndex], frac(interpolant * 4));
+}
+
+float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
+{
+    float4 baseColor = tex2D(baseTexture, coords);
+    float paletteInterpolant = sin((baseColor.r + globalTime * 1.4) * flowCompactness) * 0.5 + 0.5;
+    float4 paletteSample = PaletteLerp(paletteInterpolant);
+    
+    // Apply posterization.
+    paletteSample = round(paletteSample * gradientPrecision) / gradientPrecision;
+    
+    return paletteSample * baseColor.a;
+}
+technique Technique1
+{
+    pass AutoloadPass
+    {
+        PixelShader = compile ps_2_0 PixelShaderFunction();
+    }
+}
