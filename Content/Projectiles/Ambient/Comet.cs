@@ -122,12 +122,11 @@ namespace Cascade.Content.Projectiles.Ambient
             shader.TrySetParameter("gradientPrecision", 10f);
             shader.TrySetParameter("palette", new Vector4[]
             {
-                new Color(13, 58, 142).ToVector4(),
-                new Color(35, 119, 213).ToVector4(),
-                new Color(106, 162, 235).ToVector4(),
-                new Color(145, 228, 255).ToVector4(),
-                new Color(212, 254, 255).ToVector4(),
-                new Color(130, 78, 235).ToVector4(),
+                new Color(121, 201, 238).ToVector4(),
+                new Color(16, 119, 238).ToVector4(),
+                new Color(67, 43, 217).ToVector4(),
+                new Color(126, 71, 237).ToVector4(),
+                new Color(172, 62, 235).ToVector4(),
             });
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
