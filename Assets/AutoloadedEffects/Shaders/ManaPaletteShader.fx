@@ -1,9 +1,9 @@
 sampler baseTexture : register(s0);
 
-uniform float globalTime;
-uniform float flowCompactness;
-uniform float gradientPrecision;
-uniform float4 palette[6];
+float globalTime;
+float flowCompactness;
+float gradientPrecision;
+float4 palette[9];
 
 float4 PaletteLerp(float interpolant)
 {
