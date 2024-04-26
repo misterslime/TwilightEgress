@@ -1,4 +1,4 @@
-﻿namespace Cascade.Content.NPCs.CosmostoneShowers
+﻿namespace Cascade.Core.BaseEntities.ModNPCs
 {
     public abstract class BaseAsteroid : ModNPC
     {

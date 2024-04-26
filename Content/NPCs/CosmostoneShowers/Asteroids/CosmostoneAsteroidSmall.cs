@@ -1,14 +1,15 @@
-﻿namespace Cascade.Content.NPCs.CosmostoneShowers
-{
-    public class ExodiumAsteroid : BaseAsteroid, ILocalizedModType
-    {
-        private List<int> ViableCollisionTypes = new List<int>()
-        {
-            ModContent.NPCType<CosmostoneAsteroid>(),
-            ModContent.NPCType<ExodiumAsteroid>()
-        };
+﻿using Cascade.Content.Items.Materials;
+using Cascade.Core.BaseEntities.ModNPCs;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria.GameContent.ItemDropRules;
 
+namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
+{
+    public class CosmostoneAsteroidSmall : BaseAsteroid, ILocalizedModType
+    {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
+
+        public override string Texture => "Cascade/Content/Projectiles/Ambient/Comet";
 
         public override void SetStaticDefaults()
         {
@@ -17,15 +18,14 @@
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.CannotDropSouls[Type] = true;
-            NPCID.Sets.CountsAsCritter[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            NPC.width = 36;
-            NPC.height = 36;
+            NPC.width = 34;
+            NPC.height = 34;
             NPC.damage = 0;
-            NPC.defense = 40;
+            NPC.defense = 20;
             NPC.lifeMax = 150;
             NPC.aiStyle = -1;
             NPC.dontCountMe = true;
@@ -34,7 +34,7 @@
             NPC.noGravity = true;
             NPC.dontTakeDamageFromHostiles = true;
             NPC.chaseable = false;
-            NPC.knockBackResist = 0.5f;
+            NPC.knockBackResist = 0.4f;
             NPC.Opacity = 0f;
 
             NPC.HitSound = SoundID.Tink;
@@ -53,10 +53,18 @@
 
         public override void OnMeteorCrashKill()
         {
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 45; i++)
+            {
+                Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f) * NPC.velocity.Y;
+                Dust d = Dust.NewDustPerfect(NPC.Bottom, DustID.BlueTorch, speed * 0.85f);
+                d.noGravity = true;
+                d.scale = Main.rand.NextFloat(1f, 2f);
+            }
+
+            for (int i = 0; i < 12; i++)
             {
                 Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(0.6f, 0.85f) * NPC.velocity.Y;
-                Color initialColor = Color.Lerp(Color.DarkGray, Color.SlateGray, Main.rand.NextFloat());
+                Color initialColor = Color.Lerp(Color.DarkGray, Color.Cyan, Main.rand.NextFloat());
                 Color fadeColor = Color.SaddleBrown;
                 float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
                 float opacity = Main.rand.NextFloat(0.6f, 1f);
@@ -68,7 +76,7 @@
         public override void SafeAI()
         {
             // Collision detection.
-            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((NPC npc) => npc.active && npc.whoAmI != NPC.whoAmI && ViableCollisionTypes.Contains(npc.type)).ToList();
+            List<NPC> activeAsteroids = Main.npc.Take(Main.maxNPCs).Where((npc) => npc.active && npc.whoAmI != NPC.whoAmI && AsteroidUtil.ViableCollisionTypes.Contains(npc.type)).ToList();
             int count = activeAsteroids.Count;
 
             if (count > 0)
@@ -78,13 +86,48 @@
                 {
                     if (NPC.Hitbox.Intersects(asteroid.Hitbox))
                     {
-                        NPC.velocity = -NPC.DirectionTo(asteroid.Center) * (1f + NPC.velocity.Length() + asteroid.scale) * 0.45f;
-                        asteroid.velocity = -asteroid.DirectionTo(NPC.Center) * (1f + NPC.velocity.Length() + NPC.scale) * 0.45f;
+                        NPC.velocity = -NPC.DirectionTo(asteroid.Center) * (1f + NPC.velocity.Length() + asteroid.scale) * 0.15f;
+                        asteroid.velocity = -asteroid.DirectionTo(NPC.Center) * (1f + NPC.velocity.Length() + NPC.scale) * 0.15f;
                     }
                 }
             }
+        }
 
-            Lighting.AddLight(NPC.Center, Color.DarkSlateBlue.ToVector3());
+
+        public void HandleOnHitDrops(Player player, Item item)
+        {
+            // Also, drop pieces of Cosmostone and Cometstone at a 1/10 chance.
+            int chance = (int)(12 * Lerp(1f, 0.3f, NPC.scale / 2f) * Lerp(1f, 0.2f, item.pick / 250f));
+            if (Main.rand.NextBool(chance))
+            {
+                int itemType = ModContent.ItemType<Cosmostone>();
+                int itemStack = (int)Round(1 * Lerp(1f, 3f, NPC.scale / 2f));
+                int i = Item.NewItem(NPC.GetSource_OnHurt(player), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), itemType, itemStack);
+                if (Main.item.IndexInRange(i))
+                    Main.item[i].velocity = Main.rand.NextVector2Circular(4f, 4f);
+            }
+        }
+
+        public override void OnHitByItem(Player player, Item item, NPC.HitInfo hit, int damageDone)
+        {
+            // If the player is using any pickaxe to hit the Asteroids...
+            if (item.pick > 0)
+                HandleOnHitDrops(player, item);
+        }
+
+        public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone)
+        {
+            // If the player is using some sort of drill or other mining tool which utilizes a held projectile...
+            Player player = Main.player[projectile.owner];
+            if (player.ActiveItem().pick > 0 && projectile.owner == player.whoAmI)
+                HandleOnHitDrops(player, player.ActiveItem());
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            int minimumStack = (int)Round(3 * Lerp(1f, 3f, NPC.scale / 2f));
+            int maximumStack = (int)Round(5 * Lerp(1f, 3f, NPC.scale / 2f));
+            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Cosmostone>(), default, minimumStack, maximumStack));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -94,6 +137,10 @@
                 for (int i = 0; i < 15; i++)
                 {
                     Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f);
+                    Dust d = Dust.NewDustPerfect(NPC.Center, DustID.BlueFairy, speed * 5f * hit.HitDirection);
+                    d.noGravity = true;
+                    d.scale = Main.rand.NextFloat(1f, 2f);
+
                     Dust d2 = Dust.NewDustPerfect(NPC.Center, DustID.TintableDust, speed * 5f * hit.HitDirection);
                     d2.color = Color.Lerp(Color.SlateGray, Color.DarkGray, Main.rand.NextFloat());
                     d2.scale = Main.rand.NextFloat(1f, 2f);
@@ -102,7 +149,7 @@
                 for (int i = 0; i < 12; i++)
                 {
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 7f) * hit.HitDirection;
-                    Color initialColor = Color.Lerp(Color.DarkGray, Color.SlateGray, Main.rand.NextFloat());
+                    Color initialColor = Color.Lerp(Color.DarkGray, Color.Cyan, Main.rand.NextFloat());
                     Color fadeColor = Color.SaddleBrown;
                     float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
                     float opacity = Main.rand.NextFloat(0.6f, 1f);
@@ -115,6 +162,11 @@
                 for (int i = 0; i < 7; i++)
                 {
                     Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f);
+                    Dust d = Dust.NewDustPerfect(NPC.Center, DustID.BlueTorch, speed * 5f * hit.HitDirection);
+                    d.noGravity = true;
+                    d.scale = Main.rand.NextFloat(1f, 2f);
+
+
                     Dust d2 = Dust.NewDustPerfect(NPC.Center, DustID.TintableDust, speed * 5f * hit.HitDirection);
                     d2.color = Color.Lerp(Color.SlateGray, Color.DarkGray, Main.rand.NextFloat());
                     d2.scale = Main.rand.NextFloat(1f, 2f);
@@ -125,27 +177,45 @@
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             DrawTrail();
-            DrawAsteroid();
+            DrawAsteroid(drawColor);
             return false;
         }
 
-        public void DrawAsteroid()
+        public void DrawAsteroid(Color drawColor)
         {
-            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Texture2D texture = CascadeTextureRegistry.Comet.Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
-            // Backglow effects.
+            /* Backglow effects.
             Main.spriteBatch.UseBlendState(BlendState.Additive);
+
             for (int i = 0; i < 4; i++)
             {
+                Main.spriteBatch.UseBlendState(BlendState.Additive);
                 float spinAngle = Main.GlobalTimeWrappedHourly * 0.35f;
                 Vector2 backglowDrawPosition = drawPosition + Vector2.UnitY.RotatedBy(spinAngle + TwoPi * i / 4) * 5f;
-                Main.EntitySpriteDraw(texture, backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.SlateGray), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+                DrawCosmostone(backglowDrawPosition, NPC.frame, NPC.GetAlpha(Color.Cyan), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             }
-            Main.spriteBatch.ResetToDefault();
+            Main.spriteBatch.ResetToDefault()*/
 
-            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, /*NPC.GetAlpha(Color.White)*/drawColor, NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+            DrawCosmostone(drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+        }
+
+        public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
+        {
+            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+
+            Main.spriteBatch.PrepareForShaders();
+
+            ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
+            shader.TrySetParameter("flowCompactness", 3.0f);
+            shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("palette", CascadeUtilities.CosmostonePalette);
+            shader.Apply();
+            Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
+            Main.spriteBatch.ResetToDefault();
         }
 
         public float SetTrailWidth(float completionRatio)
@@ -155,7 +225,7 @@
 
         public Color SetTrailColor(float completionRatio)
         {
-            return Color.Lerp(Color.DarkSlateBlue, Color.White, completionRatio) * NPC.Opacity;
+            return Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, completionRatio) * NPC.Opacity;
         }
 
         public void DrawTrail()
@@ -170,8 +240,8 @@
 
             Vector2 positionToCenterOffset = NPC.Size * 0.5f;
             ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings trailSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(NPC.oldPos.ToList(), trailSettings, 85);
+            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
+            PrimitiveRenderer.RenderTrail(NPC.oldPos.ToList(), laserSettings, 85);
         }
     }
 }

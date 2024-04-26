@@ -1,5 +1,7 @@
 ﻿using CalamityMod;
 using CalamityMod.Particles;
+using Cascade.Content.NPCs.CosmostoneShowers.Asteroids;
+using Terraria;
 using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
@@ -13,6 +15,16 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             Fleeing,
             Latching,
             Attacking,
+        }
+
+        public enum ManaphageAnimation
+        {
+            Attack,
+            Inject,
+            Idle,
+            LookLeft,
+            LookRight,
+            Sucking
         }
 
         public const int JellyfishMovementIntervalIndex = 0;
@@ -49,6 +61,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public bool ShouldTargetNPCs;
 
+        public int Animation;
+
         public NPC AsteroidToSucc;
 
         public float ManaRatio => CurrentManaCapacity / MaximumManaCapacity;
@@ -70,8 +84,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public override void SetDefaults()
         {
-            NPC.width = 38;
-            NPC.height = 50;
+            NPC.width = 44;
+            NPC.height = 62;
             NPC.damage = 25;
             NPC.defense = 3;
             NPC.lifeMax = 90;
@@ -136,7 +150,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 => player.WithinRange(NPC.Center, MaximumPlayerSearchDistance);
             bool npcSearchFilter(NPC npc)
             {
-                if (npc.type == ModContent.NPCType<CosmostoneAsteroid>())
+                if (npc.type == ModContent.NPCType<CosmostoneAsteroidSmall>())
                     return ShouldTargetNPCs && npc.WithinRange(NPC.Center, MaximumNPCSearchDistance);
                 return false;
             }
@@ -242,6 +256,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             ref float jellyfishPropulsionCount = ref NPC.Cascade().ExtraAI[JellyfishPropulsionCountIndex];
             ref float maxPropulsions = ref NPC.Cascade().ExtraAI[MaxPropulsionsIndex];
 
+            Animation = (int)ManaphageAnimation.Idle;
+
             if (LocalAIState == 0f)
             {
                 jellyfishMovementInterval = 120;
@@ -316,6 +332,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
             int idleSwitchInterval = 1800;
 
+            Animation = (int)ManaphageAnimation.Idle;
+
             if (Timer is 0)
             {
                 lazeMovementInterval = Main.rand.Next(240, 360);
@@ -356,6 +374,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public void DoBehavior_Fleeing(NPCAimedTarget target)
         {
+            Animation = (int)ManaphageAnimation.Attack;
+
             // Run away from any nearby players.
             List<Player> nearbyPlayers = Main.player.Take(Main.maxPlayers).Where(player => player.active && player.Distance(NPC.Center) <= 600f).ToList();
             if (nearbyPlayers.Count <= 0 || target.Type != Terraria.Enums.NPCTargetType.Player || target.Invalid)
@@ -374,6 +394,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public void DoBehavior_Latching(NPCAimedTarget target)
         {
+            Animation = (int)ManaphageAnimation.Inject;
+
             // Reset if the asteroid target variable is null.
             if (AsteroidToSucc is null)
             {
@@ -415,6 +437,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 // Suck mana out of it.
                 if (Timer % 30 == 0)
                 {
+                    Animation = (int)ManaphageAnimation.Sucking;
                     int damageToAsteroid = Main.rand.Next(10, 15);
                     float manaToSuck = Main.rand.NextFloat(5f, 10f);
                     AsteroidToSucc.SimpleStrikeNPC(damageToAsteroid, 0, noPlayerInteraction: true);
@@ -427,6 +450,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public void DoBehavior_Attacking(NPCAimedTarget target)
         {
+            Animation = (int)ManaphageAnimation.Attack;
+
             ref float additionalAggroRange = ref NPC.Cascade().ExtraAI[AdditionalAggroRangeIndex];
             ref float manaSuckTimer = ref NPC.Cascade().ExtraAI[ManaSuckTimerIndex];
 
@@ -492,7 +517,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             // If the Manaphage starts becoming low on mana, start looking for nearby Asteroids.
             if (target.Type == Terraria.Enums.NPCTargetType.NPC)
             {
-                List<NPC> cosmostoneAsteroids = Main.npc.Take(Main.maxNPCs).Where(npc => npc.active && npc.type == ModContent.NPCType<CosmostoneAsteroid>() && NPC.Distance(npc.Center) <= 300).ToList();
+                List<NPC> cosmostoneAsteroids = Main.npc.Take(Main.maxNPCs).Where(npc => npc.active && npc.type == ModContent.NPCType<CosmostoneAsteroidSmall>() && NPC.Distance(npc.Center) <= 300).ToList();
                 if (cosmostoneAsteroids.Count <= 0)
                     return;
 
@@ -540,12 +565,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
 
-            Texture2D texture = TextureAssets.Npc[Type].Value;
+            Asset<Texture2D> texture = TextureAssets.Npc[Type];
             Vector2 origin = texture.Size() / 2f;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 stretchFactor = new(spriteStretchX, spriteStretchY);
 
-            Main.EntitySpriteDraw(texture, drawPosition, texture.Frame(), NPC.GetAlpha(drawColor), NPC.rotation, origin, NPC.scale * stretchFactor, 0);
+            Rectangle sourceRectangle = texture.Frame(6, 5, frameX: Animation, frameY: (int)Math.Floor(Timer / 6) % 5);
+
+            Main.EntitySpriteDraw(texture.Value, drawPosition, sourceRectangle, NPC.GetAlpha(drawColor), NPC.rotation, new Vector2(44, 62) / 2f, NPC.scale * stretchFactor, 0);
             return false;
         }
     }
