@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Items.Dedicated.Raesh
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Dedicated.Raesh
 {
     public class FlytrapMaw : ModProjectile, ILocalizedModType
     {
@@ -9,6 +11,8 @@
         private List<NPC> NPCsWhoHaveBeenHit { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
+
+        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -130,7 +134,7 @@
         public void DrawPrims()
         {
             Asset<Texture2D> trailTexture = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Raesh/FlytrapMaw_Chain");
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(trailTexture, 1);
@@ -138,15 +142,7 @@
             GameShaders.Misc["CalamityMod:PrimitiveTexture"].Apply();
 
             TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            shader.SetTexture(trailTexture, 1);
-
-            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), laserSettings, 85);
+            Main.spriteBatch.ExitShaderRegion();
         }
     }
 }

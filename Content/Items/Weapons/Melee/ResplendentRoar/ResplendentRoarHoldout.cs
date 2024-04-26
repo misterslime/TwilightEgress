@@ -1,4 +1,5 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using Cascade.Core.Graphics;
 
 namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
 {
@@ -61,6 +62,8 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
         public float SwingRatio(bool small) => ThrustCurve.Evaluate(Timer / (small ? SmallSwingMaxTime : LargeSwingMaxTime));
 
         public new string LocalizationCategory => "Projectiles.Melee";
+
+        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override string Texture => "CalamityMod/Items/Weapons/Melee/TheBurningSky";
 
@@ -472,7 +475,7 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
 
         public void DrawPrimTrail()
         {
-            /*TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ExobladePierce"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ExobladePierce"]);
 
             Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
             Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
@@ -486,12 +489,7 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
             Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
 
             TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 60);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size / 2f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 60);
+            Main.spriteBatch.ExitShaderRegion();
         }
     }
 }

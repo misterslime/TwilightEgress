@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
     public class HolidayHalberdThrown : ModProjectile, ILocalizedModType
     {
@@ -11,6 +13,8 @@
         public new string LocalizationCategory => "Projectiles.Rogue";
 
         public override string Texture => "Cascade/Content/Items/Weapons/Rogue/HolidayHalberd/HolidayHalberd";
+
+        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -156,19 +160,14 @@
 
         public void DrawPrimTrail()
         {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
             Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
 
             TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 65);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 65);
+            Main.spriteBatch.ExitShaderRegion();
         }
     }
 }

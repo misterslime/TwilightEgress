@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Items.Dedicated.Marv
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Dedicated.Marv
 {
     public class ElectricSkyBolt : ModProjectile, ILocalizedModType
     {
@@ -9,6 +11,8 @@
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar";
+
+        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -86,17 +90,13 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
             TrailDrawer.DrawPrimitives(StrikePositions, -Main.screenPosition, 22);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, Shader: shader);
-            PrimitiveRenderer.RenderTrail(StrikePositions, laserSettings, 22);
+            Main.spriteBatch.ExitShaderRegion();
 
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             DrawBloomFlare(texture);

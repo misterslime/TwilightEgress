@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Items.Dedicated.Marv
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Dedicated.Marv
 {
     public class BoltStrike : ModProjectile, ILocalizedModType
     {
@@ -15,6 +17,8 @@
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Content/Items/Dedicated/Marv/ElectricSkyBoltExplosion";
+
+        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -227,18 +231,13 @@
 
         public void DrawPrims()
         {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
+            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
 
             Main.spriteBatch.EnterShaderRegion();
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
             GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
             TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 85);
+            Main.spriteBatch.ExitShaderRegion();
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Particles
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Particles
 {
     public class LightningArcParticle : CasParticle
     {
@@ -21,6 +23,8 @@
         public Vector2 EndPosition { get; set; }
 
         public override string AtlasTextureName => "Cascade.EmptyPixel.png";
+
+        public PrimitiveDrawer LightningDrawer { get; set; } = null;
 
         public LightningArcParticle(Vector2 basePosition, Vector2 endPosition, float pointDisplacementVariance, float jaggednessNumerator, float scale, Color color, int lifespan, bool useSmoothening = false, bool additiveBlending = true)
         {
@@ -53,16 +57,14 @@
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            /*spriteBatch.EnterShaderRegion(AdditiveBlending ? BlendState.Additive : BlendState.AlphaBlend);
+            LightningDrawer ??= new PrimitiveDrawer(GetLightningWidth, GetLightningColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
+
+            spriteBatch.EnterShaderRegion(AdditiveBlending ? BlendState.Additive : BlendState.AlphaBlend);
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
             GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
 
-            PrimitiveRenderer.RenderTrail(LightningPoints, new(GetLightningWidth, GetLightningColor), LightningPoints.Count * 2);
-            spriteBatch.ExitShaderRegion();*/
-
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(GetLightningWidth, GetLightningColor, Shader: shader);
-            PrimitiveRenderer.RenderTrail(LightningPoints, primSettings, LightningPoints.Count * 2);
+            LightningDrawer.DrawPrimitives(LightningPoints, -Main.screenPosition, LightningPoints.Count * 2);
+            spriteBatch.ExitShaderRegion();
         }
     }
 }
