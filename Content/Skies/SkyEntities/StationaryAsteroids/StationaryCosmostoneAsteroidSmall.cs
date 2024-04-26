@@ -22,7 +22,7 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
+        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall";
 
         public override int MaxFrames => 3;
 
@@ -54,7 +54,7 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 
         public void DrawCosmostone(SpriteBatch spriteBatch, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D glowmask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall_Glowmask").Value; ;
 
             Main.EntitySpriteDraw(StoredTexture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
 

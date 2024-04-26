@@ -8,6 +8,9 @@ namespace Cascade.Content.Projectiles.Ambient
 
         public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
+        public override string Texture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall";
+        public override string GlowTexture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall_Glowmask";
+
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("Comet");
@@ -90,8 +93,7 @@ namespace Cascade.Content.Projectiles.Ambient
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Cyan * 0.45f), 2f);
             //Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
 
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
             int individualFrameHeight = texture.Height / Main.projFrames[Projectile.type];
             int currentYFrame = individualFrameHeight * Projectile.frame;
@@ -105,8 +107,8 @@ namespace Cascade.Content.Projectiles.Ambient
         public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
 
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D glowmask = TextureAssets.GlowMask[Projectile.type].Value;
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
 

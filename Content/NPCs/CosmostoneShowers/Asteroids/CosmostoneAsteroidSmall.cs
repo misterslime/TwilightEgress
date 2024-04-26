@@ -10,8 +10,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
     {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
-        public override string Texture => "Cascade/Content/Projectiles/Ambient/Comet";
-
         public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
@@ -186,7 +184,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public void DrawAsteroid(Color drawColor)
         {
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
+            Texture2D texture = TextureAssets.Npc[NPC.type].Value;
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
@@ -208,7 +206,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D glowmask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall_Glowmask").Value; ;
 
             Main.spriteBatch.PrepareForShaders();
 

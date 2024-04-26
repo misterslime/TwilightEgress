@@ -18,8 +18,8 @@ namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.Next(2);
-            Rotation = Main.rand.NextFloat(TwoPi);
+            Frame = Main.rand.NextFloat() < 0.03f ? 1 : 0;
+            Rotation = Main.rand.NextFloat(PiOver2);
         }
 
         public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CometstoneAsteroidLarge";

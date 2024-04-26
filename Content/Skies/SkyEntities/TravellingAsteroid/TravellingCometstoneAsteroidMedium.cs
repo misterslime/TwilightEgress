@@ -19,7 +19,7 @@ namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
 
             Opacity = 0f;
             Frame = Main.rand.Next(3);
-            Rotation = Main.rand.NextFloat(TwoPi);
+            Rotation = Main.rand.NextFloat(Pi);
         }
 
         public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CometstoneAsteroidMedium";

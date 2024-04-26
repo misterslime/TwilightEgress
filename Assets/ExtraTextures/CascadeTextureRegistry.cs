@@ -9,10 +9,6 @@
 
         public static readonly Asset<Texture2D> GreyscaleVortex = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/GreyscaleVortex");
 
-        public static readonly Asset<Texture2D> Comet = ModContent.Request<Texture2D>("Cascade/Content/Projectiles/Ambient/Comet");
-
-        public static readonly Asset<Texture2D> CometGlowmask = ModContent.Request<Texture2D>("Cascade/Content/Projectiles/Ambient/Comet_Glowmask");
-
         #region Lists
         public static readonly List<string> FourPointedStars = new()
         {

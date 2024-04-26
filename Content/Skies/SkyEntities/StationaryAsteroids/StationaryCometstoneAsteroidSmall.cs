@@ -17,14 +17,14 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.Next(5);
+            Frame = Main.rand.Next(8);
             Rotation = Main.rand.NextFloat(TwoPi);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
         public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CometstoneAsteroidSmall";
 
-        public override int MaxFrames => 5;
+        public override int MaxFrames => 8;
 
         public override bool DieWithLifespan => true;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cascade.Core.BaseEntities.ModNPCs;
+﻿using Cascade.Core.BaseEntities.ModNPCs;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
@@ -48,7 +43,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(1f, 2f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.frame.Y = Main.rand.Next(0, 2) * 138;
+            NPC.frame.Y = Main.rand.NextFloat() < 0.03f ? 138 : 0;
             NPC.netUpdate = true;
         }
 

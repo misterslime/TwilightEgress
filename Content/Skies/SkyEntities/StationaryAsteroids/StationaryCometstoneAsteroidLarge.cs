@@ -17,8 +17,8 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.Next(2);
-            Rotation = Main.rand.NextFloat(TwoPi);
+            Frame = Main.rand.NextFloat() < 0.03f ? 1 : 0;
+            Rotation = Main.rand.NextFloat(PiOver2);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
