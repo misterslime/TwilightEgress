@@ -1,35 +1,35 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 
-namespace Cascade.Content.Skies.SkyEntities
+namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 {
-    public class TravellingAsteroid : SkyEntity
+    public class StationaryCosmostoneAsteroidMedium : SkyEntity
     {
         public float RotationSpeed;
 
         public float RotationDirection;
 
-        public TravellingAsteroid(Vector2 position, Vector2 velocity, float scale, float depth, float rotationSpeed, int lifespan)
+        public StationaryCosmostoneAsteroidMedium(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
-            Velocity = velocity;
             Scale = scale;
             Depth = depth;
             RotationSpeed = rotationSpeed;
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.Next(3);
+            Frame = Main.rand.Next(1);
             Rotation = Main.rand.NextFloat(TwoPi);
+            RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "Cascade/Content/Projectiles/Ambient/Comet";
+        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidMedium";
 
-        public override int MaxFrames => 3;
+        public override int MaxFrames => 1;
 
         public override bool DieWithLifespan => true;
 
         public override BlendState BlendState => BlendState.AlphaBlend;
-         
+
         public override void Update()
         {
             int timeToDisappear = Lifespan - 60;
@@ -40,21 +40,21 @@ namespace Cascade.Content.Skies.SkyEntities
             if (Time >= timeToDisappear && Time <= Lifespan)
                 Opacity = Clamp(Opacity - 0.1f, 0f, 1f);
 
-            Rotation += RotationSpeed * Velocity.X * 0.03f;
+            Rotation += RotationSpeed * RotationDirection;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % 3);
+            Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % MaxFrames);
             Vector2 mainOrigin = frameRectangle.Size() / 2f;
 
-            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + (Depth / 10f)), 0.15f + (Depth / 10f)) * Opacity;
+            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + Depth / 15f), 0.15f + Depth / 15f) * Opacity;
             DrawCosmostone(spriteBatch, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
         }
 
         public void DrawCosmostone(SpriteBatch spriteBatch, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D glowmask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidMedium_Glowmask").Value;
 
             Main.EntitySpriteDraw(StoredTexture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
 

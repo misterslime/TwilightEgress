@@ -4,6 +4,8 @@ using Cascade.Content.NPCs.CosmostoneShowers.Asteroids;
 using Cascade.Content.NPCs.CosmostoneShowers.Planetoids;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
+using Cascade.Content.Skies.SkyEntities.StationaryAsteroids;
+using Cascade.Content.Skies.SkyEntities.TravellingAsteroid;
 using Cascade.Core.Globals.GlobalNPCs;
 using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Terraria.GameContent.Events;
@@ -178,11 +180,11 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 // Default spawn position.
                 Vector2 asteroidSpawnPosition = closestPlayer.Center + Main.rand.NextVector2CircularEdge(Main.rand.NextFloat(1250f, 250f), Main.rand.NextFloat(600f, 200f));
 
-                float cosmostoneChance = 0.4f;
-                float cometstoneChance = 0.6f;
-                float smallAsteroidChance = 0.5f;
-                float mediumAsteroidChance = 0.35f;
-                float largeAsteroidChance = 0.15f;
+                float cosmostoneChance = 1f;
+                float cometstoneChance = 2f;
+                float smallAsteroidChance = 4f;
+                float mediumAsteroidChance = 2f;
+                float largeAsteroidChance = 1f;
 
                 Dictionary<int, float> asteroids = new Dictionary<int, float>
                 {
@@ -299,8 +301,34 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 }
             }
 
+            // Weights for asteroid spawning
+            float cosmostoneChance = 1f;
+            float cometstoneChance = 2f;
+            float smallAsteroidChance = 4f;
+            float mediumAsteroidChance = 2f;
+            float largeAsteroidChance = 1f;
+
+            Dictionary<int, float> asteroids = new Dictionary<int, float>
+            {
+                { 0, cosmostoneChance * smallAsteroidChance },
+                { 1, cosmostoneChance * mediumAsteroidChance },
+                { 2, cosmostoneChance * largeAsteroidChance },
+                { 3, cometstoneChance * smallAsteroidChance },
+                { 4, cometstoneChance * mediumAsteroidChance },
+                { 5, cometstoneChance * largeAsteroidChance }
+            };
+
             // Horizontally-travelling Asteroids.
-            if (SkyEntityManager.CountActiveSkyEntities<TravellingAsteroid>() < MaxTravellingAsteroids && Main.rand.NextBool(TravellingAsteroidSpawnChance))
+            int travellingAsteroids = 0;
+
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidSmall>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidMedium>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidLarge>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidSmall>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidMedium>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidLarge>();
+
+            if (travellingAsteroids < MaxTravellingAsteroids && Main.rand.NextBool(TravellingAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
@@ -315,12 +343,43 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float depth = i + 3f;
                     int lifespan = Main.rand.Next(1200, 1800);
 
-                    new TravellingAsteroid(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                    int asteroid = asteroids.RandomElementByWeight(e => e.Value).Key;
+
+                    switch (asteroid)
+                    {
+                        case 0:
+                            new TravellingCosmostoneAsteroidSmall(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                        case 1:
+                            new TravellingCosmostoneAsteroidMedium(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                        case 2:
+                            new TravellingCosmostoneAsteroidLarge(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                        case 3:
+                            new TravellingCometstoneAsteroidSmall(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                        case 4:
+                            new TravellingCometstoneAsteroidMedium(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                        case 5:
+                            new TravellingCometstoneAsteroidLarge(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
+                    }
                 }
             }
 
             // Stationary, floating asteroids.
-            if (SkyEntityManager.CountActiveSkyEntities<StationaryAsteroid>() < MaxStationaryAsteroids && Main.rand.NextBool(StationaryAsteroidSpawnChance))
+            int stationaryAsteroids = 0;
+
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidSmall>();
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidMedium>();
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCosmostoneAsteroidLarge>();
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidSmall>();
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidMedium>();
+            stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryCometstoneAsteroidLarge>();
+
+            if (stationaryAsteroids < MaxStationaryAsteroids && Main.rand.NextBool(StationaryAsteroidSpawnChance))
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
@@ -332,7 +391,29 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     int lifespan = Main.rand.Next(600, 1200);
                     float depth = i + 3f;
 
-                    new StationaryAsteroid(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                    int asteroid = asteroids.RandomElementByWeight(e => e.Value).Key;
+                    
+                    switch (asteroid)
+                    {
+                        case 0:
+                            new StationaryCosmostoneAsteroidSmall(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 1:
+                            new StationaryCosmostoneAsteroidMedium(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 2:
+                            new StationaryCosmostoneAsteroidLarge(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 3:
+                            new StationaryCometstoneAsteroidSmall(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 4:
+                            new StationaryCometstoneAsteroidMedium(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 5:
+                            new StationaryCometstoneAsteroidLarge(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                    }
                 }
             }
 
