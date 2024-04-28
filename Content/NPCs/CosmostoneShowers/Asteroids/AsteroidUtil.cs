@@ -16,7 +16,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ModContent.NPCType<CometstoneAsteroidSmall>(),
             ModContent.NPCType<CometstoneAsteroidMedium>(),
             ModContent.NPCType<CometstoneAsteroidLarge>(),
-            ModContent.NPCType<ExodiumAsteroid>(),
         };
     }
 }
