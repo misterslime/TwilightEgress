@@ -9,6 +9,7 @@ namespace Cascade.Content.Projectiles.Ambient
         public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override string Texture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall";
+
         public override string GlowTexture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall_Glowmask";
 
         public override void SetStaticDefaults()
