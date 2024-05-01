@@ -7,3 +7,8 @@ CosmostoneBar: {
 	DisplayName: Cosmostone Bar
 	Tooltip: "'Cold to the touch'"
 }
+
+Cometstone: {
+	DisplayName: Cometstone
+	Tooltip: "PLACEHOLDER SPRITE IIRC"
+}

@@ -5,6 +5,11 @@ Mods: {
 				DisplayName: Burning Quasar
 				Tooltip: ""
 			}
+
+			CometstoneBrick: {
+				Tooltip: ""
+				DisplayName: Cometstone Brick
+			}
 		}
 
 		NPCs.Manaphage.DisplayName: Manaphage

@@ -13,6 +13,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override void SetStaticDefaults()
         {
+            Main.npcFrameCount[Type] = 2;
             NPCID.Sets.TrailCacheLength[Type] = 12;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
@@ -21,8 +22,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override void SetDefaults()
         {
-            NPC.width = 70;
-            NPC.height = 70;
+            NPC.width = 80;
+            NPC.height = 80;
             NPC.damage = 0;
             NPC.defense = 20;
             NPC.lifeMax = 150;
@@ -49,7 +50,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(1f, 2f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            //NPC.frame.Y = Main.rand.Next(0, 3) * 38;
+            NPC.frame.Y = Main.rand.Next(0, 2) * 82;
             NPC.netUpdate = true;
         }
 
