@@ -20,7 +20,7 @@ namespace Cascade.Core.Systems
 
         public override void Unload()
         {
-            On_Main.DrawDust += DrawVerlets;
+            On_Main.DrawDust -= DrawVerlets;
             verlets = null;
         }
 
