@@ -2,8 +2,10 @@
 
 namespace Cascade.Content.Items.Placeable
 {
-    public class CometstoneBrick : ModItem
+    public class SilicateClusterBrick : ModItem, ILocalizedModType
     {
+        public new string LocalizationCategory => "Items.Placeables";
+
         public override void SetStaticDefaults()
         {
             Item.ResearchUnlockCount = 100;
@@ -11,7 +13,7 @@ namespace Cascade.Content.Items.Placeable
 
         public override void SetDefaults()
         {
-            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.CometstoneBrick>());
+            Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SilicateClusterBrick>());
             Item.width = 12;
             Item.height = 12;
         }
@@ -19,7 +21,7 @@ namespace Cascade.Content.Items.Placeable
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient<Cometstone>(2)
+                .AddIngredient<SilicateCluster>(2)
                 .AddTile(TileID.Furnaces)
                 .Register();
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
-    public class CometstoneAsteroidMedium : BaseAsteroid, ILocalizedModType
+    public class SilicateAsteroidMedium : BaseAsteroid, ILocalizedModType
     {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 

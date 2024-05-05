@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Items.Materials
 {
-    public class Cometstone : ModItem, ILocalizedModType
+    public class SilicateCluster : ModItem, ILocalizedModType
     {
         public new string LocalizationCategory => "Items.Materials";
 

@@ -1,30 +1,30 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 
-namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
+namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 {
-    public class TravellingCometstoneAsteroidLarge : SkyEntity
+    public class StationarySilicateAsteroidMedium : SkyEntity
     {
         public float RotationSpeed;
 
         public float RotationDirection;
 
-        public TravellingCometstoneAsteroidLarge(Vector2 position, Vector2 velocity, float scale, float depth, float rotationSpeed, int lifespan)
+        public StationarySilicateAsteroidMedium(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
-            Velocity = velocity;
             Scale = scale;
             Depth = depth;
             RotationSpeed = rotationSpeed;
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.NextFloat() < 0.03f ? 1 : 0;
-            Rotation = Main.rand.NextFloat(PiOver2);
+            Frame = Main.rand.Next(3);
+            Rotation = Main.rand.NextFloat(Pi);
+            RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CometstoneAsteroidLarge";
+        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/SilicateAsteroidMedium";
 
-        public override int MaxFrames => 2;
+        public override int MaxFrames => 3;
 
         public override bool DieWithLifespan => true;
 
@@ -40,15 +40,15 @@ namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
             if (Time >= timeToDisappear && Time <= Lifespan)
                 Opacity = Clamp(Opacity - 0.1f, 0f, 1f);
 
-            Rotation += RotationSpeed * Velocity.X * 0.03f;
+            Rotation += RotationSpeed * RotationDirection;
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % 3);
+            Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % MaxFrames);
             Vector2 mainOrigin = frameRectangle.Size() / 2f;
 
-            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + Depth / 10f), 0.15f + Depth / 10f) * Opacity;
+            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + Depth / 15f), 0.15f + Depth / 15f) * Opacity;
             Main.EntitySpriteDraw(StoredTexture, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
         }
     }

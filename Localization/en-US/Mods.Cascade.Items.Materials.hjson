@@ -8,7 +8,7 @@ CosmostoneBar: {
 	Tooltip: "'Cold to the touch'"
 }
 
-Cometstone: {
-	DisplayName: Cometstone
+SilicateCluster: {
+	DisplayName: Silicate Cluster
 	Tooltip: PLACEHOLDER SPRITE IIRC
 }

@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
-    public class CometstoneAsteroidLarge : BaseAsteroid, ILocalizedModType
+    public class SilicateAsteroidLarge : BaseAsteroid, ILocalizedModType
     {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 

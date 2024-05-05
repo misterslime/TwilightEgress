@@ -1,6 +1,6 @@
 ﻿namespace Cascade.Content.Tiles
 {
-    public class CometstoneBrick : ModTile
+    public class SilicateClusterBrick : ModTile
     {
         public override void SetStaticDefaults()
         {

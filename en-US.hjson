@@ -10,6 +10,13 @@ Mods: {
 				Tooltip: ""
 				DisplayName: Cometstone Brick
 			}
+
+			Placeables: {
+				SilicateClusterBrick: {
+					DisplayName: Silicate Cluster Brick
+					Tooltip: ""
+				}
+			}
 		}
 
 		NPCs.Manaphage.DisplayName: Manaphage

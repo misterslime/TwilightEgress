@@ -2,13 +2,13 @@
 
 namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
 {
-    public class TravellingCometstoneAsteroidSmall : SkyEntity
+    public class TravellingSilicateAsteroidMedium : SkyEntity
     {
         public float RotationSpeed;
 
         public float RotationDirection;
 
-        public TravellingCometstoneAsteroidSmall(Vector2 position, Vector2 velocity, float scale, float depth, float rotationSpeed, int lifespan)
+        public TravellingSilicateAsteroidMedium(Vector2 position, Vector2 velocity, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
             Velocity = velocity;
@@ -18,13 +18,13 @@ namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
             Lifespan = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.Next(8);
-            Rotation = Main.rand.NextFloat(TwoPi);
+            Frame = Main.rand.Next(3);
+            Rotation = Main.rand.NextFloat(Pi);
         }
 
-        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CometstoneAsteroidSmall";
+        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/SilicateAsteroidMedium";
 
-        public override int MaxFrames => 8;
+        public override int MaxFrames => 3;
 
         public override bool DieWithLifespan => true;
 
