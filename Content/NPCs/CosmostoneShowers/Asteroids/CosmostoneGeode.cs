@@ -42,7 +42,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
         {
             // Initialize a bunch of fields.
             NPC.rotation = Main.rand.NextFloat(TwoPi);
-            NPC.scale = Main.rand.NextFloat(1f, 2f);
+            NPC.scale = Main.rand.NextFloat(0.75f, 1.25f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             //NPC.frame.Y = Main.rand.Next(0, 8) * 54;
             NPC.netUpdate = true;

@@ -6,11 +6,12 @@
 
         public override void SetStaticDefaults()
         {
-            Item.ResearchUnlockCount = 100;
-            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 16));
-            ItemID.Sets.AnimatesAsSoul[Item.type] = true;
+            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 16));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
 
-            ItemID.Sets.ItemNoGravity[Item.type] = true;
+            ItemID.Sets.ItemNoGravity[Type] = true;
+
+            Item.ResearchUnlockCount = 100;
         }
 
         public override void SetDefaults()
