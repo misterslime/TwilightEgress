@@ -39,7 +39,6 @@ namespace Cascade.Common.VerletIntegration
                     Vector2 toObject = verlet.Position - position;
                     float distance = toObject.Length();
 
-                    // 50 is the default radius
                     if (distance > radius - verlet.Radius)
                     {
                         Vector2 normal = toObject / distance;

@@ -1,6 +1,11 @@
 ﻿using Cascade.Content.Items.Materials;
 using Cascade.Core.BaseEntities.ModNPCs;
 using Cascade.Core.Graphics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Terraria.GameContent.ItemDropRules;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
@@ -13,7 +18,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 2;
+            //Main.npcFrameCount[Type] = 2;
             NPCID.Sets.TrailCacheLength[Type] = 12;
             NPCID.Sets.TrailingMode[Type] = 1;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
@@ -22,8 +27,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override void SetDefaults()
         {
-            NPC.width = 80;
-            NPC.height = 80;
+            NPC.width = 90;
+            NPC.height = 90;
             NPC.damage = 0;
             NPC.defense = 20;
             NPC.lifeMax = 150;
@@ -50,7 +55,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(1f, 2f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.frame.Y = Main.rand.Next(0, 2) * 82;
+            //NPC.frame.Y = Main.rand.Next(0, 2) * 82;
             NPC.netUpdate = true;
         }
 
