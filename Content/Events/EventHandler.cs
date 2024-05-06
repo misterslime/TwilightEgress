@@ -28,18 +28,12 @@ namespace Cascade.Content.Events
         /// <summary>
         /// Start the event
         /// </summary>
-        public void StartEvent()
-        {
-            active = true;
-        }
+        public void StartEvent() => active = true;
 
         /// <summary>
         /// Stops the event
         /// </summary>
-        public void StopEvent()
-        {
-            active = false;
-        }
+        public void StopEvent() => active = false;
 
         public void OnModLoad()
         {
