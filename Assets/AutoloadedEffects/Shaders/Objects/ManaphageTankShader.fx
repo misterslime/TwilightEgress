@@ -2,7 +2,7 @@
 sampler noiseTexture : register(s1);
 sampler distortionTexture : register(s2);
 
-float globalTime;
+float time;
 float manaCapacity;
 float3 manaColor;
 float pixelationFactor;
@@ -12,7 +12,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     coords = round(coords / pixelationFactor) * pixelationFactor;
     
     // Distort the noise map using another noise texture.
-    float2 distortionUV = float2(coords.x + globalTime * 0.34, coords.y - globalTime * 0.21);
+    float2 distortionUV = float2(coords.x + time * 0.34, coords.y - time * 0.21);
     distortionUV *= 0.3;
     float noiseDistortion = tex2D(distortionTexture, distortionUV).r;
     float2 noiseUV = coords + noiseDistortion * 0.67;
@@ -20,7 +20,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // Scale up the noise map.
     noiseUV *= 0.4;
     // Move the noise map gradually.
-    noiseUV.x += globalTime * 0.03;  
+    noiseUV.x += time * 0.03;  
     float4 noiseColor = tex2D(noiseTexture, noiseUV);
     
     // Saturate the colors depending on the amount of mana available.

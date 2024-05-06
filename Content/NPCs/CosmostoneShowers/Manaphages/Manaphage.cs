@@ -54,6 +54,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public const int FrameSpeedIndex = 11;
 
+        public const int ManaTankShaderTimeIndex = 12;
+
+        public const int InitialRotationIndex = 13;
+
         public const float MaximumPlayerSearchDistance = 1200f;
 
         public const float MaximumNPCSearchDistance = 1200f;
@@ -65,6 +69,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         public const float MaxManaSuckTimerOverFifty = 720f;
 
         public const float MaxManaSuckTimerUnderFifty = 420f;
+
+        public const float DefaultAggroRange = 150f;
+
+        public const float AggroRangeWhileLatching = 50f;
 
         public float CurrentManaCapacity;
 
@@ -121,11 +129,13 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         {
             ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
+            ref float manaTankShaderTime = ref NPC.Cascade().ExtraAI[ManaTankShaderTimeIndex];
 
             AIState = (float)Utils.SelectRandom(Main.rand, ManaphageBehavior.Idle_JellyfishPropulsion, ManaphageBehavior.Idle_LazeAround);
             CurrentManaCapacity = Main.rand.NextBool(25) ? Main.rand.NextFloat(75f, 100f) : Main.rand.NextFloat(60f, 15f);
             spriteStretchX = 1f;
             spriteStretchY = 1f;
+            manaTankShaderTime = Main.rand.NextFloat(0.25f, 0.75f) * Main.rand.NextBool().ToDirectionInt(); 
             NPC.netUpdate = true;
         }
 
@@ -204,15 +214,20 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             ref float aggroRangeTimer = ref NPC.Cascade().ExtraAI[AggroRangeTimerIndex];
             ref float manaSuckTimer = ref NPC.Cascade().ExtraAI[ManaSuckTimerIndex];
 
-            // Apply an extra 100 pixels of aggro range everytime the Manaphage is attacked.
-            // 200 is added instead if the hit was critical.
-            additionalAggroRange += hit.Crit ? 100f : 50f;
+            // Apply an extra 50 pixels of aggro range everytime the Manaphage is attacked.
+            // 100 is added instead if the hit was critical.
+            // 250 is added instead if the hit happened during the Manaphage's latching stage.
+            additionalAggroRange += AIState == (float)ManaphageBehavior.Latching ? 250f : hit.Crit ? 100f : 50f;
             if (additionalAggroRange > 500f)
                 additionalAggroRange = 500f;
 
             // Timer resetting.
             aggroRangeTimer = 720f;         
             manaSuckTimer = ManaRatio > 0.5f ? MaxManaSuckTimerOverFifty : MaxManaSuckTimerUnderFifty;
+
+            // Manaphages can be knocked out of their latching phase if hit.
+            if (AIState == (float)ManaphageBehavior.Latching)
+                SwitchBehaviorState(ManaphageBehavior.Idle_JellyfishPropulsion);
         }
 
         public void ManageExtraTimers()
@@ -251,12 +266,13 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             }
         }
 
-        public void SwitchBehaviorState(ManaphageBehavior nextBehaviorState)
+        public void SwitchBehaviorState(ManaphageBehavior nextBehaviorState, NPC asteroidToTarget = null)
         {
             Timer = 0f;
             LocalAIState = 0f;
             AIState = (float)nextBehaviorState;
             FoundValidRotationAngle = false;
+            AsteroidToSucc = asteroidToTarget;
             NPC.netUpdate = true;
         }
         #endregion
@@ -507,6 +523,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         {
             ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
+            ref float initialRotation = ref NPC.Cascade().ExtraAI[InitialRotationIndex];
+
+            Rectangle asteroidHitbox = new((int)AsteroidToSucc.position.X, (int)AsteroidToSucc.position.Y, (int)(AsteroidToSucc.width * 0.75f), (int)(AsteroidToSucc.height * 0.75f));
 
             // Reset if the asteroid target variable is null.
             if (target.Invalid || !AsteroidToSucc.active || ManaRatio >= 1f)
@@ -520,15 +539,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             // Pre-succ.
             if (LocalAIState == 0f)
             {
-                NPC.rotation = NPC.rotation.AngleLerp(NPC.AngleTo(AsteroidToSucc.Center) - 1.57f, 0.2f);
                 if (Timer >= 45)
                 {
                     // Quickly move towards the selected asteroid and stop moving once the two hitboxes
                     // intersect with each other. 
                     NPC.SimpleMove(AsteroidToSucc.Center, 12f, 6f);
-                    Rectangle collisionHitbox = new((int)AsteroidToSucc.position.X, (int)AsteroidToSucc.position.Y, (int)(AsteroidToSucc.width * 0.75f), (int)(AsteroidToSucc.height * 0.75f));
-                    if (NPC.Hitbox.Intersects(collisionHitbox))
+                    if (NPC.Hitbox.Intersects(asteroidHitbox))
                     {
+                        initialRotation = NPC.rotation - AsteroidToSucc.rotation;
                         LocalAIState = 1f;
                         Timer = 0f;
                         NPC.netUpdate = true;
@@ -540,21 +558,22 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                     int frameY = (int)Floor(Lerp(0f, 4f, Timer / 15f));
                     UpdateAnimationFrames(ManaphageAnimation.Inject, 0f, frameY);
                 }
+
             }
 
             // Post-succ.
             if (LocalAIState == 1f)
-            {
-                NPC.velocity *= 0.2f;
-                // Suck mana out of it.
+            {                
                 if (Timer % 30 == 0)
                 {
                     int damageToAsteroid = Main.rand.Next(10, 15);
-                    float manaToSuck = Main.rand.NextFloat(5f, 10f);
                     AsteroidToSucc.SimpleStrikeNPC(damageToAsteroid, 0, noPlayerInteraction: true);
-                    CurrentManaCapacity += manaToSuck;
                 }
 
+                Vector2 positionAroundAsteroid = AsteroidToSucc.Center - Vector2.UnitY.RotatedBy(initialRotation + AsteroidToSucc.rotation) * asteroidHitbox.Size();
+                NPC.SimpleMove(positionAroundAsteroid, 20f, 0f);
+
+                CurrentManaCapacity = Clamp(CurrentManaCapacity + 0.1f, 0f, MaximumManaCapacity);
                 UpdateAnimationFrames(ManaphageAnimation.Suck, 5f);               
             }
             
@@ -567,6 +586,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 spriteStretchY *= 0.98f;
             if (spriteStretchY < 1f)
                 spriteStretchY *= 1.02f;
+
+            NPC.rotation = NPC.rotation.AngleLerp(NPC.AngleTo(AsteroidToSucc.Center) - 1.57f, 0.2f);
             SwitchBehavior_Fleeing(target);
         }
 
@@ -574,22 +595,22 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         {
             ref float additionalAggroRange = ref NPC.Cascade().ExtraAI[AdditionalAggroRangeIndex];
             ref float manaSuckTimer = ref NPC.Cascade().ExtraAI[ManaSuckTimerIndex];
+            ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
+            ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
 
-            float aggroRange = 550f + additionalAggroRange;
+            float aggroRange = 400f + additionalAggroRange;
             bool targetOutOfRange = NPC.Distance(target.Center) >= aggroRange;
             if (target.Invalid || target.Type != Terraria.Enums.NPCTargetType.Player || targetOutOfRange)
             {
-                AIState = (float)Utils.SelectRandom(Main.rand, ManaphageBehavior.Idle_JellyfishPropulsion, ManaphageBehavior.Idle_LazeAround);
-                LocalAIState = 0f;
-                Timer = 0f;
-                NPC.netUpdate = true;
+                SwitchBehaviorState(Utils.SelectRandom(Main.rand, ManaphageBehavior.Idle_JellyfishPropulsion, ManaphageBehavior.Idle_LazeAround));
                 return;
             }
 
+            ShouldTargetNPCs = false;
             manaSuckTimer = ManaRatio > 0.5f ? MaxManaSuckTimerOverFifty : MaxManaSuckTimerUnderFifty;
 
             NPC.rotation = NPC.rotation.AngleLerp(NPC.AngleTo(target.Center) - 1.57f, 0.2f);    
-            Vector2 areaAroundPlayer = target.Center + NPC.DirectionFrom(target.Center) * 300f;
+            Vector2 areaAroundPlayer = target.Center + NPC.DirectionFrom(target.Center) * 250f;
             // Increase the Manaphage's movement speed depending on how much additional aggro range
             // it has ammased.
             float movementSpeed = Lerp(2f, 6f, Utils.GetLerpValue(0f, 1f, additionalAggroRange / 500f, true));
@@ -606,6 +627,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             }
 
             UpdateAnimationFrames(ManaphageAnimation.Attack, 5f);
+            spriteStretchX = Lerp(1f, 0.85f, CascadeUtilities.SineEaseInOut(Timer / 10f));
+            spriteStretchY = Lerp(0.95f, 1.05f, CascadeUtilities.SineEaseInOut(Timer / 10f));
 
             SwitchBehavior_Fleeing(target);
         }
@@ -618,15 +641,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             bool canAtack = ManaRatio > 0.3f && LifeRatio > 0.2f;
             if (canAtack && target.Type == Terraria.Enums.NPCTargetType.Player)
             {
-                float aggroRange = 200f + additionalAggroRange;
-                bool playerWithinRange = Vector2.Distance(NPC.Center, target.Center) < aggroRange;
+                float maxDetectionDistance = (AIState == (float)ManaphageBehavior.Latching ? AggroRangeWhileLatching : DefaultAggroRange) + additionalAggroRange;
+                bool playerWithinRange = Vector2.Distance(NPC.Center, target.Center) < maxDetectionDistance;
                 if (playerWithinRange)
-                {
-                    AIState = (float)ManaphageBehavior.Attacking;
-                    Timer = 0f;
-                    LocalAIState = 0f;
-                    NPC.netUpdate = true;
-                }
+                    SwitchBehaviorState(ManaphageBehavior.Attacking);
             }
         }
 
@@ -645,13 +663,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 // Once the Manaphage reaches a low enough mana capacity, find the nearest asteroid and latch onto it.
                 bool canSuckMana = ManaRatio < 0.3f || (ManaRatio < 0.6f && manaSuckTimer <= 0);
                 if (canSuckMana)
-                {
-                    AsteroidToSucc = cosmostoneAsteroids.FirstOrDefault();
-                    AIState = (float)ManaphageBehavior.Latching;
-                    Timer = 0f;
-                    LocalAIState = 0f;
-                    NPC.netUpdate = true;
-                }
+                    SwitchBehaviorState(ManaphageBehavior.Latching, cosmostoneAsteroids.FirstOrDefault());
             }
         }
 
@@ -659,15 +671,11 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         {
             ref float additionalAggroRange = ref NPC.Cascade().ExtraAI[AdditionalAggroRangeIndex];
 
-            float maxDetectionDistance = (AIState == (float)ManaphageBehavior.Latching ? 50f : 150f) + additionalAggroRange;
+            float maxDetectionDistance = (AIState == (float)ManaphageBehavior.Latching ? AggroRangeWhileLatching : DefaultAggroRange) + additionalAggroRange;
             bool canFlee = target.Type == Terraria.Enums.NPCTargetType.Player && NPC.Distance(target.Center) <= maxDetectionDistance && AIState != (float)ManaphageBehavior.Fleeing;
 
             if ((ManaRatio < 0.3f && canFlee) || (LifeRatio < 0.2f && canFlee))
-            {
-                AIState = (float)ManaphageBehavior.Fleeing;
-                LocalAIState = 0f;
-                NPC.netUpdate = true;
-            }
+                SwitchBehaviorState(ManaphageBehavior.Fleeing);
         }
         #endregion
 
@@ -712,6 +720,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         {
             ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
+            ref float manaTankShaderTime = ref NPC.Cascade().ExtraAI[ManaTankShaderTimeIndex];
 
             Texture2D manaphageTank = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Manaphages/Manaphage_Tank").Value;
             Texture2D manaphageTankMask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Manaphages/Manaphage_Tank_Mask").Value;
@@ -724,6 +733,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
             Main.spriteBatch.PrepareForShaders();
             ShaderManager.TryGetShader("Cascade.ManaphageTankShader", out ManagedShader manaTankShader);
+            manaTankShader.TrySetParameter("time", Main.GlobalTimeWrappedHourly * manaTankShaderTime);
             manaTankShader.TrySetParameter("manaCapacity", manaCapacityInterpolant);
             manaTankShader.TrySetParameter("pixelationFactor", 0.075f);
             manaTankShader.SetTexture(manaphageTankMask, 0);
@@ -732,11 +742,11 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             manaTankShader.Apply();
 
             // Draw the tank mask with the shader applied to it.
-            Main.EntitySpriteDraw(manaphageTankMask, drawPosition, null, Color.Black, NPC.rotation, origin, NPC.scale * stretchFactor * 0.98f, 0);
+            Main.EntitySpriteDraw(manaphageTankMask, drawPosition, null, Color.Black, NPC.rotation, origin, NPC.scale * 0.98f, 0);
             Main.spriteBatch.ExitShaderRegion();
 
             // Draw the tank itself.
-            Main.EntitySpriteDraw(manaphageTank, drawPosition, null, Color.White * NPC.Opacity, NPC.rotation, origin, NPC.scale * stretchFactor, 0);
+            Main.EntitySpriteDraw(manaphageTank, drawPosition, null, Color.White * NPC.Opacity, NPC.rotation, origin, NPC.scale, 0);
         }
         #endregion
         #endregion
