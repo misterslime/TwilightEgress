@@ -131,7 +131,8 @@ namespace Cascade.Content.Events.CosmostoneShowers
             // Space additions.
             if (spawnInfo.Sky)
             {
-                pool.Add(ModContent.NPCType<Manaphage>(), 0.12f);
+                pool.Clear();
+                pool.Add(ModContent.NPCType<Manaphage>(), 0.56f);
             }
 
             // Surface additions.

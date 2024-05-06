@@ -44,7 +44,7 @@
                 float gradientHeightInterpolant = Lerp(-0.002f, -0.02f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
 
                 spriteBatch.UseBlendState(BlendState.Additive);
-                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * 16f * gradientHeightInterpolant), Main.screenWidth, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
+                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * 16f * gradientHeightInterpolant), Main.screenWidth * 2, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
                 spriteBatch.ResetToDefault();
             }
         }

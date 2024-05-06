@@ -93,6 +93,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
         public ref float LocalAIState => ref NPC.ai[2];
         #endregion
 
+        #region Overrides
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[Type] = 5;
@@ -122,7 +123,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
 
             AIState = (float)Utils.SelectRandom(Main.rand, ManaphageBehavior.Idle_JellyfishPropulsion, ManaphageBehavior.Idle_LazeAround);
-            CurrentManaCapacity = 0f;
+            CurrentManaCapacity = Main.rand.NextBool(25) ? Main.rand.NextFloat(75f, 100f) : Main.rand.NextFloat(60f, 15f);
             spriteStretchX = 1f;
             spriteStretchY = 1f;
             NPC.netUpdate = true;
@@ -146,6 +147,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public override void AI()
         {
+            ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
+
             NPC.AdvancedNPCTargeting(true, MaximumPlayerSearchDistance, ShouldTargetNPCs, MaximumNPCSearchDistance, 
                 ModContent.NPCType<CosmostoneAsteroidSmall>(), ModContent.NPCType<CosmostoneAsteroidMedium>(), ModContent.NPCType<CosmostoneAsteroidLarge>());
             NPCAimedTarget target = NPC.GetTargetData();
@@ -181,6 +184,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                     break;
             }
 
+            float tankLightLevel = Lerp(0.3f, 1.25f, ManaRatio);
+            Vector2 tankPosition = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * 31f * spriteStretchY;
+            Lighting.AddLight(tankPosition, Color.Cyan.ToVector3() * tankLightLevel);
+
             CurrentManaCapacity = Clamp(CurrentManaCapacity, 0f, MaximumManaCapacity);
             ManageExtraTimers();
             Timer++;
@@ -190,6 +197,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
         public override void OnHitByProjectile(Projectile projectile, NPC.HitInfo hit, int damageDone) => OnHitEffects(hit);
 
+        #region Helper Methods
         public void OnHitEffects(NPC.HitInfo hit)
         {
             ref float additionalAggroRange = ref NPC.Cascade().ExtraAI[AdditionalAggroRangeIndex];
@@ -228,6 +236,21 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             manaSuckTimer = Clamp(manaSuckTimer - 1f, 0f, 720f);
         }
 
+        public void CheckForTurnAround(out bool turnAround)
+        {
+            turnAround = false;
+            for (int i = 0; i < 8; i++)
+            {
+                // Avoid leaving the world and avoid running into tiles.
+                Vector2 centerAhead = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * 128f * i;
+                bool leavingWorldBounds = centerAhead.Y >= Main.maxTilesY + 750f || centerAhead.Y < Main.maxTilesY * 0.34f;
+                turnAround = leavingWorldBounds;
+
+                if (!Collision.CanHit(NPC.Center, NPC.width, NPC.height, centerAhead, NPC.width, NPC.height))
+                    turnAround = true;
+            }
+        }
+
         public void SwitchBehaviorState(ManaphageBehavior nextBehaviorState)
         {
             Timer = 0f;
@@ -236,7 +259,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             FoundValidRotationAngle = false;
             NPC.netUpdate = true;
         }
+        #endregion
 
+        #region AI Methods
         public void DoBehavior_JellyfishPropulsionIdle(NPCAimedTarget target)
         {
             ref float jellyfishMovementInterval = ref NPC.Cascade().ExtraAI[JellyfishMovementIntervalIndex];
@@ -637,29 +662,16 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             float maxDetectionDistance = (AIState == (float)ManaphageBehavior.Latching ? 50f : 150f) + additionalAggroRange;
             bool canFlee = target.Type == Terraria.Enums.NPCTargetType.Player && NPC.Distance(target.Center) <= maxDetectionDistance && AIState != (float)ManaphageBehavior.Fleeing;
 
-            if ((ManaRatio < 0.3f || LifeRatio < 0.2f) && canFlee)
+            if ((ManaRatio < 0.3f && canFlee) || (LifeRatio < 0.2f && canFlee))
             {
                 AIState = (float)ManaphageBehavior.Fleeing;
                 LocalAIState = 0f;
                 NPC.netUpdate = true;
             }
         }
+        #endregion
 
-        public void CheckForTurnAround(out bool turnAround)
-        {
-            turnAround = false;
-            for (int i = 0; i < 8; i++)
-            {
-                // Avoid leaving the world and avoid running into tiles.
-                Vector2 centerAhead = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * 128f * i;
-                bool leavingWorldBounds = centerAhead.Y >= Main.maxTilesY + 750f || centerAhead.Y < Main.maxTilesY * 0.34f;
-                turnAround = leavingWorldBounds;
-
-                if (!Collision.CanHit(NPC.Center, NPC.width, NPC.height, centerAhead, NPC.width, NPC.height))
-                    turnAround = true;
-            }
-        }
-
+        #region Drawing and Animation
         public void UpdateAnimationFrames(ManaphageAnimation manaphageAnimation, float frameSpeed, int? specificYFrame = null)
         {
             int frameX = manaphageAnimation switch
@@ -674,11 +686,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
             FrameX = frameX;
             FrameY = specificYFrame ?? (int)Math.Floor(Timer / frameSpeed) % Main.npcFrameCount[Type];
-        }
-
-        public override void FindFrame(int frameHeight)
-        {
-           
         }
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
@@ -730,7 +737,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
             // Draw the tank itself.
             Main.EntitySpriteDraw(manaphageTank, drawPosition, null, Color.White * NPC.Opacity, NPC.rotation, origin, NPC.scale * stretchFactor, 0);
-
         }
+        #endregion
+        #endregion
     }
 }

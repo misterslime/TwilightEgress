@@ -77,6 +77,10 @@ namespace Cascade.Core.Graphics.GraphicalObjects.Particles
             return this;
         }
 
-        public Vector2 GetDrawPositionWithParallax() => Position - Main.screenPosition * ParallaxStrength;
+        public Vector2 GetDrawPositionWithParallax()
+        {
+            Vector2 inWorldPosition = Position - Main.screenPosition;
+            return inWorldPosition * ParallaxStrength;
+        }
     }
 }
