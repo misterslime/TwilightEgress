@@ -4,15 +4,7 @@
     {
         public new string LocalizationCategory => "Items.Materials";
 
-        public override void SetStaticDefaults()
-        {
-            Main.RegisterItemAnimation(Type, new DrawAnimationVertical(6, 16));
-            ItemID.Sets.AnimatesAsSoul[Type] = true;
-
-            ItemID.Sets.ItemNoGravity[Type] = true;
-
-            Item.ResearchUnlockCount = 100;
-        }
+        public override void SetStaticDefaults() => Item.ResearchUnlockCount = 100;
 
         public override void SetDefaults()
         {
