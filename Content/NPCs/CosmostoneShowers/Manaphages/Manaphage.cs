@@ -621,7 +621,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 bool canSuckMana = ManaRatio < 0.3f || (ManaRatio < 0.6f && manaSuckTimer <= 0);
                 if (canSuckMana)
                 {
-                    CombatText.NewText(new Rectangle((int)NPC.Center.X, (int)NPC.Center.Y, NPC.width, NPC.height), Color.LightBlue, "Going to succ mana!", true);
                     AsteroidToSucc = cosmostoneAsteroids.FirstOrDefault();
                     AIState = (float)ManaphageBehavior.Latching;
                     Timer = 0f;

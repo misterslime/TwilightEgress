@@ -1,28 +1,25 @@
 ﻿using CalamityMod.Events;
 using CalamityMod.NPCs.NormalNPCs;
 using Cascade.Content.NPCs.CosmostoneShowers.Asteroids;
+using Cascade.Content.NPCs.CosmostoneShowers.Manaphages;
 using Cascade.Content.NPCs.CosmostoneShowers.Planetoids;
 using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
 using Cascade.Content.Skies.SkyEntities.StationaryAsteroids;
 using Cascade.Content.Skies.SkyEntities.TravellingAsteroid;
-using Cascade.Core.Globals.GlobalNPCs;
 using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 using Terraria.GameContent.Events;
 using Terraria.Graphics;
-using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.Events.CosmostoneShowers
 {
     public class CosmostoneShowerEvent : EventHandler
     {
-        public static bool CosmostoneShower { get; set; }
-
         private int ShiningStarSpawnChance
         {
             get
             {
-                if (!EventIsActive || !CosmostoneShower)
+                if (!EventIsActive)
                     return 0;
                 return 100 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
             }
@@ -32,7 +29,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         {
             get
             {
-                if (!EventIsActive || !CosmostoneShower)
+                if (!EventIsActive)
                     return 0;
                 return 70 * (int)Round(Lerp(1f, 0.6f, Star.starfallBoost / 3f), 0);
             }
@@ -42,7 +39,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         {
             get
             {
-                if (!EventIsActive || !CosmostoneShower)
+                if (!EventIsActive)
                     return 0;
                 return 55;
             }
@@ -52,7 +49,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         {
             get
             {
-                if (!EventIsActive || !CosmostoneShower)
+                if (!EventIsActive)
                     return 0;
                 return 10;
             }
@@ -62,7 +59,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         {
             get
             {
-                if (!EventIsActive || !CosmostoneShower)
+                if (!EventIsActive)
                     return 0;
 
                 int spawnChance = Main.tenthAnniversaryWorld ? 10000 : LanternNight.LanternsUp ? 50000 : 100000;
@@ -97,47 +94,28 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private const int MaxCosmicGases = 50;
 
-        public override bool EventIsActive => CosmostoneShower;
+        public override bool PersistAfterLeavingWorld => true;
 
-        public override void OnModLoad()
+        public override bool PreUpdateEvent()
         {
-            CascadeGlobalNPC.EditSpawnPoolEvent += EditSpawnPool;
-        }
-
-        public override void OnModUnload()
-        {
-            CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
-        }
-
-        public override void SaveWorldData(TagCompound tag)
-        {
-            tag["CosmostoneShower"] = CosmostoneShower;
-        }
-
-        public override void LoadWorldData(TagCompound tag)
-        {
-            CosmostoneShower = tag.GetBool("CosmostoneShower");
-        }
-
-        public override void UpdateEvent()
-        {         
             bool shouldStopEvent = Main.bloodMoon || Main.pumpkinMoon || Main.snowMoon || BossRushEvent.BossRushActive;
             bool shouldIncreaseSpawnRate = LanternNight.NextNightIsLanternNight;
 
             // Start and stop the event.
-            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !CosmostoneShower && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
+            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !Active && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
-                Main.NewText("The night sky glimmers with cosmic energy...", Color.DeepSkyBlue);
-                CosmostoneShower = true;
+                Main.NewText("A mana-rich asteroid belt is travelling past the planet...", Color.DeepSkyBlue);
+                EventHandlerManager.StartEvent<CosmostoneShowerEvent>();
             }
 
-            if ((Main.dayTime && CosmostoneShower) || shouldStopEvent)
-                CosmostoneShower = false;
+            if ((Main.dayTime && Active) || shouldStopEvent)
+                EventHandlerManager.StopEvent<CosmostoneShowerEvent>();
 
-            // Don't run any code past here if the event isn't active.
-            if (!EventHandlerManager.SpecificEventIsActive<CosmostoneShowerEvent>())
-                return;
+            return true;
+        }
 
+        public override void UpdateEvent()
+        {        
             // Important entities.
             Entities_SpawnSpecialSpaceNPCs();
             
@@ -145,11 +123,32 @@ namespace Cascade.Content.Events.CosmostoneShowers
             Visuals_SpawnAmbientSkyEntities();
         }
 
-        public override void ResetEventStuff()
+        public override void EditEventSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
-            CosmostoneShower = false;
+            if (!spawnInfo.Player.ZoneCosmostoneShowers() || spawnInfo.Invasion)
+                return;
+
+            // Space additions.
+            if (spawnInfo.Sky)
+            {
+                pool.Add(ModContent.NPCType<Manaphage>(), 0.12f);
+            }
+
+            // Surface additions.
+            if (spawnInfo.Player.ZoneOverworldHeight)
+            {
+                pool.Add(NPCID.Firefly, 0.85f);
+                pool.Add(NPCID.EnchantedNightcrawler, 0.75f);
+            }
+
+            // FUCK YOU
+            if (pool.ContainsKey(ModContent.NPCType<ShockstormShuttle>()))
+                pool.Remove(ModContent.NPCType<ShockstormShuttle>());
         }
 
+        // TODO:
+        // Overall this entire spawning method once the Planetoid and Asteroid reworks are finished.
+        // -fryzahh
         private void Entities_SpawnSpecialSpaceNPCs()
         {
             int asteroidSpawnChance = 125;
@@ -238,32 +237,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
             }
-        }
-
-        private void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
-        {
-            if (!spawnInfo.Player.ZoneCosmostoneShowers() || spawnInfo.Invasion)
-                return;
-
-            // Space additions.
-            if (spawnInfo.Sky)
-            {
-                // Clear the original spawn pool, successfully getting rid of Vanilla NPCs since
-                // they can't be manually removed.
-                pool.Clear();
-            }
-
-            // Surface additions.
-            if (spawnInfo.Player.ZoneOverworldHeight)
-            {
-                pool.Add(NPCID.Firefly, 0.85f);
-            }
-
-            pool.Add(NPCID.EnchantedNightcrawler, 0.75f);
-
-            // FUCK YOU
-            if (pool.ContainsKey(ModContent.NPCType<ShockstormShuttle>()))
-                pool.Remove(ModContent.NPCType<ShockstormShuttle>());
         }
 
         private void Visuals_SpawnAmbientSkyEntities()
