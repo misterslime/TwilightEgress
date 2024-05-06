@@ -305,6 +305,11 @@
                 The set of actions that should occur when a state transition occurs.
             </summary>
         </member>
+        <member name="E:Luminance.Common.StateMachines.PushdownAutomata`2.OnStackEmpty">
+            <summary>
+                The set of actions that should occur when the stack is out of items.
+            </summary>
+        </member>
         <member name="M:Luminance.Common.StateMachines.PushdownAutomata`2.RegisterState(`0)">
             <summary>
             Registers a state in the registry.
@@ -351,7 +356,7 @@
             <param name="p">The original point.</param>
             <param name="direction">The direction to search in.</param>
         </member>
-        <member name="M:Luminance.Common.Utilities.Utilities.Utilities.DrawAfterimagesCentered(Terraria.Projectile,System.Int32,Microsoft.Xna.Framework.Color,System.Int32,System.Nullable{System.Int32},System.Single,System.Single,Microsoft.Xna.Framework.Graphics.Texture2D,System.Boolean)">
+        <member name="M:Luminance.Common.Utilities.Utilities.DrawAfterimagesCentered(Terraria.Projectile,System.Int32,Microsoft.Xna.Framework.Color,System.Int32,System.Nullable{System.Int32},System.Single,System.Single,Microsoft.Xna.Framework.Graphics.Texture2D,System.Boolean)">
             <summary>
                 Draws a projectile as a series of afterimages. The first of these afterimages is centered on the center of the projectile's hitbox.<br />
                 This function is guaranteed to draw the projectile itself, even if it has no afterimages and/or the Afterimages config option is turned off.
@@ -991,6 +996,83 @@
                 Colors a message with the provided color using chat tags.
             </summary>
         </member>
+        <member name="T:Luminance.Common.VerletIntergration.VerletSegment">
+            <summary>
+            Represents a verlet segment, for use in verlet simulatons.
+            </summary>
+            <param name="position">The position of this segment.</param>
+            <param name="velocity">The velocity of this segment.</param>
+            <param name="locked">Whether the segment is locked in place. If true, its position will not update via simulations.</param>
+        </member>
+        <member name="M:Luminance.Common.VerletIntergration.VerletSegment.#ctor(Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,System.Boolean)">
+            <summary>
+            Represents a verlet segment, for use in verlet simulatons.
+            </summary>
+            <param name="position">The position of this segment.</param>
+            <param name="velocity">The velocity of this segment.</param>
+            <param name="locked">Whether the segment is locked in place. If true, its position will not update via simulations.</param>
+        </member>
+        <member name="T:Luminance.Common.VerletIntergration.VerletSettings">
+            <summary>
+            Configurable settings for verlet simulations.
+            </summary>
+            <param name="TileCollision">Whether the segments should collide with tiles.</param>
+            <param name="SlowInWater">Whether the segments should move slower through water.<br/><b>Does nothing if <paramref name="Gravity"/> is 0.</b></param>
+            <param name="Gravity">The gravity strength to apply to the segments.</param>
+            <param name="MaxFallSpeed">The maximum speed the segments should fall due to gravity.</param>
+            <param name="ConserveEnergy">Whether an additional calcuation should be performed to conserve the energy of the segments.<br/>This results in them bouncing around a lot more before settling down.</param>
+        </member>
+        <member name="M:Luminance.Common.VerletIntergration.VerletSettings.#ctor(System.Boolean,System.Boolean,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Configurable settings for verlet simulations.
+            </summary>
+            <param name="TileCollision">Whether the segments should collide with tiles.</param>
+            <param name="SlowInWater">Whether the segments should move slower through water.<br/><b>Does nothing if <paramref name="Gravity"/> is 0.</b></param>
+            <param name="Gravity">The gravity strength to apply to the segments.</param>
+            <param name="MaxFallSpeed">The maximum speed the segments should fall due to gravity.</param>
+            <param name="ConserveEnergy">Whether an additional calcuation should be performed to conserve the energy of the segments.<br/>This results in them bouncing around a lot more before settling down.</param>
+        </member>
+        <member name="P:Luminance.Common.VerletIntergration.VerletSettings.TileCollision">
+            <summary>Whether the segments should collide with tiles.</summary>
+        </member>
+        <member name="P:Luminance.Common.VerletIntergration.VerletSettings.SlowInWater">
+            <summary>Whether the segments should move slower through water.<br/><b>Does nothing if <paramref name="Gravity"/> is 0.</b></summary>
+        </member>
+        <member name="P:Luminance.Common.VerletIntergration.VerletSettings.Gravity">
+            <summary>The gravity strength to apply to the segments.</summary>
+        </member>
+        <member name="P:Luminance.Common.VerletIntergration.VerletSettings.MaxFallSpeed">
+            <summary>The maximum speed the segments should fall due to gravity.</summary>
+        </member>
+        <member name="P:Luminance.Common.VerletIntergration.VerletSettings.ConserveEnergy">
+            <summary>Whether an additional calcuation should be performed to conserve the energy of the segments.<br/>This results in them bouncing around a lot more before settling down.</summary>
+        </member>
+        <member name="T:Luminance.Common.VerletIntergration.VerletSimulations">
+            <summary>
+            Contains various simulations for verlet chains.
+            </summary>
+        </member>
+        <member name="M:Luminance.Common.VerletIntergration.VerletSimulations.VerletSimulation(System.Collections.Generic.List{Luminance.Common.VerletIntergration.VerletSegment},System.Single,Luminance.Common.VerletIntergration.VerletSettings,System.Int32)">
+            <summary>
+            Performs a verlet simulation, configure specific details with <paramref name="settings"/>.
+            </summary>
+            <param name="segments">The segments to run through the simulaion.</param>
+            <param name="segmentDistance">The ideal distance between each segment.</param>
+            <param name="settings">The settings for the simulation.</param>
+            <param name="loops">The number of loops to perform to calculate the final positions. More is more precise, but more costly.</param>
+            <returns>The segments post simulation.</returns>
+        </member>
+        <member name="M:Luminance.Common.VerletIntergration.VerletSimulations.RopeVerletSimulation(System.Collections.Generic.List{Luminance.Common.VerletIntergration.VerletSegment},Microsoft.Xna.Framework.Vector2,System.Single,Luminance.Common.VerletIntergration.VerletSettings,System.Nullable{Microsoft.Xna.Framework.Vector2})">
+            <summary>
+            Performs a verlet simulation for a rope with a fixed end(s), configure specific details with <paramref name="settings"/>.
+            </summary>
+            <param name="segments">The segments to run through the simulaion.</param>
+            <param name="topPosition">The fixed postion of the start of the rope.</param>
+            <param name="idealRopeLength">The ideal length of the rope.</param>
+            <param name="settings">The settings for the simulation.</param>
+            <param name="endPosition">The optional, fixed position of the end of the rope.</param>
+            <returns>The segments post simulation.</returns>
+        </member>
         <member name="T:Luminance.Core.Balancing.BalancePriority">
             <summary>
             Defines what priority a balance change should have in case of conflicts. Only the change with the highest priority will occur.
@@ -1516,7 +1598,7 @@
             The texture name of this particle on the particle atlas. Should be prefixed with "YourModName."
             </summary>
         </member>
-        <member name="F:Luminance.Core.Graphics.Particle.ManuallyDrawn">
+        <member name="P:Luminance.Core.Graphics.Particle.ManuallyDrawn">
             <summary>
             Whether the particle is manually drawn.
             </summary>
@@ -1649,6 +1731,11 @@
             <param name="renderAction">The render action to perform.</param>
             <param name="layer">The layer to draw to.</param>
         </member>
+        <member name="F:Luminance.Core.Graphics.PrimitiveRenderer.MaxCirclePositions">
+            <summary>
+            Must be lower than <see cref="F:Luminance.Core.Graphics.PrimitiveRenderer.MaxTrailPositions"/>, less than 1/4 of <see cref="F:Luminance.Core.Graphics.PrimitiveRenderer.MaxVertices"/> and less than 1/6 of <see cref="F:Luminance.Core.Graphics.PrimitiveRenderer.MaxIndices"/>.
+            </summary>
+        </member>
         <member name="M:Luminance.Core.Graphics.PrimitiveRenderer.RenderTrail(System.Collections.Generic.IEnumerable{Microsoft.Xna.Framework.Vector2},Luminance.Core.Graphics.PrimitiveSettings,System.Nullable{System.Int32})">
             <summary>
             Renders a primitive trail.
@@ -1656,6 +1743,106 @@
             <param name="positions">The list of positions to use. Keep in mind that these are expected to be in <b>world position</b>, and <see cref="F:Terraria.Main.screenPosition"/> is automatically subtracted from them all.<br/>At least 4 points are required to use smoothing.</param>
             <param name="settings">The primitive draw settings to use.</param>
             <param name="pointsToCreate">The amount of points to use. More is higher detailed, but less performant. By default, is the number of positions provided. <b>Going above 100 is NOT recommended.</b></param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveRenderer.RenderQuad(Microsoft.Xna.Framework.Graphics.Texture2D,Microsoft.Xna.Framework.Vector2,System.Single,System.Single,System.Nullable{Microsoft.Xna.Framework.Color},Luminance.Core.Graphics.ManagedShader,System.Nullable{Microsoft.Xna.Framework.Quaternion})">
+            <summary>
+            Renders a primitive quad from a texture. Useful for using with rotation matrices.
+            </summary>
+            <param name="texture">The texture to use as the base.</param>
+            <param name="center">The world position to render the quad at.</param>
+            <param name="scale">The scale to apply.</param>
+            <param name="rotation">The rotation to apply.</param>
+            <param name="color">The color to draw with. Defaults to the lighting color at <paramref name="center"/>.</param>
+            <param name="shader">The shader to use. Defaults to "Luminance.QuadRenderer".</param>
+            <param name="rotationQuarternion">The rotation quarternion to use. Defaults to null.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveRenderer.RenderQuad(Microsoft.Xna.Framework.Graphics.Texture2D,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,System.Single,System.Nullable{Microsoft.Xna.Framework.Color},Luminance.Core.Graphics.ManagedShader,System.Nullable{Microsoft.Xna.Framework.Quaternion})">
+            <summary>
+            Renders a primitive quad from a texture. Useful for using with rotation matrices.
+            </summary>
+            <param name="texture">The texture to use as the base.</param>
+            <param name="center">The world position to render the quad at.</param>
+            <param name="scale">The scale to apply.</param>
+            <param name="rotation">The rotation to apply.</param>
+            <param name="color">The color to draw with. Defaults to the lighting color at <paramref name="center"/>.</param>
+            <param name="shader">The shader to use. Defaults to "Luminance.QuadRenderer".</param>
+            <param name="rotationQuarternion">The rotation quarternion to use. Defaults to null.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveRenderer.RenderCircle(Microsoft.Xna.Framework.Vector2,Luminance.Core.Graphics.PrimitiveSettingsCircle,System.Int32)">
+            <summary>
+            Renders a circle made up of primitives.
+            </summary>
+            <param name="center">The world position to render the circle at.</param>
+            <param name="settings">The settings to use.</param>
+            <param name="sideCount">The amount of triangles to use in the circle. Higher = smoother edge but more costly.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveRenderer.RenderCircleEdge(Microsoft.Xna.Framework.Vector2,Luminance.Core.Graphics.PrimitiveSettingsCircleEdge,System.Int32)">
+            <summary>
+            Renders the edge of a circle made up of primitives.
+            </summary>
+            <param name="center">The world position to render the circle at.</param>
+            <param name="settings">The settings to use.</param>
+            <param name="totalPoints">The amount of triangles to use in the circle. Higher = smoother edge but more costly.</param>
+        </member>
+        <member name="T:Luminance.Core.Graphics.PrimitiveSettings">
+            <summary>
+            Configurable settings for a primitive trail.
+            </summary>
+            <param name="WidthFunction">Determines the width of the trail.</param>
+            <param name="ColorFunction">Determines the color of the trail.</param>
+            <param name="OffsetFunction">Determines the offset of the trail.</param>
+            <param name="Smoothen">Whether to smoothen the positions of the trail.</param>
+            <param name="Pixelate">Whether to pixelate the trail. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+            <param name="InitialVertexPositionsOverride">Optional tuple to replace the first vertex positions.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveSettings.#ctor(Luminance.Core.Graphics.PrimitiveSettings.VertexWidthFunction,Luminance.Core.Graphics.PrimitiveSettings.VertexColorFunction,Luminance.Core.Graphics.PrimitiveSettings.VertexOffsetFunction,System.Boolean,System.Boolean,Luminance.Core.Graphics.ManagedShader,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean,System.Nullable{System.ValueTuple{Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2}})">
+            <summary>
+            Configurable settings for a primitive trail.
+            </summary>
+            <param name="WidthFunction">Determines the width of the trail.</param>
+            <param name="ColorFunction">Determines the color of the trail.</param>
+            <param name="OffsetFunction">Determines the offset of the trail.</param>
+            <param name="Smoothen">Whether to smoothen the positions of the trail.</param>
+            <param name="Pixelate">Whether to pixelate the trail. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+            <param name="InitialVertexPositionsOverride">Optional tuple to replace the first vertex positions.</param>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.WidthFunction">
+            <summary>Determines the width of the trail.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.ColorFunction">
+            <summary>Determines the color of the trail.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.OffsetFunction">
+            <summary>Determines the offset of the trail.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.Smoothen">
+            <summary>Whether to smoothen the positions of the trail.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.Pixelate">
+            <summary>Whether to pixelate the trail. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.Shader">
+            <summary>The shader to use when rendering.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.ProjectionAreaWidth">
+            <summary>The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.ProjectionAreaHeight">
+            <summary>The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.UseUnscaledMatrix">
+            <summary>Whether to use an unscaled matrix when rendering.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettings.InitialVertexPositionsOverride">
+            <summary>Optional tuple to replace the first vertex positions.</summary>
         </member>
         <member name="T:Luminance.Core.Graphics.PrimitiveSettings.VertexWidthFunction">
             <summary>
@@ -1677,6 +1864,101 @@
             </summary>
             <param name="trailLengthInterpolant">The current position along the trail as a 0-1 interpolant value.</param>
             <returns>The offset for the current point.</returns>
+        </member>
+        <member name="T:Luminance.Core.Graphics.PrimitiveSettingsCircle">
+            <summary>
+            Configurable settings for a primitive circle.
+            </summary>
+            <param name="RadiusFunction">Determines the radius of the circle.</param>
+            <param name="ColorFunction">Determines the color of the circle.</param>
+            <param name="Pixelate">Whether to pixelate the circle. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveSettingsCircle.#ctor(Luminance.Core.Graphics.PrimitiveSettings.VertexWidthFunction,Luminance.Core.Graphics.PrimitiveSettings.VertexColorFunction,System.Boolean,Luminance.Core.Graphics.ManagedShader,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Configurable settings for a primitive circle.
+            </summary>
+            <param name="RadiusFunction">Determines the radius of the circle.</param>
+            <param name="ColorFunction">Determines the color of the circle.</param>
+            <param name="Pixelate">Whether to pixelate the circle. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.RadiusFunction">
+            <summary>Determines the radius of the circle.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.ColorFunction">
+            <summary>Determines the color of the circle.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.Pixelate">
+            <summary>Whether to pixelate the circle. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.Shader">
+            <summary>The shader to use when rendering.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.ProjectionAreaWidth">
+            <summary>The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.ProjectionAreaHeight">
+            <summary>The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircle.UseUnscaledMatrix">
+            <summary>Whether to use an unscaled matrix when rendering.</summary>
+        </member>
+        <member name="T:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge">
+            <summary>
+            Configurable settings for a primitive circle edge.
+            </summary>
+            <param name="EdgeWidthFunction">Determines the width of the circle edge.</param>
+            <param name="ColorFunction">Determines the color of the circle edge.</param>
+            <param name="RadiusFunction">Determines the radius of the circle edge.</param>
+            <param name="Pixelate">Whether to pixelate the circle edge. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.#ctor(Luminance.Core.Graphics.PrimitiveSettings.VertexWidthFunction,Luminance.Core.Graphics.PrimitiveSettings.VertexColorFunction,Luminance.Core.Graphics.PrimitiveSettings.VertexWidthFunction,System.Boolean,Luminance.Core.Graphics.ManagedShader,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            Configurable settings for a primitive circle edge.
+            </summary>
+            <param name="EdgeWidthFunction">Determines the width of the circle edge.</param>
+            <param name="ColorFunction">Determines the color of the circle edge.</param>
+            <param name="RadiusFunction">Determines the radius of the circle edge.</param>
+            <param name="Pixelate">Whether to pixelate the circle edge. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></param>
+            <param name="Shader">The shader to use when rendering.</param>
+            <param name="ProjectionAreaWidth">The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</param>
+            <param name="ProjectionAreaHeight">The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</param>
+            <param name="UseUnscaledMatrix">Whether to use an unscaled matrix when rendering.</param>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.EdgeWidthFunction">
+            <summary>Determines the width of the circle edge.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.ColorFunction">
+            <summary>Determines the color of the circle edge.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.RadiusFunction">
+            <summary>Determines the radius of the circle edge.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.Pixelate">
+            <summary>Whether to pixelate the circle edge. <b>MUST be used with <see cref="T:Luminance.Core.Graphics.IPixelatedPrimitiveRenderer"/> or <see cref="M:Luminance.Core.Graphics.PrimitivePixelationSystem.RenderToPrimsNextFrame(System.Action,Luminance.Core.Graphics.PixelationPrimitiveLayer)"/></b></summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.Shader">
+            <summary>The shader to use when rendering.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.ProjectionAreaWidth">
+            <summary>The width of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenWidth"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.ProjectionAreaHeight">
+            <summary>The height of the projection matrix area. Defaults to <see cref="F:Terraria.Main.screenHeight"/>.</summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.PrimitiveSettingsCircleEdge.UseUnscaledMatrix">
+            <summary>Whether to use an unscaled matrix when rendering.</summary>
         </member>
         <member name="T:Luminance.Core.Graphics.VertexPosition2DColorTexture">
             <summary>
@@ -2076,7 +2358,7 @@
         </member>
         <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.ClearCompilationDirectory">
             <summary>
-            Clears all .fx and .xnb files in the compiler directory.
+            Clears all .fx, .xnb, and .fxc files in the compiler directory.
             </summary>
         </member>
         <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.TryToWatchPath(Terraria.ModLoader.Mod,System.String)">
@@ -2092,10 +2374,11 @@
             </summary>
             <param name="watcher">The shader watcher to process</param>
         </member>
-        <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.StartCompilerProcess">
+        <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.StartCompilerProcess(System.String)">
             <summary>
-            Starts EasyXNB.
+            Starts the fxc compiler and runs it for a given .fx file.
             </summary>
+            <param name="fxPath">The path to the .fx file.</param>
         </member>
         <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.ProcessCompiledFile(Luminance.Core.Graphics.ShaderRecompilationMonitor.CompilingFile,Luminance.Core.Graphics.ShaderRecompilationMonitor.ShaderWatcher,System.String)">
             <summary>
@@ -2107,7 +2390,7 @@
         </member>
         <member name="M:Luminance.Core.Graphics.ShaderRecompilationMonitor.MoveFileToCompilingFolder(Luminance.Core.Graphics.ShaderRecompilationMonitor.CompilingFile)">
             <summary>
-            Moves a given compiling file to the compilation directory so that EasyXNB can run on it and acquire a new compiled shader.
+            Moves a given compiling file to the compilation directory so that the compiler can run on it and acquire a new compiled shader.
             </summary>
             <param name="file">The file to move.</param>
         </member>
@@ -2227,6 +2510,11 @@
             Call to register a screen modifier delegate at the provided layer. Each registered modifier is ran in ascending layer order.
             </summary>
         </member>
+        <member name="T:Luminance.Core.Graphics.ScreenShakeSystem.ShakeInfo">
+            <summary>
+            Represents a screenshake instance.
+            </summary>
+        </member>
         <member name="F:Luminance.Core.Graphics.ScreenShakeSystem.ShakeInfo.AngularVariance">
             <summary>
             This indicates the maximum amount BaseDirection can be rotated by when a shake occurs. At sufficiently high values there is effectively no shake direction and it's equivalent to NextVector2Circular.
@@ -2246,6 +2534,46 @@
             <summary>
             This indicates how much the shake should dissipate every frame.
             </summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.ScreenShakeSystem.ShakeInfo.None">
+            <summary>
+            A default-object ShakeInfo that does nothing.
+            </summary>
+        </member>
+        <member name="P:Luminance.Core.Graphics.ScreenShakeSystem.OverallShakeIntensity">
+            <summary>
+            The overall intensity of every shake currently active.
+            </summary>
+        </member>
+        <member name="M:Luminance.Core.Graphics.ScreenShakeSystem.StartShake(System.Single,System.Single,System.Nullable{Microsoft.Xna.Framework.Vector2},System.Single)">
+            <summary>
+            Creates a general screenshake.
+            </summary>
+            <param name="strength">The strength of the screenshake.</param>
+            <param name="angularVariance">The size of the angle to randomly offset the screenshake direction by.</param>
+            <param name="shakeDirection">The direction of the screenshake. Is <see cref="P:Microsoft.Xna.Framework.Vector2.Zero"/> by default.</param>
+            <param name="shakeStrengthDissipationIncrement">The amount to decrease the screenshake strength by each frame.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.ScreenShakeSystem.StartShakeAtPoint(Microsoft.Xna.Framework.Vector2,System.Single,System.Single,System.Nullable{Microsoft.Xna.Framework.Vector2},System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a screenshake at a specific point.
+            </summary>
+            <param name="shakeCenter">The position of the screenshake.</param>
+            <param name="strength">The strength of the screenshake.</param>
+            <param name="angularVariance">The size of the angle to randomly offset the screenshake direction by.</param>
+            <param name="shakeDirection">The direction of the screenshake. Is <see cref="P:Microsoft.Xna.Framework.Vector2.Zero"/> by default.</param>
+            <param name="shakeStrengthDissipationIncrement">The amount to decrease the screenshake strength by each frame.</param>
+            <param name="intensityTaperEndDistance">The distance where beyond this, the player should not be affected by the screenshake.</param>
+            <param name="intensityTaperStartDistance">The starting distance for the screenshake intensity to fall off for the player.</param>
+        </member>
+        <member name="M:Luminance.Core.Graphics.ScreenShakeSystem.SetUniversalRumble(System.Single,System.Single,System.Nullable{Microsoft.Xna.Framework.Vector2},System.Single)">
+            <summary>
+            Sets the universal screenshake. Only one of these exists at a time, and setting another while one is active will override the existing one.
+            </summary>
+            <param name="strength">The strength of the screenshake.</param>
+            <param name="angularVariance">The size of the angle to randomly offset the screenshake direction by.</param>
+            <param name="shakeDirection">The direction of the screenshake. Is <see cref="P:Microsoft.Xna.Framework.Vector2.Zero"/> by default.</param>
+            <param name="shakeStrengthDissipationIncrement">The amount to decrease the screenshake strength by each frame.</param>
         </member>
         <member name="T:Luminance.Core.Hooking.HookHelper">
             <summary>
@@ -2371,6 +2699,83 @@
             This should be used if an IL edit could not be loaded for any reason, such as a <see cref="M:MonoMod.Cil.ILCursor.TryGotoNext(MonoMod.Cil.MoveType,System.Func{Mono.Cecil.Cil.Instruction,System.Boolean}[])"/> failure.
             </summary>
             <param name="reason">The reason that the IL edit failed.</param>
+        </member>
+        <member name="T:Luminance.Core.MenuInfoUI.InfoUIManager">
+            <summary>
+            A class to supply all information icons for your mod on loading.
+            </summary>
+        </member>
+        <member name="M:Luminance.Core.MenuInfoUI.InfoUIManager.GetPlayerInfoIcons">
+            <summary>
+            Return all player info icons here.<br/>
+            <b>Called automatically, do not call.</b>
+            </summary>
+        </member>
+        <member name="M:Luminance.Core.MenuInfoUI.InfoUIManager.GetWorldInfoIcons">
+            <summary>
+            Return all world info icons here.<br/>
+            <b>Called automatically, do not call.</b>
+            </summary>
+        </member>
+        <member name="T:Luminance.Core.MenuInfoUI.PlayerInfoIcon">
+            <summary>
+            Represents an icon that shows up on the player selection UI to provide information about the player's state.
+            </summary>
+            <param name="TexturePath">The path to the texture of the icon, including the mod name.</param>
+            <param name="HoverTextKey">The localization key for the text that should be displayed when this icon is hovered.</param>
+            <param name="ShouldAppear">Whether this icon should appear for the provided player.</param>
+            <param name="Priority">The priority of this icon, this determines the ordering of the icon from low to high.</param>
+        </member>
+        <member name="M:Luminance.Core.MenuInfoUI.PlayerInfoIcon.#ctor(System.String,System.String,System.Func{Terraria.Player,System.Boolean},System.Byte)">
+            <summary>
+            Represents an icon that shows up on the player selection UI to provide information about the player's state.
+            </summary>
+            <param name="TexturePath">The path to the texture of the icon, including the mod name.</param>
+            <param name="HoverTextKey">The localization key for the text that should be displayed when this icon is hovered.</param>
+            <param name="ShouldAppear">Whether this icon should appear for the provided player.</param>
+            <param name="Priority">The priority of this icon, this determines the ordering of the icon from low to high.</param>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.PlayerInfoIcon.TexturePath">
+            <summary>The path to the texture of the icon, including the mod name.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.PlayerInfoIcon.HoverTextKey">
+            <summary>The localization key for the text that should be displayed when this icon is hovered.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.PlayerInfoIcon.ShouldAppear">
+            <summary>Whether this icon should appear for the provided player.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.PlayerInfoIcon.Priority">
+            <summary>The priority of this icon, this determines the ordering of the icon from low to high.</summary>
+        </member>
+        <member name="T:Luminance.Core.MenuInfoUI.WorldInfoIcon">
+            <summary>
+            Represents an icon that shows up on the world selection UI to provide information about the world's state.
+            </summary>
+            <param name="TexturePath">The path to the texture of the icon, including the mod name.</param>
+            <param name="HoverTextKey">The localization key for the text that should be displayed when this icon is hovered.</param>
+            <param name="ShouldAppear">Whether this icon should appear for the provided world. Store things in the world header and check them here.</param>
+            <param name="Priority">The priority of this icon, this determines the ordering of the icon from low to high.</param>
+        </member>
+        <member name="M:Luminance.Core.MenuInfoUI.WorldInfoIcon.#ctor(System.String,System.String,System.Func{Terraria.IO.WorldFileData,System.Boolean},System.Byte)">
+            <summary>
+            Represents an icon that shows up on the world selection UI to provide information about the world's state.
+            </summary>
+            <param name="TexturePath">The path to the texture of the icon, including the mod name.</param>
+            <param name="HoverTextKey">The localization key for the text that should be displayed when this icon is hovered.</param>
+            <param name="ShouldAppear">Whether this icon should appear for the provided world. Store things in the world header and check them here.</param>
+            <param name="Priority">The priority of this icon, this determines the ordering of the icon from low to high.</param>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.WorldInfoIcon.TexturePath">
+            <summary>The path to the texture of the icon, including the mod name.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.WorldInfoIcon.HoverTextKey">
+            <summary>The localization key for the text that should be displayed when this icon is hovered.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.WorldInfoIcon.ShouldAppear">
+            <summary>Whether this icon should appear for the provided world. Store things in the world header and check them here.</summary>
+        </member>
+        <member name="P:Luminance.Core.MenuInfoUI.WorldInfoIcon.Priority">
+            <summary>The priority of this icon, this determines the ordering of the icon from low to high.</summary>
         </member>
         <member name="M:Luminance.Core.ModCalls.ModCall.ProcessInternal(System.Object[])">
             <summary>

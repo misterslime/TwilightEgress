@@ -8,7 +8,7 @@ float3 manaColor;
 float pixelationFactor;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
-{   
+{
     coords = round(coords / pixelationFactor) * pixelationFactor;
     
     // Distort the noise map using another noise texture.
@@ -20,7 +20,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // Scale up the noise map.
     noiseUV *= 0.4;
     // Move the noise map gradually.
-    noiseUV.x += time * 0.03;  
+    noiseUV.x += time * 0.03;
     float4 noiseColor = tex2D(noiseTexture, noiseUV);
     
     // Saturate the colors depending on the amount of mana available.
