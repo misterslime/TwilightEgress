@@ -3,81 +3,90 @@ using Terraria.ModLoader.IO;
 
 namespace Cascade.Content.Events
 {
-    public abstract class EventHandler : ModSystem
+    public abstract class EventHandler
     {
         /// <summary>
-        /// Whether the event is active or not.
+        /// Whether the event is active or not, private.
         /// </summary>
-        public bool Active;
+        private bool active;
 
         /// <summary>
         /// The condition which determins whether or not the event is active.
         /// </summary>
-        public bool EventIsActive
-        {
-            get
-            {
-                if (!Active)
-                    return false;
-                return true;
-            }
-        }
+        public bool EventIsActive => active;
+
+        /// <summary>
+        /// The internal name of this. Similar to <see cref="ModType.Name"/>
+        /// </summary>
+        public virtual string Name => GetType().Name;
 
         /// <summary>
         /// Whether or not the event should remain active after leaving and rejoining the world.
         /// </summary>
         public virtual bool PersistAfterLeavingWorld { get; }
 
-        public sealed override void OnModLoad()
+        /// <summary>
+        /// Start the event
+        /// </summary>
+        public void StartEvent()
+        {
+            active = true;
+        }
+
+        /// <summary>
+        /// Stops the event
+        /// </summary>
+        public void StopEvent()
+        {
+            active = false;
+        }
+
+        public void OnModLoad()
         {
             CascadeGlobalNPC.EditSpawnPoolEvent += EditSpawnPool;
             CascadeGlobalNPC.EditSpawnRateEvent += EditSpawnRate;
             SafeOnModLoad();
         }
 
-        public sealed override void OnModUnload()
+        public void OnModUnload()
         {
             CascadeGlobalNPC.EditSpawnPoolEvent -= EditSpawnPool;
             CascadeGlobalNPC.EditSpawnRateEvent -= EditSpawnRate;
             SafeOnModUnload();
         }
 
-        public override void SaveWorldData(TagCompound tag)
+        public void SaveWorldData(TagCompound tag)
         {
-            if (PersistAfterLeavingWorld && Active)
-                tag[$"{Name}.Active"] = Active;
+            if (PersistAfterLeavingWorld && active)
+                tag[$"{Name}.Active"] = active;
             SafeSaveWorldData(tag);
         }
 
-        public override void LoadWorldData(TagCompound tag)
+        public void LoadWorldData(TagCompound tag)
         {
-            Active = tag.GetBool($"{Name}.Active");
+            active = tag.GetBool($"{Name}.Active");
             SafeLoadWorldData(tag);
         }
 
-        public override void OnWorldLoad() => ResetEventStuff();
 
-        public override void OnWorldUnload() => ResetEventStuff();
-
-        public override void PostUpdateEverything()
+        public void HandlerUpdateEvent()
         {
-            PreUpdateEvent();
             if (EventIsActive && PreUpdateEvent())
                 UpdateEvent();
         }
 
         private void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
-            if (!PreUpdateEvent() || !EventIsActive)
+            if (!EventIsActive)
                 return;
             EditEventSpawnPool(pool, spawnInfo);
         }
 
         private void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
-            if (!PreUpdateEvent() || !EventIsActive)
+            if (!EventIsActive)
                 return;
-            EditEventSpawnRate(player, ref spawnRate , ref maxSpawns);  
+            EditEventSpawnRate(player, ref spawnRate, ref maxSpawns);
         }
 
         /// <summary>

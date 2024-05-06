@@ -102,13 +102,13 @@ namespace Cascade.Content.Events.CosmostoneShowers
             bool shouldIncreaseSpawnRate = LanternNight.NextNightIsLanternNight;
 
             // Start and stop the event.
-            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !Active && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
+            if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !EventIsActive && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
                 Main.NewText("A mana-rich asteroid belt is travelling past the planet...", Color.DeepSkyBlue);
                 EventHandlerManager.StartEvent<CosmostoneShowerEvent>();
             }
 
-            if ((Main.dayTime && Active) || shouldStopEvent)
+            if ((Main.dayTime && EventIsActive) || shouldStopEvent)
                 EventHandlerManager.StopEvent<CosmostoneShowerEvent>();
 
             return true;

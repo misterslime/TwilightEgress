@@ -1,5 +1,9 @@
 ﻿using Terraria.ModLoader.Core;
 using System.Runtime.Serialization;
+using Cascade.Content.Events.CosmostoneShowers;
+using System;
+using Terraria.ModLoader.IO;
+using Stubble.Core.Classes;
 
 namespace Cascade.Content.Events
 {
@@ -13,16 +17,80 @@ namespace Cascade.Content.Events
             foreach (Type type in AssemblyManager.GetLoadableTypes(Cascade.Instance.Code))
             {
                 if (type.IsSubclassOf(typeof(EventHandler)) && !type.IsAbstract)
-                    Events[type] = Activator.CreateInstance(type) as EventHandler;
+                {
+                    EventHandler handler = Activator.CreateInstance(type) as EventHandler;
+                    handler.OnModLoad();
+                    Events[type] = handler;
+                }
             }
         }
 
-        public override void OnModUnload() => Events = null;
+        public override void OnModUnload()
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                    eventHandler.OnModUnload();
+            }
+            Events = null;
+        }
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.SaveWorldData(tag);
+                }
+            }
+        }
+
+        public override void LoadWorldData(TagCompound tag)
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.SaveWorldData(tag);
+                }
+            }
+        }
+
+        public override void OnWorldLoad() => ResetAllEventStuff();
+
+        public override void OnWorldUnload() => ResetAllEventStuff();
+
+        public override void PostUpdateEverything()
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.HandlerUpdateEvent();
+                }
+            }
+        }
+
+        public void ResetAllEventStuff()
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.ResetEventStuff();
+                }
+            }
+        }
 
         /// <summary>
         /// Checks if the specified event is active or not.
         /// </summary>
-        public static bool SpecificEventIsActive<T>() where T : EventHandler => Events[typeof(T)].EventIsActive;
+        public static bool SpecificEventIsActive<T>() where T : EventHandler => (bool)(Events?[typeof(T)].EventIsActive);
 
         /// <summary>
         /// Starts the specified event.
@@ -30,24 +98,18 @@ namespace Cascade.Content.Events
         /// <typeparam name="T"></typeparam>
         public static void StartEvent<T>() where T : EventHandler
         {
-            if (Events == null)
-                return;
-
-            Events.TryGetValue(typeof(T), out EventHandler worldEvent);
-            worldEvent.Active = true;
+            if (Events?.TryGetValue(typeof(T), out EventHandler worldEvent) == true)
+                worldEvent.StartEvent();
         }
 
         /// <summary>
-        /// Starts the specified event.
+        /// Stops the specified event.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public static void StopEvent<T>() where T : EventHandler
         {
-            if (Events == null)
-                return;
-
-            Events.TryGetValue(typeof(T), out EventHandler worldEvent);
-            worldEvent.Active = false;
+            if (Events?.TryGetValue(typeof(T), out EventHandler worldEvent) == true)
+                worldEvent.StopEvent();
         }
     }
 }

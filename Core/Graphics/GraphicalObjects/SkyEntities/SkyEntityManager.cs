@@ -1,5 +1,5 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
-using System.Runtime.Serialization;
+using System.Runtime.CompilerServices;
 
 namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
 {
@@ -33,7 +33,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             IEnumerable<Type> skyEntitySubclasses = Utilities.GetEveryTypeDerivedFrom(typeof(SkyEntity), Cascade.Instance.Code);
             foreach (Type type in skyEntitySubclasses)
             {
-                SkyEntity skyEntity = (SkyEntity)FormatterServices.GetUninitializedObject(type);
+                SkyEntity skyEntity = (SkyEntity)RuntimeHelpers.GetUninitializedObject(type);
                 SkyEntities[type] = skyEntity;
 
                 // Store an ID for each sky entity. All sky entities of the same type that are spawned will copy this ID.
