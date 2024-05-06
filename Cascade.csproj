@@ -6,6 +6,9 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <AdditionalFiles Remove="Assets\AutoloadedEffects\Shaders\Objects\ManaphageTankShader.fx" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\ChromaticAbberation.fx" />
     <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\EllipticalVignette.fx" />
     <None Remove="Assets\AutoloadedEffects\Shaders\Overlays\NoisyVignette.fx" />
@@ -33,8 +36,6 @@
     <None Remove="Localization\en-US\Mods.Cascade.Projectiles.Summon.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.Status.DeathReasons.hjson" />
     <None Remove="Localization\en-US\Mods.Cascade.UI.hjson" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CalamityMod">

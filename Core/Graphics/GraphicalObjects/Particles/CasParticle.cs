@@ -50,15 +50,18 @@ namespace Cascade.Core.Graphics.GraphicalObjects.Particles
         public virtual int TrailingLength => 0;
 
         /// <summary>
-        /// ONLY use this method when spawning <see cref="CasParticle"/> instances. 
+        /// Use this instead of <see cref="Particle.Spawn"/> when spawning <see cref="CasParticle"/> instances.
         /// </summary>
         /// <returns></returns>
         public CasParticle SpawnCasParticle()
         {
-            Spawn();
             if (CasParticleManager.ActiveCasParticles.Count > GraphicalConfig.Instance.ParticleLimit)
-                CasParticleManager.ActiveCasParticles.First().Kill();
+            {
+                Kill();
+                return null;
+            }
 
+            Spawn();
             CasParticleManager.ActiveCasParticles.Add(this);
 
             OldPositions = [];
