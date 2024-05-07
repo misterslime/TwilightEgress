@@ -736,7 +736,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             manaTankShader.TrySetParameter("time", Main.GlobalTimeWrappedHourly * manaTankShaderTime);
             manaTankShader.TrySetParameter("manaCapacity", manaCapacityInterpolant);
             manaTankShader.TrySetParameter("pixelationFactor", 0.075f);
-            manaTankShader.SetTexture(manaphageTankMask, 0);
             manaTankShader.SetTexture(CascadeTextureRegistry.BlueCosmicGalaxy, 1, SamplerState.AnisotropicWrap);
             manaTankShader.SetTexture(CascadeTextureRegistry.SmudgyNoise, 2, SamplerState.AnisotropicWrap);
             manaTankShader.Apply();
