@@ -46,6 +46,43 @@
         }
 
         /// <summary>
+        /// Interpolates between an array of colors.
+        /// </summary>
+        /// <param name="colors">The array of colors to interpolate between.</param>
+        /// <param name="x">The amount or progress of interpolation.</param>
+        /// <returns>A <see cref="Color"/> instance that's the specified point in the gradient.</returns>
+        public static Color InterpolateColor(Color[] colors, double x)
+        {
+            // https://en.wikipedia.org/wiki/Normal_distribution
+
+            double r = 0.0, g = 0.0, b = 0.0;
+            double total = 0.0;
+            double step = 1.0 / (colors.Length - 1);
+            double mu = 0.0;
+            double sigma2 = 0.035;
+
+            foreach (Color color in colors)
+            {
+                total += Math.Exp(-(x - mu) * (x - mu) / (2.0 * sigma2)) / Math.Sqrt(2.0 * Math.PI * sigma2);
+                mu += step;
+            }
+
+            mu = 0.0;
+            foreach (Color color in colors)
+            {
+                double percent = Math.Exp(-(x - mu) * (x - mu) / (2.0 * sigma2)) / Math.Sqrt(2.0 * Math.PI * sigma2);
+                mu += step;
+
+                r += color.R * percent / total;
+                g += color.G * percent / total;
+                b += color.B * percent / total;
+            }
+
+            System.Drawing.Color newColor = System.Drawing.Color.FromArgb(255, (int)r, (int)g, (int)b);
+            return new Color(newColor.R, newColor.G, newColor.B, newColor.A);
+        }
+
+        /// <summary>
         /// Prepares a <see cref="RasterizerState"/> with screen culling enabled. This is mainly used for improving performance when drawing.
         /// </summary>
         /// <returns><see cref="Main.Rasterizer"/> with ScissorTestEnable enabled and a ScissorRectangle that covers the width and height

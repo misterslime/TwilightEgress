@@ -242,16 +242,19 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private void Visuals_SpawnAmbientSkyEntities()
         {
-            if (Main.rand.NextBool(3))
+            int particles = Main.rand.Next(5) + 1;
+            for (int i = 0; i < particles; i++)
             {
                 Vector2 lightBallSpawnPos = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(Main.screenWidth, Main.screenHeight);
-                Vector2 velocity = Vector2.One.RotatedByRandom(Tau) * Main.rand.NextFloat(-0.3f, 0.3f);
-                float scale = Main.rand.NextFloat(0.08f, 0.25f);
+                Vector2 lightBallVelocity = Vector2.One.RotatedByRandom(Tau) * Main.rand.NextFloat(-0.2f, 0.2f);
+                float lightBallscale = Main.rand.NextFloat(0.10f, 0.20f) * 2f;
                 float parallaxStrength = Main.rand.NextFloat(1f, 5f);
-                int lifetime = Main.rand.Next(120, 180);
+                int lightBallLifetime = Main.rand.Next(120, 180) * 4;
 
-                AmbientLightBallParticle lightBall = new(lightBallSpawnPos, velocity, scale, 0f, 1f, parallaxStrength, lifetime, Color.CornflowerBlue);
-                lightBall.SpawnCasParticle();
+                Color[] starColours = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
+                Color starColor = CascadeUtilities.InterpolateColor(starColours, Main.rand.NextFloat());
+
+                new AmbientLightBallParticle(lightBallSpawnPos, lightBallVelocity, lightBallscale, 0f, 1f, parallaxStrength, lightBallLifetime, starColor).SpawnCasParticle();
             }
 
             int totalStarLayers = 7;
