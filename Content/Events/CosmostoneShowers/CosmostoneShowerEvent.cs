@@ -239,7 +239,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 Vector2 starVelocity = Vector2.One.RotatedByRandom(Tau) * Main.rand.NextFloat(-0.2f, 0.2f);
                 float starScale = Main.rand.NextFloat(0.10f, 0.20f) * 2f;
                 float parallaxStrength = Main.rand.NextFloat(1f, 5f);
-                int starLifetime = Main.rand.Next(120, 180) * 4;
+                int starLifetime = Main.rand.Next(120, 180) * 2;
 
                 //Color[] starColours = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
                 Color starColor = CascadeUtilities.InterpolateColor(starColours, Main.rand.NextFloat());
