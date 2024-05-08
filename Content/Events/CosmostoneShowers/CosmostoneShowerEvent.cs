@@ -271,7 +271,10 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     Color starColor = CascadeUtilities.InterpolateColor(starColours, Main.rand.NextFloat());
 
                     if (depth > 1f)
+                    {
+                        depth += 3f;
                         new ShiningStar(position, starColor, maxScale, depth, new Vector2(xStrectch, yStretch), lifespan).Spawn();
+                    }
                     else
                         new ShiningStarParticle(position, starColor, maxScale, Main.rand.NextFloat(1f, 5f), new Vector2(xStrectch, yStretch), lifespan).SpawnCasParticle();
                 }
