@@ -81,7 +81,7 @@ namespace Cascade.Content.Skies.SkyEntities
             float scaleWithDepth = Scale / Depth;
             Color color = Color * Opacity;
 
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.6f, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.3f, 0, 0f);
             spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
         }
     }

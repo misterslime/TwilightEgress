@@ -230,7 +230,9 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
         private void Visuals_SpawnAmbientSkyEntities()
         {
-            int particles = Main.rand.Next(5) + 1;
+            Color[] starColours = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
+
+            int particles = Main.rand.Next(3) + 1;
             for (int i = 0; i < particles; i++)
             {
                 Vector2 starSpawnPos = Main.LocalPlayer.Center + Main.rand.NextVector2Circular(Main.screenWidth, Main.screenHeight);
@@ -239,7 +241,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 float parallaxStrength = Main.rand.NextFloat(1f, 5f);
                 int starLifetime = Main.rand.Next(120, 180) * 4;
 
-                Color[] starColours = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
+                //Color[] starColours = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
                 Color starColor = CascadeUtilities.InterpolateColor(starColours, Main.rand.NextFloat());
 
                 new AmbientStarParticle(starSpawnPos, starVelocity, starScale, 0f, 1f, parallaxStrength, starLifetime, starColor).SpawnCasParticle();
@@ -263,7 +265,12 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
                     float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
-                    new ShiningStar(position, ShiningStarColors, maxScale, i + 25f, new Vector2(xStrectch, yStretch), lifespan).Spawn();
+
+                    float depth = Main.rand.NextFloat();
+
+                    Color starColor = CascadeUtilities.InterpolateColor(starColours, depth);
+
+                    new ShiningStar(position, starColor, maxScale, 5f + depth * 50, new Vector2(xStrectch, yStretch), lifespan).Spawn();
                 }
             }
 
