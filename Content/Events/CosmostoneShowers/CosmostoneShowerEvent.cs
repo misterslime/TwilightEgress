@@ -87,7 +87,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             // Start and stop the event.
             if (CascadeUtilities.JustTurnedToNight && !shouldStopEvent && !EventIsActive && Main.rand.NextBool(shouldIncreaseSpawnRate ? 7 : 15))
             {
-                Main.NewText("A mana-rich asteroid belt is travelling past the planet...", Color.DeepSkyBlue);
+                Main.NewText("A mana-rich asteroid belt is travelling through the astrasphere...", Color.DeepSkyBlue);
                 EventHandlerManager.StartEvent<CosmostoneShowerEvent>();
             }
 
