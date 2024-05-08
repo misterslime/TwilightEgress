@@ -46,15 +46,14 @@
         }
 
         /// <summary>
-        /// Interpolates between an array of colors.
+        /// Interpolates between an array of colors. See <see href="https://en.wikipedia.org/wiki/Normal_distribution">this page</see>
+        /// to learn more about how this works.
         /// </summary>
         /// <param name="colors">The array of colors to interpolate between.</param>
         /// <param name="x">The amount or progress of interpolation.</param>
         /// <returns>A <see cref="Color"/> instance that's the specified point in the gradient.</returns>
         public static Color InterpolateColor(Color[] colors, double x)
         {
-            // https://en.wikipedia.org/wiki/Normal_distribution
-
             double r = 0.0, g = 0.0, b = 0.0;
             double total = 0.0;
             double step = 1.0 / (colors.Length - 1);

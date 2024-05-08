@@ -65,20 +65,20 @@ namespace Cascade.Content.Events
 
         public void HandlerUpdateEvent()
         {
-            if (EventIsActive && PreUpdateEvent())
+            if (active && PreUpdateEvent())
                 UpdateEvent();
         }
 
         private void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
-            if (!EventIsActive)
+            if (!active)
                 return;
             EditEventSpawnPool(pool, spawnInfo);
         }
 
         private void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
-            if (!EventIsActive)
+            if (!active)
                 return;
             EditEventSpawnRate(player, ref spawnRate, ref maxSpawns);
         }
