@@ -21,7 +21,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive)
                     return 0;
-                return 100 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
+                return 12 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
             }
         }
 
@@ -42,16 +42,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 if (!EventIsActive)
                     return 0;
                 return 55;
-            }
-        }
-
-        private int CosmicGasSpawnChance
-        {
-            get
-            {
-                if (!EventIsActive)
-                    return 0;
-                return 10;
             }
         }
 
@@ -86,13 +76,11 @@ namespace Cascade.Content.Events.CosmostoneShowers
             }
         }
 
-        private const int MaxShiningStars = 75;
+        private const int MaxShiningStars = 500;
 
         private const int MaxTravellingAsteroids = 100;
 
         private const int MaxStationaryAsteroids = 25;
-
-        private const int MaxCosmicGases = 50;
 
         public override bool PersistAfterLeavingWorld => true;
 
@@ -266,16 +254,16 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 for (int i = 0; i < totalStarLayers; i++)
                 {
-                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
+                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 2f;
                     float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
                     Vector2 position = new(x, y);
 
-                    float maxScale = Main.rand.NextFloat(1f, 3f);
-                    int lifespan = Main.rand.Next(120, 240);
+                    float maxScale = Main.rand.NextFloat(1f, 10f);
+                    int lifespan = Main.rand.Next(120, 200);
 
                     float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
-                    new ShiningStar(position, ShiningStarColors, maxScale, i + 5f, new Vector2(xStrectch, yStretch), lifespan).Spawn();
+                    new ShiningStar(position, ShiningStarColors, maxScale, i + 25f, new Vector2(xStrectch, yStretch), lifespan).Spawn();
                 }
             }
 
@@ -401,28 +389,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
                             new StationarySilicateAsteroidLarge(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
                             break;
                     }
-                }
-            }
-
-            // Cosmic gases.
-            // Makes the sky less monochromatic with its flat blue color.
-            if (SkyEntityManager.CountActiveSkyEntities<CosmicGas>() < MaxCosmicGases && Main.rand.NextBool(CosmicGasSpawnChance))
-            {
-                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 2f;
-                float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.1f);
-                Vector2 position = new(x, y);
-
-                int numGas = Main.rand.Next(4, 7);
-                for (int i = 0; i < numGas; i++)
-                {
-                    float individualPositionVariance = Main.rand.NextFloat(850f, 1250f);
-                    position += Main.rand.NextVector2Circular(individualPositionVariance, individualPositionVariance);
-
-                    float maxScale = Main.rand.NextFloat(12f, 18f);
-                    int lifespan = Main.rand.Next(600, 1200);
-                    float depth = Main.rand.NextFloat(5f, 200f);
-
-                    new CosmicGas(position, ShiningStarColors, maxScale, depth, lifespan).Spawn();
                 }
             }
 

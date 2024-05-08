@@ -35,17 +35,25 @@
         #region Gradients
         public static readonly Asset<Texture2D> BlueCosmicGalaxy = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/BlueCosmicGalaxy");
 
+        public static readonly Asset<Texture2D> BlueCosmicGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/BlueCosmicGalaxyBlurred");
+
         public static readonly Asset<Texture2D> GrainyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/GrainyNoise");
 
         public static readonly Asset<Texture2D> MeltyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/MeltyNoise");
 
         public static readonly Asset<Texture2D> NeuronNebulaGalaxy = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/NeuronNebulaGalaxy");
 
+        public static readonly Asset<Texture2D> NeuronNebulaGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/NeuronNebulaGalaxy_Blurry");
+
         public static readonly Asset<Texture2D> PerlinNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise");
 
         public static readonly Asset<Texture2D> PerlinNoise2 = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise2");
 
         public static readonly Asset<Texture2D> PerlinNoise3 = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise3");
+
+        public static readonly Asset<Texture2D> PurpleBlueNebulaGalaxy = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PurpleBlueNebulaGalaxy");
+
+        public static readonly Asset<Texture2D> PurpleBlueNebulaGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PurpleBlueNebulaGalaxyBlurred");
 
         public static readonly Asset<Texture2D> SmudgyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/SmudgyNoise");
 
