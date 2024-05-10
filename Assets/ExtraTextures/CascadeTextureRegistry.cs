@@ -5,9 +5,9 @@
         #region Objects
         public static readonly LazyAsset<Texture2D> EmptyPixel = MiscTexturesRegistry.InvisiblePixel;
 
-        public static readonly Asset<Texture2D> SoftStar = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar");
-
         public static readonly Asset<Texture2D> GreyscaleVortex = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/GreyscaleVortex");
+
+        public static readonly Asset<Texture2D> SoftStar = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar");
 
         #region Lists
         public static readonly List<string> FourPointedStars = new()
@@ -18,6 +18,16 @@
             "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Medium_2",
             "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Large",
             "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Large_2"
+        };
+
+        public static readonly List<string> FourPointedStars_Atlas = new()
+        {
+            "Cascade.FourPointedStar_Small.png",
+            "Cascade.FourPointedStar_Small_2.png",
+            "Cascade.FourPointedStar_Medium.png",
+            "Cascade.FourPointedStar_Medium_2.png",
+            "Cascade.FourPointedStar_Large.png",
+            "Cascade.FourPointedStar_Large_2.png"
         };
 
         public static readonly List<string> Smokes = new()

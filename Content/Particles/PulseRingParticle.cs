@@ -55,7 +55,7 @@
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            RingTextureToDraw = UseSoftTexture ? AtlasManager.GetTexture("Cascade.HollowCircleSoftEdge") : Texture;
+            RingTextureToDraw = UseSoftTexture ? AtlasManager.GetTexture("Cascade.HollowCircleSoftEdge.png") : Texture;
             spriteBatch.Draw(RingTextureToDraw, Position - Main.screenPosition, Frame, DrawColor * Opacity, Rotation, null, Scale * Squish);
         }
     }

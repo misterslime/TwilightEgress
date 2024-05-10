@@ -1,43 +1,35 @@
-﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
+﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
 
 namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 {
     public class StationarySilicateAsteroidMedium : SkyEntity
     {
-        public float RotationSpeed;
-
-        public float RotationDirection;
-
         public StationarySilicateAsteroidMedium(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
-            Scale = scale;
+            Scale = new(scale);
             Depth = depth;
             RotationSpeed = rotationSpeed;
-            Lifespan = lifespan;
+            Lifetime = lifespan;
 
             Opacity = 0f;
             Frame = Main.rand.Next(3);
-            Rotation = Main.rand.NextFloat(Pi);
+            Rotation = Main.rand.NextFloat(Tau);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/SilicateAsteroidMedium";
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
-        public override int MaxFrames => 3;
-
-        public override bool DieWithLifespan => true;
-
-        public override BlendState BlendState => BlendState.AlphaBlend;
+        public override int MaxVerticalFrames => 3;
 
         public override void Update()
         {
-            int timeToDisappear = Lifespan - 60;
+            int timeToDisappear = Lifetime - 60;
 
             // Fade in and out.
             if (Time < timeToDisappear)
                 Opacity = Clamp(Opacity + 0.1f, 0f, 1f);
-            if (Time >= timeToDisappear && Time <= Lifespan)
+            if (Time >= timeToDisappear && Time <= Lifetime)
                 Opacity = Clamp(Opacity - 0.1f, 0f, 1f);
 
             Rotation += RotationSpeed * RotationDirection;
@@ -45,11 +37,13 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle frameRectangle = StoredTexture.Frame(1, MaxFrames, 0, Frame % MaxFrames);
-            Vector2 mainOrigin = frameRectangle.Size() / 2f;
+            Texture2D asteroid = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/SilicateAsteroidMedium").Value;
 
-            Color color = Color.Lerp(Color.White, Color.Lerp(Main.ColorOfTheSkies, Color.Black, 0.3f + Depth / 15f), 0.15f + Depth / 15f) * Opacity;
-            Main.EntitySpriteDraw(StoredTexture, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
+            Rectangle frameRectangle = asteroid.Frame(1, MaxVerticalFrames, 0, Frame % MaxVerticalFrames);
+            Vector2 mainOrigin = frameRectangle.Size() / 2f;
+            Color color = Color.Lerp(Color.White, Color.Black, 0.15f + Depth / 10f) * Opacity;
+
+            spriteBatch.Draw(asteroid, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
         }
     }
 }

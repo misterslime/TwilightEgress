@@ -26,9 +26,6 @@ namespace Cascade
                     calamityMod.Call("LoadParticleInstances", this);
                 });
             }
-
-            // Calamity-specific loading.
-            CooldownRegistry.RegisterModCooldowns(this);
         }
 
         public override void Unload()

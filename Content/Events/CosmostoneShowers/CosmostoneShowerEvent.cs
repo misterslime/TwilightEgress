@@ -7,7 +7,7 @@ using Cascade.Content.Projectiles;
 using Cascade.Content.Skies.SkyEntities;
 using Cascade.Content.Skies.SkyEntities.StationaryAsteroids;
 using Cascade.Content.Skies.SkyEntities.TravellingAsteroid;
-using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
+using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
 using Terraria.GameContent.Events;
 using Terraria.Graphics;
 
@@ -15,7 +15,9 @@ namespace Cascade.Content.Events.CosmostoneShowers
 {
     public class CosmostoneShowerEvent : EventHandler
     {
-        private Color[] ShiningStarColors = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
+        public VirtualCamera VirtualCameraInstance { get; private set; }
+
+        private readonly Color[] ShiningStarColors = [Color.Violet, Color.DeepSkyBlue, Color.CornflowerBlue, Color.White, Color.Yellow, Color.Orange, Color.Red];
 
         private const int MaxShiningStars = 500;
 
@@ -41,7 +43,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive)
                     return 0;
-                return 100 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
+                return 175 * (int)Round(Lerp(1f, 0.4f, Star.starfallBoost / 3f), 0);
             }
         }
 
@@ -51,7 +53,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 if (!EventIsActive)
                     return 0;
-                return 70 * (int)Round(Lerp(1f, 0.6f, Star.starfallBoost / 3f), 0);
+                return 100 * (int)Round(Lerp(1f, 0.6f, Star.starfallBoost / 3f), 0);
             }
         }
 
@@ -98,7 +100,12 @@ namespace Cascade.Content.Events.CosmostoneShowers
         }
 
         public override void UpdateEvent()
-        {        
+        {
+            if (!EventIsActive)
+                return;
+
+            VirtualCameraInstance = new(Main.LocalPlayer);
+
             // Important entities.
             Entities_SpawnSpecialSpaceNPCs();
             
@@ -257,24 +264,23 @@ namespace Cascade.Content.Events.CosmostoneShowers
         {
             int totalStarLayers = 7;
             int totalAsteroidsLayers = 5;
-            VirtualCamera virtualCamera = new(Main.LocalPlayer);
 
             // Shining Stars.
             if (SkyEntityManager.CountActiveSkyEntities<ShiningStar>() < MaxShiningStars && Main.rand.NextBool(ShiningStarSpawnChance))
             {
                 for (int i = 0; i < totalStarLayers; i++)
                 {
-                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 2f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.6f);
+                    float x = VirtualCameraInstance.Center.X + Main.rand.NextFloat(-VirtualCameraInstance.Size.X, VirtualCameraInstance.Size.X) * 2f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(0.03f, 0.6f);
                     Vector2 position = new(x, y);
 
-                    float maxScale = Main.rand.NextFloat(1f, 10f);
+                    float maxScale = Main.rand.NextFloat(8f, 15f);
                     int lifespan = Main.rand.Next(120, 200);
 
                     float xStrectch = Main.rand.NextFloat(0.5f, 1.5f);
                     float yStretch = Main.rand.NextFloat(0.5f, 1.5f);
 
-                    float depth = Main.rand.NextFloat(3f, 10f) * 25f;
+                    float depth = Main.rand.NextFloat(1f, 20f) * 10f;
 
                     Color starColor = CascadeUtilities.InterpolateColor(ShiningStarColors, Main.rand.NextFloat());
 
@@ -315,8 +321,8 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
-                    float x = virtualCamera.Center.X - virtualCamera.Size.X - 1280f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.2f, 0.225f);
+                    float x = VirtualCameraInstance.Position.X - 2500f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.1f, 0.25f);
                     Vector2 position = new(x, y);
 
                     float speed = Main.rand.NextFloat(3f, 15f);
@@ -370,8 +376,8 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 for (int i = 0; i < totalAsteroidsLayers; i++)
                 {
-                    float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 3f;
-                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.225f);
+                    float x = VirtualCameraInstance.Center.X + Main.rand.NextFloat(-VirtualCameraInstance.Size.X, VirtualCameraInstance.Size.X) * 2f;
+                    float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.1f, 0.225f);
                     Vector2 position = new(x, y);
 
                     float maxScale = Main.rand.NextFloat(0.5f, 2f);
@@ -412,7 +418,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             {
                 int lifespan = Main.rand.Next(600, 1200);
 
-                float x = virtualCamera.Center.X + Main.rand.NextFloat(-virtualCamera.Size.X, virtualCamera.Size.X) * 0.85f;
+                float x = VirtualCameraInstance.Center.X + Main.rand.NextFloat(-VirtualCameraInstance.Size.X, VirtualCameraInstance.Size.X) * 0.85f;
                 float y = (float)(Main.worldSurface * 16f) * Main.rand.NextFloat(-0.01f, 0.08f);
                 Vector2 position = new(x, y);
 

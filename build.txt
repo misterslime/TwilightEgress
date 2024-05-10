@@ -5,4 +5,4 @@ modReferences = CalamityMod, Luminance
 hideCode = false
 hideResources = false
 includeSource = true
-buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*, .git\*, CONTRIBUTION GUIDE.md, .gitignore, .gitattributes

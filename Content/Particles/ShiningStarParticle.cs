@@ -62,17 +62,16 @@
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D starTextures = ModContent.Request<Texture2D>(CascadeTextureRegistry.FourPointedStars[TextureIndex]).Value;
-            Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
+            AtlasTexture starTextures = AtlasManager.GetTexture(CascadeTextureRegistry.FourPointedStars_Atlas[TextureIndex]);
+            AtlasTexture bloomTexture = AtlasManager.GetTexture("Cascade.BloomFlare.png");
 
-            Vector2 mainOrigin = starTextures.Size() / 2f;
-            Vector2 bloomOrigin = bloomTexture.Size() / 2f;
+            Vector2 mainOrigin = starTextures.Size / 2f;
+            Vector2 bloomOrigin = bloomTexture.Size / 2f;
 
-            Vector2 scaleWithDepth = Scale / ParallaxStrength;
             Color color = DrawColor * Opacity;
-
-            spriteBatch.Draw(bloomTexture, GetDrawPositionWithParallax(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.3f, 0, 0f);
-            spriteBatch.Draw(starTextures, GetDrawPositionWithParallax(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionWithParallax(), null, color, Rotation, bloomOrigin, Scale / 8f);
+            spriteBatch.Draw(starTextures, GetDrawPositionWithParallax(), null, Color.White * Opacity, 0f, mainOrigin, Scale * StretchFactor * 0.6f);
+            spriteBatch.Draw(starTextures, GetDrawPositionWithParallax(), null, color, 0f, mainOrigin, Scale * StretchFactor);
         }
     }
 }

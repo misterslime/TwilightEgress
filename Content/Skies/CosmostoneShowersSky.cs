@@ -43,21 +43,20 @@
         {
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue)
             {
-                Texture2D skyTexture = ModContent.Request<Texture2D>("Cascade/Content/Skies/CosmostoneShowersSky").Value;
-                float gradientHeightInterpolant = Lerp(-0.002f, -0.02f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
+                float gradientHeightInterpolant = Lerp(-0.001f, -0.25f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
 
                 Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
 
                 ShaderManager.TryGetShader("Cascade.CosmostoneShowersSkyShader", out ManagedShader cosmoSkyShader);
-                cosmoSkyShader.TrySetParameter("galaxyOpacity", 0.8f);
-                cosmoSkyShader.TrySetParameter("galaxyColor", Color.White.ToVector3());
-                cosmoSkyShader.TrySetParameter("fadeOutMargin", 0.6f);
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise, 1, SamplerState.AnisotropicWrap);
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 2, SamplerState.AnisotropicWrap);
+                cosmoSkyShader.TrySetParameter("galaxyOpacity", FadeOpacity * 0.4f);
+                cosmoSkyShader.TrySetParameter("fadeOutMargin", 0.75f);
+                cosmoSkyShader.TrySetParameter("pixelationFactor", new Vector2(500f, 500f));
+                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise, 1, SamplerState.LinearWrap);
+                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 2, SamplerState.LinearWrap);
                 cosmoSkyShader.Apply();
 
-                spriteBatch.Draw(CascadeTextureRegistry.NeuronNebulaGalaxyBlurred.Value, new Rectangle(0, (int)(Main.worldSurface * 16f * gradientHeightInterpolant), Main.screenWidth * 2, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
+                spriteBatch.Draw(CascadeTextureRegistry.PurpleBlueNebulaGalaxyBlurred.Value, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant), Main.screenWidth, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
                 spriteBatch.ResetToDefault();
             }
         }

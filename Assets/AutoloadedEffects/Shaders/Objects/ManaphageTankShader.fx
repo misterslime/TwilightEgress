@@ -9,7 +9,7 @@ float pixelationFactor;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
-    coords = round(coords / pixelationFactor) * pixelationFactor;
+    coords = round(coords * pixelationFactor) / pixelationFactor;
     
     // Distort the noise map using another noise texture.
     float2 distortionUV = float2(coords.x + time * 0.34, coords.y - time * 0.21);

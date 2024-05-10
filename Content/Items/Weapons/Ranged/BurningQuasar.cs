@@ -23,7 +23,7 @@ namespace Cascade.Content.Items.Weapons.Ranged
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = 5;
-            Item.value = CalamityGlobalItem.Rarity2BuyPrice;
+            Item.value = CalamityGlobalItem.RarityBlueBuyPrice;
             Item.rare = ItemRarityID.Blue;
             Item.shootSpeed = 8.5f;
             Item.useAmmo = AmmoID.Gel;

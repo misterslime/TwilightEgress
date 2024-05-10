@@ -28,7 +28,7 @@ namespace Cascade.Content.Items.Dedicated.Fluffy
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Ranged;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.rare = ItemRarityID.Yellow;
             Item.shoot = ModContent.ProjectileType<TheBastOffenseHoldout>();
         }

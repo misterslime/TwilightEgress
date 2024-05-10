@@ -6,10 +6,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CalamityMod">
-      <HintPath>ModDependancies\CalamityMod.dll</HintPath>
+      <HintPath>..\..\ModReader\CalamityMod\CalamityMod.dll</HintPath>
     </Reference>
     <Reference Include="Luminance">
-      <HintPath>ModDependancies\Luminance.dll</HintPath>
+      <HintPath>..\..\ModReader\Luminance\Luminance.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
