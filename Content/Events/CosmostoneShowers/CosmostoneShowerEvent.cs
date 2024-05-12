@@ -234,6 +234,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         #endregion
 
         #region Visuals
+        #region Graphical Object Handling
         private void Visuals_SpawnForegroundParticles()
         {
             // Ambient star particles; small sparkles that appear over the screen.
@@ -425,6 +426,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 new Sirius(position, Color.SkyBlue, 2f, lifespan).Spawn();
             }
         }
+        #endregion
         #endregion
     }
 }

@@ -29,6 +29,17 @@
             new Color(157, 113, 239).ToVector4(),
         };
 
+        public static readonly Vector4[] CosmostoneSkyPaletteTwo =
+        {
+            new Color(255, 248, 111).ToVector4(),
+            new Color(255, 237, 111).ToVector4(),
+            new Color(255, 229, 111).ToVector4(),
+            new Color(255, 218, 111).ToVector4(),
+            new Color(255, 208, 111).ToVector4(),
+            new Color(255, 200, 111).ToVector4(),
+            new Color(255, 192, 111).ToVector4(),
+        };
+
         /// <summary>
         /// Converts a hexidecimal code into RGB values.
         /// </summary>

@@ -1,33 +1,49 @@
 ﻿sampler maskTexture : register(s0);
-sampler noiseTexture : register(s1);
-sampler distortionTexture : register(s2);
+sampler cloudLayerOneTexture : register(s1);
+sampler cloudLayerTwoTexture : register(s2);
+sampler distortionTexture : register(s3);
 
 float globalTime;
+float2 textureSize;
 float galaxyOpacity;
 float fadeOutMargin;
-float2 pixelationFactor;
+
+float2 ApplyRotationToUV(float angle, float2 coords)
+{
+    float pivot = float2(0.5, 0.5) - coords;   
+    float2 preRotatedCoordinates = float2(dot(coords, float2(sin(angle), cos(angle))), dot(coords, float2(cos(angle), -sin(angle))));
+    
+    coords = preRotatedCoordinates * (coords - pivot) + pivot;
+    return coords;
+}
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
-    coords = round(coords * pixelationFactor) / pixelationFactor;
+    // Pixelation.
+    float2 pixelSize = 1.1 / textureSize;
+    coords = round(coords / pixelSize) * pixelSize;
     
     // Calculate distortion for the main noise texture.
     float2 distortionCoords = float2(coords.x + globalTime * 0.007, coords.y + globalTime * -0.002);
     distortionCoords *= 0.25;
     float distortion = tex2D(distortionTexture, distortionCoords).r;
     
-    // Create the noise map with the distortion applied.
-    float2 noiseCoords = coords + distortion * 0.23;
-    noiseCoords.x -= globalTime * 0.006;
-    noiseCoords *= 0.4;
-    float4 noise = tex2D(noiseTexture, noiseCoords);
+    // Create two noise maps with the distortion applied.
+    float2 layerOneCoords = coords + distortion * 0.28;
+    layerOneCoords.x -= globalTime * 0.006;
+    layerOneCoords *= 0.4;
+    float4 layerOneNoise = tex2D(cloudLayerOneTexture, layerOneCoords);
     
-    // Mask the noise map onto another texture.
-    float2 maskCoords = float2(coords.x + globalTime * 0.003, coords.y + globalTime * 0.001);
-    float4 mask = tex2D(maskTexture, coords);   
+    float2 layerTwoCoords = coords + distortion * 0.1;
+    layerTwoCoords += float2(globalTime * -0.03, globalTime * -0.007);
+    float4 layerTwoNoise = tex2D(cloudLayerTwoTexture, layerTwoCoords);
+    
+    float2 maskCoords = float2(coords.x - globalTime * 0.04, coords.y + globalTime * 0.06);
+    maskCoords *= 1.5;
+    float4 mask = tex2D(maskTexture, maskCoords);
     
     float fadeOutRegion = 1 - (coords.y - fadeOutMargin) / (1 - fadeOutMargin);
-    return mask * 2 * noise * pow(fadeOutRegion, 2) * galaxyOpacity;
+    return mask * 10 * (layerOneNoise * (layerTwoNoise * 0.5)) * pow(fadeOutRegion, 2) * galaxyOpacity;
 }
 
 technique Technique1

@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Skies
+﻿using Cascade.Content.Events.CosmostoneShowers;
+
+namespace Cascade.Content.Skies
 {
     public class CosmostoneShowersSceneEffect : ModSceneEffect
     {
@@ -41,23 +43,45 @@
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            float gradientHeightInterpolant = Lerp(-0.1f, -0.35f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue)
             {
-                float gradientHeightInterpolant = Lerp(-0.001f, -0.25f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
 
-                Main.spriteBatch.End();
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
+                // Bakcground nebula.
+                Texture2D skyTexture = CascadeTextureRegistry.PurpleBlueNebulaGalaxyBlurred.Value;
 
                 ShaderManager.TryGetShader("Cascade.CosmostoneShowersSkyShader", out ManagedShader cosmoSkyShader);
-                cosmoSkyShader.TrySetParameter("galaxyOpacity", FadeOpacity * 0.4f);
-                cosmoSkyShader.TrySetParameter("fadeOutMargin", 0.75f);
-                cosmoSkyShader.TrySetParameter("pixelationFactor", new Vector2(500f, 500f));
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise, 1, SamplerState.LinearWrap);
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 2, SamplerState.LinearWrap);
+                cosmoSkyShader.TrySetParameter("galaxyOpacity", FadeOpacity * 0.15f);
+                cosmoSkyShader.TrySetParameter("fadeOutMargin", 0.85f);
+                cosmoSkyShader.TrySetParameter("textureSize", new Vector2(skyTexture.Width, skyTexture.Height));
+                cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, SamplerState.LinearWrap);
+                cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 2, SamplerState.LinearWrap);
+                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 3, SamplerState.LinearWrap);
                 cosmoSkyShader.Apply();
 
-                spriteBatch.Draw(CascadeTextureRegistry.PurpleBlueNebulaGalaxyBlurred.Value, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant), Main.screenWidth, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
-                spriteBatch.ResetToDefault();
+                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 25f), Main.screenWidth, Main.screenHeight), Color.White * FadeOpacity);
+                spriteBatch.ExitShaderRegion();
+
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
+
+                // Clouds below the nebula.
+                Texture2D cloudTexture = CascadeTextureRegistry.NeuronNebulaGalaxyBlurred.Value;
+
+                ShaderManager.TryGetShader("Cascade.CosmostoneShowersCloudsShader", out ManagedShader cosmoCloudsShader);
+                cosmoCloudsShader.TrySetParameter("cloudOpacity", FadeOpacity * 0.6f);
+                cosmoCloudsShader.TrySetParameter("fadeOutMargin", 0.55f);
+                cosmoCloudsShader.TrySetParameter("erosionStrength", 0.85f);
+                cosmoCloudsShader.TrySetParameter("textureSize", cloudTexture.Size());
+                cosmoCloudsShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, SamplerState.LinearWrap);
+                cosmoCloudsShader.SetTexture(CascadeTextureRegistry.PerlinNoise3, 2, SamplerState.LinearWrap);
+                cosmoCloudsShader.SetTexture(MiscTexturesRegistry.TurbulentNoise.Value, 3, SamplerState.LinearWrap);
+                cosmoCloudsShader.Apply();
+
+                spriteBatch.Draw(cloudTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 450f), Main.screenWidth, Main.screenHeight), Color.White * FadeOpacity);
+                spriteBatch.ExitShaderRegion();
             }
         }
     }

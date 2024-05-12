@@ -2,6 +2,9 @@
 {
     public static class CascadeTextureRegistry
     {
+        // Please keep things in alphabetical order.
+        // - fryzahh
+
         #region Objects
         public static readonly LazyAsset<Texture2D> EmptyPixel = MiscTexturesRegistry.InvisiblePixel;
 
@@ -53,7 +56,7 @@
 
         public static readonly Asset<Texture2D> NeuronNebulaGalaxy = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/NeuronNebulaGalaxy");
 
-        public static readonly Asset<Texture2D> NeuronNebulaGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/NeuronNebulaGalaxy_Blurry");
+        public static readonly Asset<Texture2D> NeuronNebulaGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/NeuronNebulaGalaxyBlurred");
 
         public static readonly Asset<Texture2D> PerlinNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise");
 
@@ -61,9 +64,13 @@
 
         public static readonly Asset<Texture2D> PerlinNoise3 = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise3");
 
+        public static readonly Asset<Texture2D> PerlinNoise4 = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PerlinNoise4");
+
         public static readonly Asset<Texture2D> PurpleBlueNebulaGalaxy = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PurpleBlueNebulaGalaxy");
 
         public static readonly Asset<Texture2D> PurpleBlueNebulaGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/PurpleBlueNebulaGalaxyBlurred");
+
+        public static readonly Asset<Texture2D> RealisticClouds = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/RealisticClouds");
 
         public static readonly Asset<Texture2D> SmudgyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/SmudgyNoise");
 
