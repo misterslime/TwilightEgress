@@ -1,27 +1,23 @@
-﻿using CalamityMod.Dusts;
-using Cascade.Common.VerletIntegration;
-using Luminance.Common.Utilities;
-using Luminance.Core.Graphics;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using Cascade.Common.Physics.Gravity;
+using Cascade.Common.Physics.VerletIntegration;
 using Terraria;
 
 namespace Cascade.Core.Systems
 {
     public class PlanetoidSystem : ModSystem
     {
-        public static VerletObject[] verlets;
+        public static MassiveObject[] planetoids;
 
         public override void Load()
         {
             On_Main.DrawDust += DrawVerlets;
-            verlets = new VerletObject[200];
+            planetoids = new MassiveObject[200];
         }
 
         public override void Unload()
         {
             On_Main.DrawDust -= DrawVerlets;
-            verlets = null;
+            planetoids = null;
         }
 
         public override void PreUpdatePlayers()
@@ -31,46 +27,23 @@ namespace Cascade.Core.Systems
 
             //Main.NewText(createVerlet);
 
-            //verlets = new VerletObject[200];
+            //planetoids = new MassiveObject[200];
 
             if (createVerlet)
             {
                 for (int i = 0; i < 200; i++)
                 {
-                    if (verlets[i] is null)
-                    {
-                        verlets[i] = new VerletObject(player.Center - Main.rand.NextVector2Circular(1f, 1f) * 300f, Main.rand.NextVector2Circular(1f, 1f), 47f, 0f);
-                        break;
-                    }
-                }
-            }
+                    if (planetoids[i] is not null) continue;
 
-            /*foreach (VerletObject? verlet in verlets)
-            {
-                if (verlet is not null)
-                {
-                    Vector2 collisionAxis = player.Center - verlet.Position;
-                    float distance = collisionAxis.Length();
-
-                    if (distance >= 150f)
-                        continue;
-
-                    float mass1 = verlet.Radius * verlet.Radius * player.gravity;
-                    //float mass2 = verlet2.Radius * verlet2.Radius * gravity;
-
-                    // F = G * M1 * M2 / d^2
-                    // ma = G * M1 * M2 / d^2
-                    // a = (G * M1 * M2) / (d^2 * m)
-
-                    float acceleration = 30 * (mass1 * mass1) / (distance * distance * mass1);
-
-                    Vector2 normal = collisionAxis / distance;
-
-                    player.velocity -= acceleration * normal;
+                    planetoids[i] = new MassiveObject(player.Center - Main.rand.NextVector2Circular(1f, 1f) * 300f, Main.rand.NextVector2Circular(0.2f, 0.2f), 47f, 0f, 100f);
+                    break;
                 }
             }*/
 
-            verlets.UpdateVerlets(1);
+            //player.velocity += planetoids.GetGravityAtPosition(player.Center, 1f);
+
+            planetoids.UpdateVerlets(1);
+            planetoids.PushObjects(1);
         }
 
         private void DrawVerlets(On_Main.orig_DrawDust orig, Main self)
@@ -81,12 +54,10 @@ namespace Cascade.Core.Systems
 
             Texture2D galileoTexture = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Planetoids/GalileoPlanetoid").Value;
 
-            foreach (VerletObject? verlet in verlets)
+            foreach (VerletObject? verlet in planetoids)
             {
                 if (verlet is not null)
-                {
                     Main.spriteBatch.Draw(galileoTexture, verlet.Position - Main.screenPosition, galileoTexture.Frame(), Color.White, 0f, galileoTexture.Frame().Size() * 0.5f, 1f, 0, 0f);
-                }
             }
 
             Main.spriteBatch.End();

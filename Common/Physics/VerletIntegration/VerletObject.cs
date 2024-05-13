@@ -1,8 +1,10 @@
-﻿namespace Cascade.Common.VerletIntegration
+﻿namespace Cascade.Common.Physics.VerletIntegration
 {
-    public class VerletObject
+    public abstract class VerletObject
     {
         public float Radius { get; set; }
+
+        public int WhoAmI { get; set; }
 
         public Vector2 Position { get; set; }
         public Vector2 OldPosition { get; set; }
@@ -12,14 +14,6 @@
         public float RotationSpeed { get; set; }
 
         public Vector2 Velocity => Position - OldPosition;
-
-        public VerletObject(Vector2 position, Vector2 velocity, float radius, float rotationSpeed)
-        {
-            Position = position;
-            OldPosition = position - velocity;
-            Radius = radius;
-            RotationSpeed = rotationSpeed;
-        }
 
         public void UpdatePosition(float deltaTime)
         {
