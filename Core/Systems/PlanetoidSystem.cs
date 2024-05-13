@@ -23,7 +23,7 @@ namespace Cascade.Core.Systems
 
         public override void PreUpdatePlayers()
         {
-            bool createVerlet = (int)(Main.GlobalTimeWrappedHourly * 60) % 60 == 0;
+            /*bool createVerlet = (int)(Main.GlobalTimeWrappedHourly * 60) % 60 == 0;
             Player player = Main.player[Main.myPlayer];
 
             //planetoids = new MassiveObject[200];
@@ -31,7 +31,7 @@ namespace Cascade.Core.Systems
             if (createVerlet)
             {
                 NewPlanetoid(player.Center - Main.rand.NextVector2Circular(1f, 1f) * 300f, Main.rand.NextVector2Circular(1f, 1f), 47f, 0f, 100f);
-            }
+            }*/
 
             planetoids.UpdateVerlets(1);
             planetoids.ApplyGravity(1);

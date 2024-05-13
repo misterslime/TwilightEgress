@@ -9,6 +9,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
     {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
+        private float ShaderTimeMultiplier = 1f;
+
         public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
@@ -52,6 +54,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.frame.Y = Main.rand.Next(0, 2) * 82;
             NPC.netUpdate = true;
+
+            ShaderTimeMultiplier = Main.rand.NextFloat(0.1f, 1.5f) * Main.rand.NextBool().ToDirectionInt();
         }
 
         public override void OnMeteorCrashKill()
@@ -215,8 +219,11 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("timeMultiplier", ShaderTimeMultiplier);
             shader.TrySetParameter("palette", CascadeUtilities.CosmostonePalette);
+            shader.TrySetParameter("opacity", NPC.Opacity);
             shader.Apply();
+
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();
         }
