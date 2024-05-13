@@ -10,43 +10,34 @@ namespace Cascade.Core.Systems
 
         public override void Load()
         {
-            On_Main.DrawDust += DrawVerlets;
+            On_Main.DrawDust += DrawPlanetoids;
             planetoids = new MassiveObject[200];
         }
 
         public override void Unload()
         {
-            On_Main.DrawDust -= DrawVerlets;
+            On_Main.DrawDust -= DrawPlanetoids;
             planetoids = null;
         }
 
         public override void PreUpdatePlayers()
         {
-            /*bool createVerlet = (int)(Main.GlobalTimeWrappedHourly * 60) % 60 == 0;
-            Player player = Main.player[Main.myPlayer];
-
-            //Main.NewText(createVerlet);
-
-            //planetoids = new MassiveObject[200];
-
-            if (createVerlet)
-            {
-                for (int i = 0; i < 200; i++)
-                {
-                    if (planetoids[i] is not null) continue;
-
-                    planetoids[i] = new MassiveObject(player.Center - Main.rand.NextVector2Circular(1f, 1f) * 300f, Main.rand.NextVector2Circular(0.2f, 0.2f), 47f, 0f, 100f);
-                    break;
-                }
-            }*/
-
-            //player.velocity += planetoids.GetGravityAtPosition(player.Center, 1f);
-
             planetoids.UpdateVerlets(1);
-            planetoids.PushObjects(1);
+            planetoids.ApplyGravity(1);
         }
 
-        private void DrawVerlets(On_Main.orig_DrawDust orig, Main self)
+        public static void NewPlanetoid(Vector2 position, Vector2 velocity, float radius, float rotationSpeed, float mass)
+        {
+            for (int i = 0; i < 200; i++)
+            {
+                if (planetoids[i] is not null) continue;
+
+                planetoids[i] = new MassiveObject(position, velocity, radius, rotationSpeed, mass);
+                break;
+            }
+        }
+
+        private void DrawPlanetoids(On_Main.orig_DrawDust orig, Main self)
         {
             orig(self);
 

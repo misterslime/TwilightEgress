@@ -6,7 +6,7 @@
 
         public static Vector2 GravityAccelerationVector(Vector2 position) => position * (-G * G / position.Length());
 
-        public static void PushObjects(this MassiveObject[] objects, float deltaTime)
+        public static void ApplyGravity(this MassiveObject[] objects, float deltaTime)
         {
             foreach (MassiveObject? obj in objects)
             {
