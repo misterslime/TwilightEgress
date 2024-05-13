@@ -106,12 +106,22 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
             VirtualCameraInstance = new(Main.LocalPlayer);
 
+            float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
+            float yWorldPosition = Main.maxTilesY * 0.057f;
+            Vector2 playerPositionInBounds = new(xWorldPosition, yWorldPosition);
+
+            int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
+            Player closestPlayer = Main.player[closestPlayerIndex];
+
             // Important entities.
-            Entities_SpawnSpecialSpaceNPCs();
-            
+            Entities_SpawnSpecialSpaceNPCs(closestPlayer);
+
             // Visual objects.
-            Visuals_SpawnAmbientSkyEntities();
-            Visuals_SpawnForegroundParticles();
+            if (closestPlayer.Center.Y <= Main.maxTilesY * 3.5f)
+            {
+                Visuals_SpawnAmbientSkyEntities();
+                Visuals_SpawnForegroundParticles();
+            }
         }
 
         public override void EditEventSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
@@ -142,7 +152,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
         // TODO:
         // Overall this entire spawning method once the Planetoid and Asteroid reworks are finished.
         // -fryzahh
-        private void Entities_SpawnSpecialSpaceNPCs()
+        private void Entities_SpawnSpecialSpaceNPCs(Player closestPlayer)
         {
             int asteroidSpawnChance = 125;
             int planetoidSpawnChance = 500;
@@ -158,13 +168,6 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 if (planetoidBounds.Intersects(screenBounds))
                     activePlanetoidsOnScreen.Add(planetoid);
             }
-
-            float xWorldPosition = ((Main.maxTilesX - 50) + 100) * 16f;
-            float yWorldPosition = Main.maxTilesY * 0.057f;
-            Vector2 playerPositionInBounds = new(xWorldPosition, yWorldPosition);
-
-            int closestPlayerIndex = Player.FindClosest(playerPositionInBounds, 1, 1);
-            Player closestPlayer = Main.player[closestPlayerIndex];
 
             // Asteroids.
             if (closestPlayer.active && !closestPlayer.dead && closestPlayer.Center.Y <= Main.maxTilesY + 1000f && Main.rand.NextBool(asteroidSpawnChance))
