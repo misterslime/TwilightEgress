@@ -5,8 +5,14 @@ Mods: {
 				DisplayName: Burning Quasar
 				Tooltip: ""
 			}
+
+			SailorsSingularity: {
+				DisplayName: Sailors Singularity
+				Tooltip: ""
+			}
 		}
 
 		NPCs.Manaphage.DisplayName: Manaphage
+		Projectiles.SailorsSingularityHoldout.DisplayName: Sailors Singularity Holdout
 	}
 }
