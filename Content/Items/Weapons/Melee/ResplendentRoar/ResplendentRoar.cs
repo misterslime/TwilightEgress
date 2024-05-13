@@ -28,7 +28,7 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
             Item.autoReuse = true;
             Item.DamageType = ModContent.GetInstance<TrueMeleeDamageClass>();
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shoot = ModContent.ProjectileType<ResplendentRoarHoldout>();
             Item.shootSpeed = 1f;

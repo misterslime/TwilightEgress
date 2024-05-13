@@ -28,7 +28,7 @@ namespace Cascade
             }
 
             // Calamity-specific loading.
-            CooldownRegistry.RegisterModCooldowns(this);
+            CooldownRegistry.RegisterModCooldowns();
         }
 
         public override void Unload()

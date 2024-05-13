@@ -25,7 +25,7 @@ namespace Cascade.Content.Items.Dedicated.Raesh
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item60;
             Item.rare = ItemRarityID.Yellow;
-            Item.value = CalamityGlobalItem.Rarity8BuyPrice;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.shoot = ModContent.ProjectileType<DroseraeDictionaryHoldout>();
             Item.shootSpeed = 1f;
         }

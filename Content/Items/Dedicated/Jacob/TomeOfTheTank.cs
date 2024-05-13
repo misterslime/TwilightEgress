@@ -29,7 +29,7 @@ namespace Cascade.Content.Items.Dedicated.Jacob
             Item.autoReuse = true;
             Item.DamageType = DamageClass.Magic;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity15BuyPrice;
+            Item.value = CalamityGlobalItem.RarityVioletBuyPrice;
             Item.rare = ModContent.RarityType<Violet>();
             Item.shootSpeed = 10f;
             Item.shoot = ModContent.ProjectileType<TomeOfTheTankHoldout>();
