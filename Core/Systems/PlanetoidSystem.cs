@@ -58,7 +58,7 @@ namespace Cascade.Core.Systems
             foreach (MassiveObject? planetoid in planetoids)
             {
                 if (planetoid is not null && planetoid.Active)
-                    Main.spriteBatch.Draw(galileoTexture, planetoid.Position - Main.screenPosition, galileoTexture.Frame(), Color.White, 0f, galileoTexture.Frame().Size() * 0.5f, planetoid.Radius / 47f, 0, 0f);
+                    Main.spriteBatch.Draw(galileoTexture, planetoid.Position - Main.screenPosition, galileoTexture.Frame(), Lighting.GetColor((planetoid.Position / 16f).ToPoint()), 0f, galileoTexture.Frame().Size() * 0.5f, planetoid.Radius / 47f, 0, 0f);
             }
         }
     }
