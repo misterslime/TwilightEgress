@@ -1,10 +1,14 @@
-﻿namespace Cascade.Common.Physics.VerletIntegration
+﻿using Cascade.Common.Physics.Gravity;
+
+namespace Cascade.Common.Physics.VerletIntegration
 {
     public abstract class VerletObject
     {
         public float Radius { get; set; }
 
         public int WhoAmI { get; set; }
+
+        public bool Active { get; set; }
 
         public Vector2 Position { get; set; }
         public Vector2 OldPosition { get; set; }
@@ -26,6 +30,11 @@
         public void Accelerate(Vector2 acceleration)
         {
             Acceleration += acceleration;
+        }
+
+        public virtual void OnCollide(VerletObject collidedWith)
+        {
+
         }
     }
 }

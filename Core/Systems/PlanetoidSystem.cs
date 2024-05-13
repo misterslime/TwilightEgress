@@ -1,4 +1,5 @@
-﻿using Cascade.Common.Physics.Gravity;
+﻿using CalamityMod.Rarities;
+using Cascade.Common.Physics.Gravity;
 using Cascade.Common.Physics.VerletIntegration;
 using Terraria;
 
@@ -30,9 +31,10 @@ namespace Cascade.Core.Systems
         {
             for (int i = 0; i < 200; i++)
             {
-                if (planetoids[i] is not null) continue;
+                if (planetoids[i] is not null && planetoids[i].Active) continue;
 
                 planetoids[i] = new MassiveObject(position, velocity, radius, rotationSpeed, mass);
+                planetoids[i].WhoAmI = i;
                 break;
             }
         }
@@ -45,10 +47,10 @@ namespace Cascade.Core.Systems
 
             Texture2D galileoTexture = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Planetoids/GalileoPlanetoid").Value;
 
-            foreach (VerletObject? verlet in planetoids)
+            foreach (MassiveObject? planetoid in planetoids)
             {
-                if (verlet is not null)
-                    Main.spriteBatch.Draw(galileoTexture, verlet.Position - Main.screenPosition, galileoTexture.Frame(), Color.White, 0f, galileoTexture.Frame().Size() * 0.5f, 1f, 0, 0f);
+                if (planetoid is not null && planetoid.Active)
+                    Main.spriteBatch.Draw(galileoTexture, planetoid.Position - Main.screenPosition, galileoTexture.Frame(), Color.White, 0f, galileoTexture.Frame().Size() * 0.5f, planetoid.Radius / 47f, 0, 0f);
             }
 
             Main.spriteBatch.End();

@@ -58,12 +58,16 @@ namespace Cascade.Common.Physics.VerletIntegration
 
                 if (verlet1 is not null)
                 {
+                    if (!verlet1.Active) continue;
+
                     for (int j = i + 1; j < verletCollection.Length; j++)
                     {
                         VerletObject verlet2 = verletCollection[j];
 
                         if (verlet2 is not null)
                         {
+                            if (!verlet2.Active) continue;
+
                             Vector2 collisionAxis = verlet1.Position - verlet2.Position;
                             float distance = collisionAxis.Length();
                             float minDistance = verlet1.Radius + verlet2.Radius;
@@ -75,6 +79,9 @@ namespace Cascade.Common.Physics.VerletIntegration
 
                                 verlet1.Position += delta * normal / 2f;
                                 verlet2.Position -= delta * normal / 2f;
+
+                                verlet1.OnCollide(verlet2);
+                                verlet2.OnCollide(verlet1);
                             }
                         }
                     }

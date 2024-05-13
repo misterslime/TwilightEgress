@@ -10,7 +10,7 @@
         {
             foreach (MassiveObject? obj in objects)
             {
-                if (obj is null) continue;
+                if (obj is null || !obj.Active) continue;
 
                 Vector2 TotalGravity = Vector2.Zero;
                 foreach (MassiveObject? objN in objects)
@@ -27,7 +27,7 @@
             Vector2 TotalGravity = Vector2.Zero;
             foreach (MassiveObject? obj in objects)
             {
-                if (obj is null) continue;
+                if (obj is null || !obj.Active) continue;
                 TotalGravity += obj.Mass * GravityAccelerationVector(position - obj.Position);
             }
             return TotalGravity * deltaTime;
