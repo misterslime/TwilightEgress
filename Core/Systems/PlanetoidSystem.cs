@@ -11,18 +11,28 @@ namespace Cascade.Core.Systems
 
         public override void Load()
         {
-            On_Main.DrawDust += DrawPlanetoids;
+            On_Main.DrawNPCs += DrawPlanetoids;
             planetoids = new MassiveObject[200];
         }
 
         public override void Unload()
         {
-            On_Main.DrawDust -= DrawPlanetoids;
+            On_Main.DrawNPCs -= DrawPlanetoids;
             planetoids = null;
         }
 
         public override void PreUpdatePlayers()
         {
+            bool createVerlet = (int)(Main.GlobalTimeWrappedHourly * 60) % 60 == 0;
+            Player player = Main.player[Main.myPlayer];
+
+            //planetoids = new MassiveObject[200];
+
+            if (createVerlet)
+            {
+                NewPlanetoid(player.Center - Main.rand.NextVector2Circular(1f, 1f) * 300f, Main.rand.NextVector2Circular(1f, 1f), 47f, 0f, 100f);
+            }
+
             planetoids.UpdateVerlets(1);
             planetoids.ApplyGravity(1);
         }
@@ -39,11 +49,9 @@ namespace Cascade.Core.Systems
             }
         }
 
-        private void DrawPlanetoids(On_Main.orig_DrawDust orig, Main self)
+        private void DrawPlanetoids(On_Main.orig_DrawNPCs orig, Main self, bool behildTiles)
         {
-            orig(self);
-
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.GameViewMatrix.TransformationMatrix);
+            orig(self, behildTiles);
 
             Texture2D galileoTexture = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Planetoids/GalileoPlanetoid").Value;
 
@@ -52,8 +60,6 @@ namespace Cascade.Core.Systems
                 if (planetoid is not null && planetoid.Active)
                     Main.spriteBatch.Draw(galileoTexture, planetoid.Position - Main.screenPosition, galileoTexture.Frame(), Color.White, 0f, galileoTexture.Frame().Size() * 0.5f, planetoid.Radius / 47f, 0, 0f);
             }
-
-            Main.spriteBatch.End();
         }
     }
 }
