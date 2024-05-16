@@ -62,8 +62,6 @@ namespace Cascade.Core.BaseEntities.ModNPCs
 
         public const float MaximumNPCSearchDistance = 1200f;
 
-        public const float MaximumManaCapacity = 100f;
-
         // Manaphages wait 12 seconds to search for asteroids if they are over 50% mana,
         // and 7 seconds to search for asteroids if they are under 50%
         public const float MaxManaSuckTimerOverFifty = 720f;
@@ -99,6 +97,9 @@ namespace Cascade.Core.BaseEntities.ModNPCs
         public ref float AIState => ref NPC.ai[1];
 
         public ref float LocalAIState => ref NPC.ai[2];
+
+        public virtual float MaximumManaCapacity => 100f;
+
         #endregion
 
         #region Overrides
