@@ -513,7 +513,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             Texture2D manaphageTankMask = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Manaphages/Manaphage_Tank_Mask").Value;
 
             Vector2 stretchFactor = new(spriteStretchX, spriteStretchY);
-            Vector2 origin = new Vector2(30f, 28f) / 2f;
+            Vector2 origin = manaphageTank.Size() / 2f;
             Vector2 drawPosition = NPC.Center - Main.screenPosition - Vector2.UnitY.RotatedBy(NPC.rotation) * 31f * spriteStretchY;
 
             float manaCapacityInterpolant = Utils.GetLerpValue(1f, 0f, CurrentManaCapacity / MaximumManaCapacity, true);

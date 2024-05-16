@@ -24,6 +24,9 @@ Mods: {
 			}
 		}
 
-		NPCs.Manaphage.DisplayName: Manaphage
+		NPCs: {
+			Manaphage.DisplayName: Manaphage
+			Miniphage.DisplayName: Miniphage
+		}
 	}
 }
