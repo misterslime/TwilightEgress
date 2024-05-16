@@ -43,7 +43,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float4 mask = tex2D(maskTexture, maskCoords);
     
     float fadeOutRegion = 1 - (coords.y - fadeOutMargin) / (1 - fadeOutMargin);
-    return mask * 10 * (layerOneNoise * (layerTwoNoise * 0.5)) * pow(fadeOutRegion, 2) * galaxyOpacity;
+    return mask * 8 * (layerOneNoise * (layerTwoNoise * 0.5)) * pow(fadeOutRegion, 2) * galaxyOpacity;
 }
 
 technique Technique1
