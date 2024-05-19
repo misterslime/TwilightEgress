@@ -12,3 +12,13 @@ GraphicalConfig: {
 		Tooltip: ""
 	}
 }
+
+AudioConfig: {
+	OverrideCalamityMusic: {
+		Tooltip: ""
+		Label: Override Calamity Music
+	}
+
+	Headers.Audio: Audio Header
+	DisplayName: Audio Config
+}

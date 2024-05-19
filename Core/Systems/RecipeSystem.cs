@@ -17,7 +17,7 @@ namespace Cascade.Core.Systems
                 // Disabling recipes.
                 foreach (int result in RecipesToBeDisabled)
                 {
-                    if (recipe.HasResult(result) && recipe.Mod == Cascade.Instance.CalamityMod)
+                    if (recipe.HasResult(result) && recipe.Mod is CalamityMod.CalamityMod)
                         recipe.DisableRecipe();
                 }
             }

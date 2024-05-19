@@ -1,11 +1,10 @@
-using CalamityMod.Cooldowns;
 using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade
 {
     public partial class Cascade : Mod
 	{
-        public Mod CalamityMod;
+        public static Mod CalamityMod { get; private set; }
 
         public static Cascade Instance { get; private set; }
 
@@ -20,10 +19,9 @@ namespace Cascade
             // Mod Calls.
             if (Main.netMode != NetmodeID.Server)
             {
-                var calamityMod = ModLoader.GetMod("CalamityMod");
                 Main.QueueMainThreadAction(() =>
                 {
-                    calamityMod.Call("LoadParticleInstances", this);
+                    CalamityMod.Call("LoadParticleInstances", this);
                 });
             }
         }
@@ -31,6 +29,7 @@ namespace Cascade
         public override void Unload()
         {
             Instance = null;
+            CalamityMod = null;
             UnloadLists();
             BuffHandler.StuffToUnload();
         }
