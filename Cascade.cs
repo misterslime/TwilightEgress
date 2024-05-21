@@ -1,35 +1,30 @@
+using CalamityMod.Items.Accessories;
+using CalamityMod.Items.Placeables.FurnitureAuric;
 using Cascade.Core.Players.BuffHandlers;
 
 namespace Cascade
 {
     public partial class Cascade : Mod
-	{
-        public static Mod CalamityMod { get; private set; }
+    {
+        internal static Mod CalamityMod;
 
-        public static Cascade Instance { get; private set; }
+        internal static Cascade Instance { get; private set; }
 
         public override void Load()
         {
             Instance = this;
-            CalamityMod = ModLoader.GetMod("CalamityMod");
+            CalamityMod = null;
+            ModLoader.TryGetMod("CalamityMod", out CalamityMod);
 
             // Cascade-specific loading.
             LoadLists();
-
-            // Mod Calls.
-            if (Main.netMode != NetmodeID.Server)
-            {
-                Main.QueueMainThreadAction(() =>
-                {
-                    CalamityMod.Call("LoadParticleInstances", this);
-                });
-            }
         }
 
         public override void Unload()
         {
             Instance = null;
             CalamityMod = null;
+            MusicDisplay = null;
             UnloadLists();
             BuffHandler.StuffToUnload();
         }

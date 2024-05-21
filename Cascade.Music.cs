@@ -9,8 +9,24 @@ namespace Cascade
 {
     public partial class Cascade
     {
+        internal static Mod MusicDisplay;
+
         public static bool IsBossRush { get => CalamityMod != null ? (bool)CalamityMod.Call("GetDifficultyActive", "bossrush") : false; }
 
         public static bool CanOverrideMusic(int npcID, bool overrideBossRush = false) => (!IsBossRush || overrideBossRush) && NPC.AnyNPCs(npcID);
+
+        public override void PostSetupContent()
+        {
+            MusicDisplay = null;
+            if (ModLoader.TryGetMod("MusicDisplay", out MusicDisplay))
+            {
+                AddMusic("Assets/Sounds/Music/AlmostAstral", "Almost Astral", "ENNWAY!");
+                AddMusic("Assets/Sounds/Music/SecondLaw", "Second Law", "Sidetracked");
+                AddMusic("Assets/Sounds/Music/SupercellRogue", "Supercell Rogue", "Sidetracked");
+            }
+        }
+
+        private void AddMusic(string path, string displayName, string author)
+            => MusicDisplay?.Call("AddMusic", (short)MusicLoader.GetMusicSlot(this, path), displayName, author, DisplayName);
     }
 }
