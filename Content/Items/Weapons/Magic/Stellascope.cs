@@ -13,7 +13,6 @@ namespace Cascade.Content.Items.Weapons.Magic
             Item.useTime = Item.useAnimation = 20;
             Item.knockBack = 0;
             Item.mana = 12;
-            Item.useStyle = ItemUseStyleID.Shoot;
             Item.shoot = ModContent.ProjectileType<StellascopeHoldout>();
             Item.channel = true;
             Item.value = 12504;
@@ -23,7 +22,7 @@ namespace Cascade.Content.Items.Weapons.Magic
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<StellascopeHoldout>(), damage, knockback, player.whoAmI);
+            Projectile.NewProjectile(source, position, velocity, Item.shoot, damage, knockback, player.whoAmI);
             return false;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
