@@ -12,6 +12,7 @@
             Projectile.tileCollide = false;
             Projectile.penetrate = -1;
         }
+
         public override void AI()
         {
             Projectile.velocity = Vector2.Normalize(Main.MouseWorld - Owner.MountedCenter);
@@ -22,6 +23,7 @@
             if (CalamityUtils.CantUseHoldout(Owner))
                 Projectile.Kill();
         }
+
         private void UpdatePlayerVariables()
         {
             Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, 0 - Pi / 1.5f * Projectile.direction);
@@ -31,18 +33,19 @@
             Owner.ChangeDir(Projectile.direction);
             Owner.heldProj = Projectile.whoAmI;
         }
+
         public override bool PreDraw(ref Color lightColor)
         {
             Asset<Texture2D> holdoutTexture = TextureAssets.Projectile[Type];
-            Vector2 drawPosition = Projectile.Center - Main.screenPosition;
-            drawPosition = new Vector2(drawPosition.X + 10 * Projectile.direction, drawPosition.Y - 8);
-            Vector2 rotationOrigin = holdoutTexture.Size() * 0.5f;
-            rotationOrigin.X -= 20 * Projectile.direction;
+            Vector2 drawPosition = Projectile.Center - Main.screenPosition + new Vector2(10 * Projectile.direction, -8);
+            Vector2 rotationOrigin = holdoutTexture.Size() * 0.5f - new Vector2(20 * Projectile.direction, 0);
             SpriteEffects spriteFlip = Projectile.direction == 1 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
             Main.EntitySpriteDraw(holdoutTexture.Value, drawPosition, holdoutTexture.Frame(), lightColor, Projectile.rotation, rotationOrigin, 1f, spriteFlip);
             return false;
         }
+
         public override bool ShouldUpdatePosition() => false;
+
         public override bool? CanDamage() => false;
     }
 }
