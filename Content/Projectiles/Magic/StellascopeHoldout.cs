@@ -26,7 +26,7 @@
 
         private void UpdatePlayerVariables()
         {
-            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, 0 - Pi / 1.5f * Projectile.direction);
+            Owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, -Pi / 1.5f * Projectile.direction);
             Owner.itemTime = 2;
             Owner.itemAnimation = 2;
             Owner.itemRotation = (Projectile.velocity * Projectile.direction).ToRotation();
