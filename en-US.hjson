@@ -22,11 +22,21 @@ Mods: {
 				DisplayName: Silicate Cluster
 				Tooltip: ""
 			}
+
+			Stellascope: {
+				DisplayName: Stellascope
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
 			Manaphage.DisplayName: Manaphage
 			Miniphage.DisplayName: Miniphage
+		}
+
+		Projectiles: {
+			StellascopeStar.DisplayName: Stellascope Star
+			StellascopeHoldout.DisplayName: Stellascope Holdout
 		}
 	}
 }
