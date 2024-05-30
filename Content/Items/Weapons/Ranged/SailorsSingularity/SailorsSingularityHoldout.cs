@@ -91,6 +91,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                                 if (Main.myPlayer == Projectile.owner)
                                 {
                                     Projectile.NewProjectile(Terraria.Entity.GetSource_NaturalSpawn(), position, toMouse * 12f, ModContent.ProjectileType<SailorBlast>(), Projectile.damage * 3, Projectile.knockBack, owner.whoAmI);
+                                    Main.player[Projectile.owner].velocity += toMouse.RotatedBy(Pi) * 5f;
                                 }
                             }                           
                             if(despawnCounter < 15)
@@ -103,6 +104,8 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                     {
                         toMouse = (Main.MouseWorld - owner.Center).SafeNormalize(Vector2.Zero);
                         fireRotation = toMouse.ToRotation();
+                        if (attackCounter == 14)
+                            fireRotation = fireRotation.ToRotationVector2().RotatedBy(Main.rand.NextFloat(-0.1f, 0.1f)).ToRotation();
                         if (counter % 4 == 0 && attackCounter < 14)
                             attackCounter++;
                         counter++;

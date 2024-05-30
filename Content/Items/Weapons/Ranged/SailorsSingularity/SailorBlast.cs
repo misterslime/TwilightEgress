@@ -22,7 +22,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
         public override void AI()
         {
             Projectile.rotation += 0.15f;
-            Lighting.AddLight(Projectile.Center, new Vector3(0.32f, 0.22f, 0.81f));
+            Lighting.AddLight(Projectile.Center, new Vector3(0.22f, 0.32f, 0.81f));
         }
     }
 }
