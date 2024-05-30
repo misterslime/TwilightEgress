@@ -6,7 +6,7 @@ using Mono.Cecil;
 using Terraria;
 using Terraria.ID;
 
-namespace Cascade.Content.Items.Weapons.Ranged
+namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
 {
     public class SailorsSingularity : ModItem
     {
@@ -33,9 +33,19 @@ namespace Cascade.Content.Items.Weapons.Ranged
             Item.shoot = ModContent.ProjectileType<SailorsSingularityHoldout>();
             Item.shootSpeed = 11f;
         }
+        public override bool CanUseItem(Player player)
+        {
+            if (player.altFunctionUse == 2 && Main.projectile.Any(p => p.active && p.type == ModContent.ProjectileType<SailorVortex>()))
+                return false;
+            else
+                return true;
+        }
         public override bool CanShoot(Player player)
         {
-            return true;
+            if (player.altFunctionUse == 2 && Main.projectile.Any(p => p.active && p.type == ModContent.ProjectileType<SailorVortex>()))
+                return false;
+            else
+                return true;
         }
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => true;
         public override void AddRecipes()

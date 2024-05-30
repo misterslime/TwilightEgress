@@ -13,6 +13,12 @@ Mods: {
 		}
 
 		NPCs.Manaphage.DisplayName: Manaphage
-		Projectiles.SailorsSingularityHoldout.DisplayName: Sailors Singularity Holdout
+
+		Projectiles: {
+			SailorsSingularityHoldout.DisplayName: Sailors Singularity Holdout
+			SailorStar.DisplayName: Sailor Star
+			SailorVortex.DisplayName: Sailor Vortex
+			SailorBlast.DisplayName: Sailor Blast
+		}
 	}
 }
