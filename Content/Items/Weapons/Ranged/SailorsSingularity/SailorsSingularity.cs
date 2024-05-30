@@ -35,18 +35,9 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
         }
         public override bool CanUseItem(Player player)
         {
-            if (player.altFunctionUse == 2 && Main.projectile.Any(p => p.active && p.type == ModContent.ProjectileType<SailorVortex>()))
-                return false;
-            else
-                return true;
+            return !(player.altFunctionUse == 2 && Main.projectile.Any(p => p.active && p.type == ModContent.ProjectileType<SailorVortex>()));
         }
-        public override bool CanShoot(Player player)
-        {
-            if (player.altFunctionUse == 2 && Main.projectile.Any(p => p.active && p.type == ModContent.ProjectileType<SailorVortex>()))
-                return false;
-            else
-                return true;
-        }
+        public override bool CanShoot(Player player) => true;
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback) => true;
         public override void AddRecipes()
         {

@@ -23,25 +23,36 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
             Projectile.tileCollide = false;
             Projectile.DamageType = DamageClass.Ranged;
         }
-        private int fireRate
-        {
-            get => (int)Projectile.ai[0];
-            set => Projectile.ai[0] = value;
-        }
         private int attackCounter = 0;
         private int counter = 0;
         private int despawnCounter;
         Vector2 toMouse = Vector2.Zero;
         float fireRotation = 0f;
         private static bool swingUp = true;
+        private void UpdateProjectileHeldVariables()
+        {
+            Projectile.velocity = Vector2.Zero;
+            Player owner = Main.player[Projectile.owner];
+            Projectile.Center = owner.Center;
+            Projectile.rotation = fireRotation;
+            Projectile.spriteDirection = Projectile.direction;
+            Projectile.timeLeft = 2;
+        }
+
+        private void ManipulatePlayerVariables()
+        {
+            Player owner = Main.player[Projectile.owner];
+            owner.ChangeDir((int)(Projectile.rotation.ToRotationVector2().X / Math.Abs(Projectile.rotation.ToRotationVector2().X)));
+            owner.heldProj = Projectile.whoAmI;
+            owner.itemTime = 2;
+            owner.itemAnimation = 2;
+            owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, fireRotation - PiOver2);
+        }
         public override void AI()
         {           
             Player owner = Main.player[Projectile.owner];
-            if (fireRate == 0)
-                fireRate = 40;
             if (!owner.active || owner.dead || (!owner.channel && despawnCounter >= 30) || ((!owner.Calamity().mouseRight || despawnCounter >= 30) && owner.altFunctionUse == 2))
             {
-                fireRate = 40;
                 attackCounter = 0;
                 counter = 0;
                 Projectile.active = false;
@@ -63,11 +74,8 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                             swingUp = swingUp ? false : true;
                         }
                         float range = Pi / 2 - (float)(attackCounter / 8f);
-                        Vector2 position = new Vector2(owner.Center.X, owner.Center.Y - 24) + toMouse * 20;
+                        Vector2 position = owner.Center - Vector2.UnitY * 24 + toMouse * 20;
                         int rotationDirection = swingUp ? -1 : 1;
-
-                        if (attackCounter == 14)
-                            fireRate = (int)Math.Ceiling(40 / 1.5);
 
                         if (counter == 0)
                         {
@@ -80,7 +88,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                             {
                                 fireRotation = toMouse.RotatedBy(range / 2 * rotationDirection + range / 10 * (counter) * rotationDirection - range * rotationDirection).ToRotation();
                                 if (counter % 2 == 0 && Main.myPlayer == Projectile.owner)
-                                    Projectile.NewProjectile(Terraria.Entity.GetSource_NaturalSpawn(), position, toMouse.RotatedBy(range / 2 * rotationDirection + range / 4 * (counter / 2) * rotationDirection - range * rotationDirection) * 10f, ModContent.ProjectileType<SailorStar>(), Projectile.damage, Projectile.knockBack, owner.whoAmI);
+                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), position, toMouse.RotatedBy(range / 2 * rotationDirection + range / 4 * (counter / 2) * rotationDirection - range * rotationDirection) * 10f, ModContent.ProjectileType<SailorStar>(), Projectile.damage, Projectile.knockBack, owner.whoAmI);
                             }
                         }
                         else //Max Charge Attack
@@ -90,8 +98,8 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                                 fireRotation = toMouse.ToRotation();
                                 if (Main.myPlayer == Projectile.owner)
                                 {
-                                    Projectile.NewProjectile(Terraria.Entity.GetSource_NaturalSpawn(), position, toMouse * 12f, ModContent.ProjectileType<SailorBlast>(), Projectile.damage * 3, Projectile.knockBack, owner.whoAmI);
-                                    Main.player[Projectile.owner].velocity += toMouse.RotatedBy(Pi) * 5f;
+                                    Projectile.NewProjectile(Projectile.GetSource_FromAI(), position, toMouse * 12f, ModContent.ProjectileType<SailorBlast>(), Projectile.damage * 3, Projectile.knockBack, owner.whoAmI);
+                                    owner.velocity += toMouse.RotatedBy(Pi) * 5f;
                                 }
                             }                           
                             if(despawnCounter < 15)
@@ -125,7 +133,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                         if (counter == 45)
                         {
                             SoundEngine.PlaySound(SoundID.DD2_BookStaffCast);
-                            Projectile.NewProjectile(Terraria.Entity.GetSource_NaturalSpawn(), new Vector2(Projectile.Center.X, Projectile.Center.Y), toMouse * 5f, ModContent.ProjectileType<SailorVortex>(), Projectile.damage, Projectile.knockBack, owner.whoAmI);
+                            Projectile.NewProjectile(Projectile.GetSource_FromAI(), new Vector2(Projectile.Center.X, Projectile.Center.Y), toMouse * 5f, ModContent.ProjectileType<SailorVortex>(), Projectile.damage, Projectile.knockBack, owner.whoAmI);
                         }
                         if (despawnCounter < 15)
                             despawnCounter = 15;
@@ -133,7 +141,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                     }
                     counter++;
                 }
-                UpdateProjectileHeldVariables(owner.RotatedRelativePoint(owner.MountedCenter, true));
+                UpdateProjectileHeldVariables();
                 ManipulatePlayerVariables();
             }
         }
@@ -141,34 +149,13 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
-            Vector2 halfSizeTexture = new(TextureAssets.Projectile[Projectile.type].Value.Width / 2, TextureAssets.Projectile[Projectile.type].Value.Height / 2);
-            Vector2 origin = new(halfSizeTexture.X - 24, halfSizeTexture.Y + 4 * (int)(Projectile.rotation.ToRotationVector2().X / Math.Abs(Projectile.rotation.ToRotationVector2().X)));
-            Vector2 drawPosition = new Vector2(Projectile.Center.X, Projectile.Center.Y - 8) - Main.screenPosition + Vector2.UnitY * Projectile.gfxOffY;
+            Vector2 origin = TextureAssets.Projectile[Projectile.type].Size() * 0.5f + new Vector2();
+            Vector2 drawPosition = Projectile.Center + Vector2.UnitY * (Projectile.gfxOffY - 8) - Main.screenPosition;
             SpriteEffects spriteEffects = SpriteEffects.None;
-            if ((int)(Projectile.rotation.ToRotationVector2().X / Math.Abs(Projectile.rotation.ToRotationVector2().X)) == -1)
+            if (Main.player[Projectile.owner].direction == -1)
                 spriteEffects = SpriteEffects.FlipVertically;
-            Main.EntitySpriteDraw(texture, drawPosition, texture.Bounds, Projectile.GetAlpha(lightColor), Projectile.rotation, origin, Projectile.scale, spriteEffects, 0f);
+            Main.EntitySpriteDraw(texture, drawPosition, texture.Frame(), Projectile.GetAlpha(lightColor), Projectile.rotation, origin - new Vector2(24, -4), Projectile.scale, spriteEffects, 0f);
             return false;
-        }
-        private void UpdateProjectileHeldVariables(Vector2 armPosition)
-        {
-            Projectile.velocity = Vector2.Zero;
-            Player owner = Main.player[Projectile.owner];
-            Vector2 toMouse = (Main.MouseWorld - owner.Center).SafeNormalize(Vector2.Zero);
-            Projectile.Center = new Vector2(owner.Center.X, owner.Center.Y);
-            Projectile.rotation = fireRotation;
-            Projectile.spriteDirection = Projectile.direction;
-            Projectile.timeLeft = 2;
-        }
-
-        private void ManipulatePlayerVariables()
-        {
-            Player owner = Main.player[Projectile.owner];
-            owner.ChangeDir((int)(Projectile.rotation.ToRotationVector2().X / Math.Abs(Projectile.rotation.ToRotationVector2().X)));
-            owner.heldProj = Projectile.whoAmI;
-            owner.itemTime = 2;
-            owner.itemAnimation = 2;
-                owner.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, fireRotation - Pi / 2);
-        }
+        }       
     }
 }

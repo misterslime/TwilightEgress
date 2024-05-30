@@ -41,38 +41,29 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
         {
             get
             {
-                NPC target = null;
                 Player owner = Main.player[Projectile.owner];
                 if (owner.HasMinionAttackTargetNPC)
-                    target = CheckNPCTargetValidity(Main.npc[owner.MinionAttackTargetNPC]);
-
-                if (target != null)
-                    return target;
-
+                    return CheckNPCTargetValidity(Main.npc[owner.MinionAttackTargetNPC]);
                 else
                 {
                     for (int npcIndex = 0; npcIndex < Main.npc.Length; npcIndex++)
                     {
-                        target = CheckNPCTargetValidity(Main.npc[npcIndex]);
+                        NPC target = CheckNPCTargetValidity(Main.npc[npcIndex]);
                         if (target != null)
                             return target;
                     }
                 }
-
                 return null;
             }
         }
-        public static float AggroRange = 1000f;
         public NPC CheckNPCTargetValidity(NPC potentialTarget)
         {
             if (potentialTarget.CanBeChasedBy(this, false))
             {
                 float targetDist = Vector2.Distance(potentialTarget.Center, Projectile.Center);
 
-                if ((targetDist < AggroRange) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, potentialTarget.position, potentialTarget.width, potentialTarget.height))
-                {
+                if ((targetDist < 1000f) && Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, potentialTarget.position, potentialTarget.width, potentialTarget.height))
                     return potentialTarget;
-                }
             }
 
             return null;
@@ -83,13 +74,13 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
             Projectile.scale = 2f;
             #region Movement
             Player owner = Main.player[Projectile.owner];
-            if((owner.Center - Projectile.Center).Length() >= 1200f)
+            if(!Projectile.WithinRange(owner.Center, 1200f))
                 Projectile.active = false;
             NPC target = Target;
             if (target != null)
             {
                 Projectile.velocity += (target.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 0.5f;
-                if (Projectile.velocity.Length() > maxSpeed)
+                if (Projectile.velocity.LengthSquared() > maxSpeed * maxSpeed)
                     Projectile.velocity = Projectile.velocity.SafeNormalize(Vector2.Zero) * maxSpeed;
             }
             #endregion
@@ -101,8 +92,8 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
 
             if (explosionCounter >= 6 && Main.myPlayer == Projectile.owner)
             {
-                Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicDashExplosion>(), 200, 1f, Projectile.owner);
-                if ((owner.Center - Projectile.Center).Length() < Projectile.width * 2)
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicDashExplosion>(), 200, 1f, Projectile.owner);
+                if ((owner.Center - Projectile.Center).LengthSquared() < (Projectile.width * 2 * (Projectile.width * 2)))
                     owner.velocity += (owner.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 16;
                 Projectile.active = false;
             }
@@ -120,13 +111,5 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
             }
             return false;
         }
-        /*
-        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
-        {
-            if (CalamityUtils.CircularHitboxCollision(Projectile.Center, projHitbox.Width / 2, targetHitbox))
-                return true;
-            return false;
-        }
-        */
     }
 }
