@@ -137,6 +137,7 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
                 ManipulatePlayerVariables();
             }
         }
+        public override bool? CanDamage() => false;
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
