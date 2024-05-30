@@ -24,7 +24,6 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
             Projectile.scale = 1f;
             Projectile.usesIDStaticNPCImmunity = true;
             Projectile.idStaticNPCHitCooldown = 30;
-
         }
         private int aiCounter
         {
@@ -103,10 +102,12 @@ namespace Cascade.Content.Items.Weapons.Ranged.SailorsSingularity
             if (explosionCounter >= 6 && Main.myPlayer == Projectile.owner)
             {
                 Projectile.NewProjectile(Projectile.GetSource_Death(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<CosmicDashExplosion>(), 200, 1f, Projectile.owner);
+                if ((owner.Center - Projectile.Center).Length() < Projectile.width * 2)
+                    owner.velocity += (owner.Center - Projectile.Center).SafeNormalize(Vector2.Zero) * 16;
                 Projectile.active = false;
             }
             aiCounter++;
-        }
+        }      
         private static bool IsProjectileTouchingProjectile(Projectile myProjectile, int projType)
         {
             foreach (Projectile projectile in Main.projectile.Where(n => n.type == projType && n.active))
