@@ -6,7 +6,7 @@ namespace Cascade.Core.Systems
     {
         private readonly List<int> RecipesToBeDisabled = new()
         {
-            ModContent.ItemType<PlagueHive>()
+            //ModContent.ItemType<PlagueHive>()
         };
 
         public override void PostAddRecipes()

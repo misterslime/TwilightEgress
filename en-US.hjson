@@ -16,6 +16,11 @@ Mods: {
 					DisplayName: Silicate Cluster Brick
 					Tooltip: ""
 				}
+
+				ManaGrassSeeds: {
+					DisplayName: Mana Grass Seeds
+					Tooltip: ""
+				}
 			}
 
 			SilicateCluster: {
