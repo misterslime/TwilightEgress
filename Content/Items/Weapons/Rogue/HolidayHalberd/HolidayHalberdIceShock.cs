@@ -81,7 +81,7 @@ namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
                     Color initialColor = Color.Lerp(Color.LightSkyBlue, Color.Cyan, Main.rand.NextFloat()) * Main.rand.NextFloat(0.45f, 0.75f);
                     float scale = Main.rand.NextFloat(0.75f, 2f) * Projectile.scale;
                     float opacity = Main.rand.NextFloat(0.6f, 1f);
-                    MediumMistParticle deathSmoke = new(spawnPosition, velocity, initialColor, initialColor * 0.45f, scale, opacity, Main.rand.Next(180, 240), 0.03f);
+                    MediumMistParticle deathSmoke = new(spawnPosition, velocity, initialColor, initialColor * 0.45f, scale, opacity, Main.rand.Next(60, 120), 0.03f);
                     deathSmoke.SpawnCasParticle();
                 }
             }
@@ -118,7 +118,7 @@ namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
         public override bool PreDraw(ref Color lightColor)
         {
             ref float projectileTextureOpacity = ref Projectile.Cascade().ExtraAI[ProjectileTextureOpacityIndex];
-            Texture2D glowTexture = ModContent.Request<Texture2D>("Cascade/Content/Projectiles/Rogue/HolidayHalberdIceShock_Glow").Value;
+            Texture2D glowTexture = ModContent.Request<Texture2D>("Cascade/Content/Items/Weapons/Rogue/HolidayHalberd/HolidayHalberdIceShock_Glow").Value;
 
             // Backglow.
             Main.spriteBatch.UseBlendState(BlendState.Additive);

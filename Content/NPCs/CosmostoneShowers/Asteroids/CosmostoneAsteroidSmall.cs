@@ -1,18 +1,14 @@
 ﻿using Cascade.Content.Items.Materials;
 using Cascade.Core.BaseEntities.ModNPCs;
-using Cascade.Core.Graphics;
-using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.ItemDropRules;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
-    public class CosmostoneAsteroidSmall : BaseAsteroid, ILocalizedModType
+    public class CosmostoneAsteroidSmall : BaseAsteroid, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
+        public PixelationPrimitiveLayer LayerToRenderTo => PixelationPrimitiveLayer.BeforeNPCs;
+
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
-
-        private float ShaderTimeMultiplier = 1f;
-
-        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -52,8 +48,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
             NPC.frame.Y = Main.rand.Next(0, 3) * 38;
             NPC.netUpdate = true;
-
-            ShaderTimeMultiplier = Main.rand.NextFloat(0.1f, 1.5f) * Main.rand.NextBool().ToDirectionInt();
         }
 
         public override void OnMeteorCrashKill()
@@ -181,7 +175,6 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override bool PreDraw(SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
-            DrawTrail();
             DrawAsteroid(drawColor);
             return false;
         }
@@ -217,39 +210,24 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
-            shader.TrySetParameter("timeMultiplier", ShaderTimeMultiplier);
             shader.TrySetParameter("palette", CascadeUtilities.CosmostonePalette);
-            shader.TrySetParameter("opacity", NPC.Opacity);
             shader.Apply();
-
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();
         }
 
-        public float SetTrailWidth(float completionRatio)
+        public float TrailWidthFunction(float trailLengthInterpolant) => 20f * Utils.GetLerpValue(0.75f, 0f, trailLengthInterpolant, true) * NPC.scale * NPC.Opacity;
+
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, trailLengthInterpolant) * NPC.Opacity;
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
-            return 20f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * NPC.scale * NPC.Opacity;
-        }
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.MagicStreak, 1, SamplerState.LinearWrap);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly);
 
-        public Color SetTrailColor(float completionRatio)
-        {
-            return Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, completionRatio) * NPC.Opacity;
-        }
-
-        public void DrawTrail()
-        {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-            TrailDrawer.DrawPrimitives(NPC.oldPos.ToList(), NPC.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();
-
-            /*Vector2 positionToCenterOffset = NPC.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings laserSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(NPC.oldPos.ToList(), laserSettings, 85);*/
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => NPC.Size * 0.5f, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(NPC.oldPos, settings, 24);
         }
     }
 }

@@ -78,5 +78,23 @@
 
         public static readonly Asset<Texture2D> SwirlyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/SwirlyNoise");
         #endregion
+
+        #region Trails
+        public static readonly Asset<Texture2D> FadedStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/FadedStreak");
+
+        public static readonly Asset<Texture2D> FlameStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/FlameStreak");
+
+        public static readonly Asset<Texture2D> GenericStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/GenericStreak");
+
+        public static readonly Asset<Texture2D> LightningStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/LightningStreak");
+
+        public static readonly Asset<Texture2D> LightStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/LightStreak");
+
+        public static readonly Asset<Texture2D> MagicStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/MagicStreak");
+
+        public static readonly Asset<Texture2D> SwordSmearStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/SwordSmearStreak");
+
+        public static readonly Asset<Texture2D> ThinGlowStreak = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Trails/ThinGlowStreak");
+        #endregion
     }
 }

@@ -2,11 +2,9 @@
 
 namespace Cascade.Content.Projectiles.Ambient
 {
-    public class Comet : ModProjectile, ILocalizedModType
+    public class Comet : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Ambient";
-
-        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override string Texture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall";
 
@@ -66,31 +64,8 @@ namespace Cascade.Content.Projectiles.Ambient
 
         }
 
-        public float SetTrailWidth(float completionRatio)
-        {
-            return 32f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * Projectile.scale * Projectile.Opacity;
-        }
-
-        public Color SetTrailColor(float completionRatio)
-        {
-            return Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, completionRatio) * Projectile.Opacity;
-        }
-
-        public void DrawPrims()
-        {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawPrims();
-
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Cyan * 0.45f), 2f);
             //Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
 
@@ -122,6 +97,23 @@ namespace Cascade.Content.Projectiles.Ambient
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();
+        }
+
+
+        public float TrailWidthFunction(float trailLengthInterpolant) => 32f * Utils.GetLerpValue(0.75f, 0f, trailLengthInterpolant, true) * Projectile.scale * Projectile.Opacity;
+
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, trailLengthInterpolant) * Projectile.Opacity;
+
+        public Vector2 TrailOffsetFunction(float trailLengthInterpolant) => Projectile.Size * 0.5f;
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
+        {
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(TextureAssets.Extra[ExtrasID.FlameLashTrailShape], 1);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly * 2.5f);
+
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, TrailOffsetFunction, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 24);
         }
     }
 }

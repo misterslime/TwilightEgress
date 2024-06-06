@@ -1,4 +1,5 @@
 ﻿using Cascade.Core.Graphics;
+using Terraria.Map;
 
 namespace Cascade.Content.Items.Dedicated.Raesh
 {
@@ -11,8 +12,6 @@ namespace Cascade.Content.Items.Dedicated.Raesh
         private List<NPC> NPCsWhoHaveBeenHit { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
-
-        public PrimitiveDrawer TrailDrawer { get; set; } = null;
 
         public override void SetStaticDefaults()
         {
@@ -127,21 +126,23 @@ namespace Cascade.Content.Items.Dedicated.Raesh
             return false;
         }
 
-        public float SetTrailWidth(float completionRatio) => 12f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Projectile.scale * Projectile.Opacity;
+        public float TrailWidthFunction(float trailLengthInterpolant) => 12f * Utils.GetLerpValue(1f, 0f, trailLengthInterpolant, true) * Projectile.scale * Projectile.Opacity;
 
-        public Color SetTrailColor(float completionRatio) => Color.White * Projectile.Opacity;
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.White * Projectile.Opacity;
 
         public void DrawPrims()
         {
             Asset<Texture2D> trailTexture = ModContent.Request<Texture2D>("Cascade/Content/Items/Dedicated/Raesh/FlytrapMaw_Chain");
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:PrimitiveTexture"]);
 
             Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].SetShaderTexture(trailTexture, 1);
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].Shader.Parameters["uPrimitiveSize"].SetValue(600f);
-            GameShaders.Misc["CalamityMod:PrimitiveTexture"].Apply();
+            ShaderManager.TryGetShader("Cascade.PrimitiveTextureMapTrail", out ManagedShader textureMapTrailShader);
+            textureMapTrailShader.SetTexture(trailTexture, 1);
+            textureMapTrailShader.TrySetParameter("mapTextureSize", trailTexture.Size());
+            textureMapTrailShader.TrySetParameter("textureScaleFactor", 600f);
+            textureMapTrailShader.Apply();
 
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => Projectile.Size * 0.5f, true, Shader: textureMapTrailShader);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 48);
             Main.spriteBatch.ExitShaderRegion();
         }
     }

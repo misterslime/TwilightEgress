@@ -2,23 +2,21 @@
 
 namespace Cascade.Content.Items.Dedicated.Marv
 {
-    public class ElectricSkyBolt : ModProjectile, ILocalizedModType
+    public class ElectricSkyBolt : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
-        public Vector2 StrikePosition { get; set; }
+        public List<Vector2> StrikePositions = [];
 
-        public List<Vector2> StrikePositions = new List<Vector2>();
+        public const float MaxTime = 45;
+
+        public ref float Timer => ref Projectile.ai[0];
+
+        public Vector2 StrikePosition { get; set; }
 
         public new string LocalizationCategory => "Projectiles.Magic";
 
         public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/SoftStar";
 
-        public PrimitiveDrawer TrailDrawer { get; set; } = null;
-
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("Thunderbolt");
-            ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
-        }
+        public override void SetStaticDefaults() => ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
 
         public override void SetDefaults()
         {
@@ -26,7 +24,6 @@ namespace Cascade.Content.Items.Dedicated.Marv
             Projectile.height = 15;
             Projectile.DamageType = DamageClass.Magic;
             Projectile.Opacity = 1f;
-            Projectile.timeLeft = 45;
             Projectile.penetrate = 1;
             Projectile.friendly = true;
             Projectile.tileCollide = true;
@@ -39,15 +36,17 @@ namespace Cascade.Content.Items.Dedicated.Marv
             Player owner = Main.player[Projectile.owner];
 
             // Initialization.
-            if (Projectile.timeLeft == 45)
+            if (Timer is 0f)
             {
                 StrikePosition = Main.MouseWorld;
                 Projectile.rotation = Main.rand.NextFloat(TwoPi);
             }
 
-            if (Projectile.timeLeft == 44)
+            if (Timer is 1f)
             {
+                // Generate the positions for the lightning bolt.
                 StrikePositions = CascadeUtilities.CreateLightningBoltPoints(Projectile.Center, StrikePosition);
+
                 Projectile.NewProjectile(Projectile.GetSource_FromAI(), StrikePosition, Vector2.Zero, ModContent.ProjectileType<ElectricSkyBoltExplosion>(), Projectile.damage, Projectile.knockBack, Owner: Projectile.owner);
                 int numOfMist = Main.rand.Next(5, 10);
                 for (int i = 0; i < numOfMist; i++)
@@ -62,10 +61,11 @@ namespace Cascade.Content.Items.Dedicated.Marv
                 Projectile.netUpdate = true;
             }
 
-            if (Projectile.timeLeft <= 30)
-            {
-                Projectile.Opacity = Lerp(1f, 0f, Utils.GetLerpValue(30f, 0f, Projectile.timeLeft, true));
-            }
+            if (Timer <= 30f)
+                Projectile.Opacity = Lerp(1f, 0f, Timer / 30f);
+            if (Timer >= MaxTime)
+                Projectile.Kill();
+            Timer++;
         }
 
         public override void OnKill(int timeLeft)
@@ -78,44 +78,34 @@ namespace Cascade.Content.Items.Dedicated.Marv
             }
         }
 
-        public float SetTrailWidth(float completionRatio)
-        {
-            return 16f * Utils.GetLerpValue(1f, 0.01f, completionRatio, true) * Lerp(1f, 0f, Utils.GetLerpValue(30f, 10f, Projectile.timeLeft, true));
-        }
-
-        public Color SetTrailColor(float completionRatio)
-        {
-            return Color.Lerp(Color.Yellow, Color.Goldenrod, completionRatio) * Projectile.Opacity;
-        }
-
+        
         public override bool PreDraw(ref Color lightColor)
         {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
-            TrailDrawer.DrawPrimitives(StrikePositions, -Main.screenPosition, 22);
-            Main.spriteBatch.ExitShaderRegion();
-
-            Texture2D texture = TextureAssets.Projectile[Type].Value;
-            DrawBloomFlare(texture);
-            DrawBloomFlare(texture, true);
+            DrawBloomFlare();
+            DrawBloomFlare(true);
 
             return false;
         }
 
-        public void DrawBloomFlare(Texture2D texture, bool strikePosition = false)
+        public float BoltWidthFunction(float completionRatio) => 4f * Lerp(1f, 0f, Timer / MaxTime);
+
+        public Color BoltColorFunction(float completionRatio) => Color.Lerp(Color.Yellow, Color.Goldenrod, completionRatio) * Projectile.Opacity;
+
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
+            PrimitiveSettings settings = new(BoltWidthFunction, BoltColorFunction, null, false, true);
+            PrimitiveRenderer.RenderTrail(StrikePositions, settings, (int)(StrikePosition.Length()));
+        }
+
+        public void DrawBloomFlare(bool strikePosition = false)
+        {
+            Texture2D texture = MiscTexturesRegistry.BloomFlare.Value;
+            Vector2 drawPosition = (strikePosition ? StrikePosition : Projectile.Center) - Main.screenPosition;
+
             Main.spriteBatch.UseBlendState(BlendState.Additive);
-            Vector2 drawPosition = strikePosition ? StrikePosition : Projectile.Center;
-            Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation * 2f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation * 3f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
-
-            Main.EntitySpriteDraw(texture, drawPosition - Main.screenPosition, texture.Frame(), Color.LightYellow * Projectile.Opacity, Projectile.rotation * 4f, texture.Size() / 2f, Projectile.scale, SpriteEffects.None, 0);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, texture.Size() / 2f, Projectile.scale / 5f, 0);
+            Main.EntitySpriteDraw(texture, drawPosition, null, Color.White * Projectile.Opacity, Projectile.rotation, texture.Size() / 2f, Projectile.scale / 4f, 0);
             Main.spriteBatch.ResetToDefault();
         }
     }
