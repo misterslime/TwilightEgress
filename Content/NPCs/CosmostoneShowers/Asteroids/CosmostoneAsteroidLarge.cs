@@ -10,6 +10,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
+        private float ShaderTimeMultiplier = 1f;
+
         public override void SetStaticDefaults()
         {
             //Main.npcFrameCount[Type] = 2;
@@ -213,8 +215,11 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ManagedShader shader = ShaderManager.GetShader("Cascade.ManaPaletteShader");
             shader.TrySetParameter("flowCompactness", 3.0f);
             shader.TrySetParameter("gradientPrecision", 10f);
+            shader.TrySetParameter("timeMultiplier", ShaderTimeMultiplier);
             shader.TrySetParameter("palette", CascadeUtilities.CosmostonePalette);
+            shader.TrySetParameter("opacity", NPC.Opacity);
             shader.Apply();
+
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();
         }
