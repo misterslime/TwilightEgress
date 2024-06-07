@@ -3,6 +3,12 @@
     public class StellascopeHoldout : ModProjectile
     {
         private Player Owner => Main.player[Projectile.owner];
+        private float Timer
+        {
+            get => Projectile.ai[0];
+            set => Projectile.ai[0] = value;
+        }
+        private const int ManaCost = 12;
 
         public override void SetDefaults()
         {
@@ -15,10 +21,17 @@
 
         public override void AI()
         {
+            Timer++;
             Projectile.velocity = Vector2.Normalize(Main.MouseWorld - Owner.MountedCenter);
             Projectile.rotation = Projectile.velocity.ToRotation() + (Projectile.direction == 1 ? 0f : Pi);
             Projectile.Center = Owner.Center;
             UpdatePlayerVariables();
+
+            if (Timer >= 70 && Main.myPlayer == Projectile.owner && Owner.CheckMana(ManaCost, true))
+            {
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), Main.MouseWorld, Vector2.Zero, ModContent.ProjectileType<StellascopeStar>(), Projectile.damage, Projectile.knockBack);
+                Timer = 0;
+            }
 
             if (CalamityUtils.CantUseHoldout(Owner))
                 Projectile.Kill();

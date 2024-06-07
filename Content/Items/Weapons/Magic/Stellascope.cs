@@ -10,7 +10,7 @@ namespace Cascade.Content.Items.Weapons.Magic
             Item.height = 8;
             Item.DamageType = DamageClass.Magic;
             Item.damage = 24;
-            Item.useTime = Item.useAnimation = 20;
+            Item.useTime = Item.useAnimation = 70;
             Item.knockBack = 0;
             Item.mana = 12;
             Item.useStyle = ItemUseStyleID.Shoot;
