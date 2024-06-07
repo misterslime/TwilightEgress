@@ -131,7 +131,7 @@
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            Asset<Texture2D> noiseTexture = CascadeTextureRegistry.GreyscaleSeemlessNoise;
+            Asset<Texture2D> noiseTexture = CascadeTextureRegistry.PerlinNoise3;
             Asset<Texture2D> noiseTexture2 = ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/Cracks");
             CalamityUtils.EnterShaderRegion(Main.spriteBatch, BlendState.Additive);
 

@@ -1,5 +1,4 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
-using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 
 namespace Cascade.Content.Skies.SkyEntities
 {
@@ -9,13 +8,9 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public float MinScale;
 
-        public float RotationSpeed;
-
-        public float RotationDirection;
-
         public Vector2 StretchFactor;
 
-        private int TextureIndex;
+        private readonly int TextureIndex;
 
         public const int BaseLifespan = 480;
 
@@ -26,23 +21,14 @@ namespace Cascade.Content.Skies.SkyEntities
             MaxScale = maxScale;
             MinScale = maxScale * 0.5f;
             StretchFactor = stretchFactor;
-            Lifespan = lifespan + BaseLifespan;
+            Lifetime = lifespan + BaseLifespan;
             Depth = depth;
 
             Opacity = 0f;
             Rotation = Main.rand.NextFloat(TwoPi);
             RotationSpeed = Main.rand.NextFloat(0.0025f, 0.01f);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
-        }
 
-        public override string TexturePath => "Terraria/Images/Projectile_79";
-
-        public override BlendState BlendState => BlendState.Additive;
-
-        public override SkyEntityDrawContext DrawContext => SkyEntityDrawContext.AfterCustomSkies;
-
-        public override void OnSpawn()
-        {
             // Pick a different texture depending on the max scale of the star.
             if (MaxScale <= 1.5f)
                 TextureIndex = Main.rand.Next(2);
@@ -52,19 +38,25 @@ namespace Cascade.Content.Skies.SkyEntities
                 TextureIndex = Main.rand.Next(4, 6);
         }
 
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
+
+        public override BlendState BlendState => BlendState.Additive;
+
+        public override SkyEntityDrawContext DrawContext => SkyEntityDrawContext.AfterCustomSkies;
+
         public override void Update()
         {
-            int timeToDisappear = Lifespan - 120;
+            int timeToDisappear = Lifetime - 120;
             int timeToAppear = 120;
             float appearInterpolant = Time / (float)timeToAppear;
-            float twinkleInterpolant = CascadeUtilities.SineEaseInOut(Time / 120f);
+            float twinkleInterpolant = CascadeUtilities.SineEaseInOut(Time / 60f);
             float disappearInterpolant = (Time - timeToDisappear) / 120f;
 
-            Scale = Lerp(MinScale, MaxScale, twinkleInterpolant);
+            Scale = new Vector2(Lerp(MinScale, MaxScale, twinkleInterpolant));
 
             if (Time <= timeToAppear)
                 Opacity = Lerp(0f, 1f, appearInterpolant);
-            if (Time >= timeToDisappear && Time <= Lifespan)
+            if (Time >= timeToDisappear && Time <= Lifetime)
                 Opacity = Lerp(Opacity, 0f, disappearInterpolant);
 
             Rotation += RotationSpeed * RotationDirection;
@@ -72,17 +64,18 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D starTextures = ModContent.Request<Texture2D>(CascadeTextureRegistry.FourPointedStars[TextureIndex]).Value;
-            Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
+            AtlasTexture starTextures = AtlasManager.GetTexture(CascadeTextureRegistry.FourPointedStars_Atlas[TextureIndex]);
+            AtlasTexture bloomTexture = AtlasManager.GetTexture("Cascade.BloomFlare.png");
 
-            Vector2 mainOrigin = starTextures.Size() / 2f;
-            Vector2 bloomOrigin = bloomTexture.Size() / 2f;
+            Vector2 mainOrigin = starTextures.Size / 2f;
+            Vector2 bloomOrigin = bloomTexture.Size / 2f;
 
-            float scaleWithDepth = Scale / Depth;
+            Vector2 scaleWithDepth = Scale / Depth;
             Color color = Color * Opacity;
 
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth * 0.6f, 0, 0f);
-            spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color, Rotation, bloomOrigin, scaleWithDepth / 8f);
+            spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, Color.White * Opacity, 0f, mainOrigin, scaleWithDepth * StretchFactor * 0.6f);
+            spriteBatch.Draw(starTextures, GetDrawPositionBasedOnDepth(), null, color, 0f, mainOrigin, scaleWithDepth * StretchFactor);
         }
     }
 }

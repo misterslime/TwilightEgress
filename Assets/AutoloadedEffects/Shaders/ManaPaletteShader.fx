@@ -1,9 +1,11 @@
 sampler baseTexture : register(s0);
 
 float globalTime;
+float timeMultiplier;
 float flowCompactness;
 float gradientPrecision;
 float4 palette[7];
+float opacity;
 
 float4 PaletteLerp(float interpolant)
 {
@@ -16,13 +18,13 @@ float4 PaletteLerp(float interpolant)
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
     float4 baseColor = tex2D(baseTexture, coords);
-    float paletteInterpolant = sin((baseColor.r + globalTime * 1.4) * flowCompactness) * 0.5 + 0.5;
+    float paletteInterpolant = sin((baseColor.r + globalTime * timeMultiplier) * flowCompactness) * 0.5 + 0.5;
     float4 paletteSample = PaletteLerp(paletteInterpolant);
     
     // Apply posterization.
     //paletteSample = round(paletteSample * gradientPrecision) / gradientPrecision;
     
-    return paletteSample * baseColor.a;
+    return paletteSample * baseColor.a * opacity;
 }
 technique Technique1
 {

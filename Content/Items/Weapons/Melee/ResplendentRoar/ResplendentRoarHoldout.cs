@@ -1,8 +1,9 @@
 ﻿using CalamityMod.Buffs.DamageOverTime;
+using Cascade.Core.Graphics;
 
 namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
 {
-    public class ResplendentRoarHoldout : ModProjectile, ILocalizedModType
+    public class ResplendentRoarHoldout : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         private enum AttackTypes
         {
@@ -68,7 +69,7 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
         {
             ProjectileID.Sets.HeldProjDoesNotUsePlayerGfxOffY[Type] = true;
             ProjectileID.Sets.TrailCacheLength[Type] = 12;
-            ProjectileID.Sets.TrailingMode[Type] = 0;
+            ProjectileID.Sets.TrailingMode[Type] = 2;
         }
 
         public override void SetDefaults()
@@ -457,12 +458,9 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
             orig.Invoke(self);
         }*/
 
-        public float SetTrailWidth(float completionRatio)
-        {
-            return 40f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Projectile.scale;
-        }
+        public float TrailWidthFunction(float completionRatio) => 40f * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Projectile.scale;
 
-        public Color SetTrailColor(float completionRatio)
+        public Color TrailColorFunction(float completionRatio)
         {
             Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
             Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
@@ -470,28 +468,17 @@ namespace Cascade.Content.Items.Weapons.Melee.ResplendentRoar
             return trailColor;
         }
 
-        public void DrawPrimTrail()
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
-            /*TrailDrawer ??= new PrimitiveDrawingSystem(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ExobladePierce"]);
+            // This sets the starting position of the primitive trail so that the other positions follow it accordingly
+            Projectile.oldPos[0] = Projectile.position + Projectile.rotation.ToRotationVector2() * 128f * Projectile.scale;
 
-            Color colorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.IndianRed, Color.Yellow, Color.Red);
-            Color secondColorGroup = Utilities.MulticolorLerp(Main.GlobalTimeWrappedHourly * 0.75f, Color.OrangeRed, Color.Sienna, Color.PaleVioletRed);
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.FlameStreak, 1, SamplerState.LinearWrap);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly);
 
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseColor(colorGroup);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseSecondaryColor(secondColorGroup);
-            GameShaders.Misc["CalamityMod:ExobladePierce"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/GreyscaleGradients/EternityStreak"));
-            GameShaders.Misc["CalamityMod:ExobladePierce"].UseImage2("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ExobladePierce"].Apply();
-            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
-
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 60);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size / 2f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 60);
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => Projectile.Size * 0.5f, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 48);
         }
     }
 }

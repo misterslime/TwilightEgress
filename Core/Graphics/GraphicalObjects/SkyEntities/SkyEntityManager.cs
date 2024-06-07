@@ -1,18 +1,11 @@
-﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
-using System.Runtime.Serialization;
+﻿using ReLogic.Threading;
 
-namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
+namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntities
 {
     public class SkyEntityManager : ModSystem
     {
         #region Fields
-        public static Dictionary<Type, SkyEntity> SkyEntities;
-
-        public static Dictionary<Type, int> SkyEntityIDs;
-
-        public static Dictionary<int, Texture2D> SkyEntityTextures;
-
-        public static List<SkyEntity> ActiveSkyEntities;
+        internal static List<SkyEntity> ActiveSkyEntities = [];
         #endregion
 
         #region Overrides
@@ -22,48 +15,17 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             if (Main.netMode == NetmodeID.Server)
                 return;
 
-            SkyEntities = new();
-            SkyEntityIDs = new();
-            SkyEntityTextures = new();
-            ActiveSkyEntities = new();
-
-            // Always ensure that the current ID is set to the highest value in the dictionary.
-            int currentID = SkyEntityIDs.Any() ? SkyEntityIDs.Values.Max() : 0;
-
-            IEnumerable<Type> skyEntitySubclasses = Utilities.GetEveryTypeDerivedFrom(typeof(SkyEntity), Cascade.Instance.Code);
-            foreach (Type type in skyEntitySubclasses)
-            {
-                SkyEntity skyEntity = (SkyEntity)FormatterServices.GetUninitializedObject(type);
-                SkyEntities[type] = skyEntity;
-
-                // Store an ID for each sky entity. All sky entities of the same type that are spawned will copy this ID.
-                SkyEntityIDs[type] = currentID;
-
-                // Texture loading.
-                // Automatically load sky entity textures based on their internal ID.
-                Texture2D skyEntityTexture = ModContent.Request<Texture2D>(skyEntity.TexturePath, AssetRequestMode.ImmediateLoad).Value;
-                SkyEntityTextures[currentID] = skyEntityTexture;
-
-                // Incremenet the ID for each sky enity type.
-                currentID++;
-            }
-
             On_SkyManager.DrawDepthRange += DrawSkyEntities_BeforeCustomSkies;
             On_SkyManager.DrawDepthRange += DrawSkyEntities_AfterCustomSkies;
         }
 
         public override void OnModUnload()
         {
-            SkyEntities = null;
-            SkyEntityIDs = null;
-            SkyEntityTextures = null;
             ActiveSkyEntities = null;
 
             On_SkyManager.DrawDepthRange -= DrawSkyEntities_BeforeCustomSkies;
             On_SkyManager.DrawDepthRange -= DrawSkyEntities_AfterCustomSkies;
         }
-
-        public override void OnWorldLoad() => ActiveSkyEntities.Clear();
 
         public override void OnWorldUnload() => ActiveSkyEntities.Clear();
 
@@ -72,65 +34,54 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
         #region Updating
         public override void PostUpdateEverything()
         {
-            foreach (SkyEntity skyEntity in ActiveSkyEntities)
+            FastParallel.For(0, ActiveSkyEntities.Count, (int x, int y, object context) =>
             {
-                if (skyEntity == null || !skyEntity.Active)
-                    continue;
+                for (int i = x; i < y; i++)
+                {
+                    ActiveSkyEntities[i].Time++;
+                    ActiveSkyEntities[i].Position += ActiveSkyEntities[i].Velocity;
+                    ActiveSkyEntities[i].Update();
+                }
+            });
 
-                skyEntity.Active = true;
-                skyEntity.Time++;
-                skyEntity.Position += skyEntity.Velocity;
-                skyEntity.Update();
-            }
-
-            ActiveSkyEntities.RemoveAll(skyEntity => !skyEntity.Active || (skyEntity.Time >= skyEntity.Lifespan && skyEntity.DieWithLifespan));
+            ActiveSkyEntities.RemoveAll(skyEntity => skyEntity.Time >= skyEntity.Lifetime && skyEntity.DieWithLifespan);
         }
         #endregion
         #endregion
 
-        #region Static Methods
-        public static bool IsSpecificSkyEntityActive<T>() where T : SkyEntity => SkyEntities[typeof(T)].Active;
+        #region Public Static Methods
+        public static bool IsSpecificSkyEntityActive<T>() where T : SkyEntity => ActiveSkyEntities.ContainsType(typeof(T));
 
         public static int CountActiveSkyEntities<T>() where T : SkyEntity
         {
             int count = 0;
             foreach (SkyEntity sky in ActiveSkyEntities)
             {
-                if (sky.ID == SkyEntityIDs[typeof(T)])
+                if (sky.GetType() == typeof(T))
                     count++;
             }
 
             return count;
         }
 
+        public static int CountActiveSkyEntities(params Type[] types)
+        {
+            int count = 0;
+            foreach (SkyEntity sky in ActiveSkyEntities)
+            {
+                if (types.ContainsType(sky.GetType()))
+                    count++;
+            }
+
+            return count;
+        }
         #endregion
 
         #region Private Methods
-        private void DrawAllSkyEntityInstances(SkyEntity skyEntity, SpriteBatch spriteBatch, float minDepth, float maxDepth)
-        {
-            if (ActiveSkyEntities.Count <= 0)
-                return;
-
-            // Prepare for screen culling.
-            RasterizerState screenCullState = CascadeUtilities.PrepareScissorRectangleState();
-
-            spriteBatch.Begin(SpriteSortMode.Deferred, skyEntity.BlendState, Main.DefaultSamplerState, DepthStencilState.None, screenCullState, null, Main.GameViewMatrix.TransformationMatrix);
-
-            if (skyEntity.Depth > minDepth && skyEntity.Depth <= maxDepth)
-                skyEntity.Draw(spriteBatch);
-
-            spriteBatch.End();
-        }
-
         private void DrawSkyEntities_BeforeCustomSkies(On_SkyManager.orig_DrawDepthRange orig, SkyManager self, SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             spriteBatch.End();
-            foreach (SkyEntity skyEntity in ActiveSkyEntities)
-            {
-                if (skyEntity.DrawContext != SkyEntityDrawContext.BeforeCustomSkies)
-                    continue;
-                DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
-            }
+            DrawSkyEntities(SkyEntityDrawContext.BeforeCustomSkies, spriteBatch, minDepth, maxDepth);
             spriteBatch.ResetToDefault(false);
 
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
@@ -141,14 +92,33 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem
             orig.Invoke(self, spriteBatch, minDepth, maxDepth);
 
             spriteBatch.End();
-            foreach (SkyEntity skyEntity in ActiveSkyEntities)
-            {
-                if (skyEntity.DrawContext != SkyEntityDrawContext.AfterCustomSkies)
-                    continue;
-                DrawAllSkyEntityInstances(skyEntity, spriteBatch, minDepth, maxDepth);
-            }
+            DrawSkyEntities(SkyEntityDrawContext.AfterCustomSkies, spriteBatch, minDepth, maxDepth);
             spriteBatch.ResetToDefault(false);
         }
+
+        private static void DrawSkyEntities(SkyEntityDrawContext drawContext, SpriteBatch spriteBatch, float minDepth, float maxDepth)
+        {
+            // Get a list of sky entities based on their draw context.
+            List<SkyEntity> drawCollection = ActiveSkyEntities.Where(s => s.DrawContext == drawContext).ToList();
+            if (drawCollection.Count <= 0)
+                return;
+
+            // Prepare for screen culling.
+            RasterizerState screenCullState = CascadeUtilities.PrepareScissorRectangleState();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, drawCollection.First().BlendState, Main.DefaultSamplerState, DepthStencilState.None, screenCullState, null, Main.GameViewMatrix.TransformationMatrix);
+
+            foreach (SkyEntity skyEntity in drawCollection)
+            {
+                if (skyEntity.Depth > minDepth && skyEntity.Depth <= maxDepth)
+                    skyEntity.Draw(spriteBatch);
+            }
+
+            spriteBatch.End();
+        }
+
+        private static void DrawSkyEntities(SkyEntityDrawContext drawContext, SpriteBatch spriteBatch)
+            => DrawSkyEntities(drawContext, spriteBatch, float.MinValue, float.MaxValue);
         #endregion
     }
 }

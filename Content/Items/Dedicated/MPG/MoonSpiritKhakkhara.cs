@@ -35,7 +35,7 @@ namespace Cascade.Content.Items.Dedicated.MPG
             Item.UseSound = SoundID.Item105;
             Item.DamageType = DamageClass.Summon;
             Item.useStyle = ItemUseStyleID.Shoot;
-            Item.value = CalamityGlobalItem.Rarity14BuyPrice;
+            Item.value = CalamityGlobalItem.RarityDarkBlueBuyPrice;
             Item.rare = ModContent.RarityType<DarkBlue>();
             Item.shootSpeed = 0f;
             Item.shoot = ModContent.ProjectileType<MoonSpiritKhakkharaHoldout>();

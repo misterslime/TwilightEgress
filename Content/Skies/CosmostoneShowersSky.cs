@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Skies
+﻿using Cascade.Content.Events.CosmostoneShowers;
+
+namespace Cascade.Content.Skies
 {
     public class CosmostoneShowersSceneEffect : ModSceneEffect
     {
@@ -32,20 +34,29 @@
             if (isActive && FadeOpacity < 1f)
                 FadeOpacity += 0.01f;
             else if (!isActive && FadeOpacity > 0f)
-                FadeOpacity -= 0.01f;          
+                FadeOpacity -= 0.01f;
+
+            // Disable vanilla Terraria's stars in turn of making ours more abundant and noticeable.
+            for (int i = 0; i < Main.maxStars; i++)
+                Main.star[i] = new();
         }
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            Matrix transformationMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
+            Vector3 matrixDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
+            transformationMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * matrixDirection;
+
+            // Render the background. 
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue)
             {
-                Texture2D skyTexture = ModContent.Request<Texture2D>("Cascade/Content/Skies/CosmostoneShowersSky").Value;
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, transformationMatrix);
+                
+                CosmostoneShowerEvent.RenderBackground(spriteBatch, FadeOpacity);
 
-                float gradientHeightInterpolant = Lerp(-0.002f, -0.02f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
-
-                spriteBatch.UseBlendState(BlendState.Additive);
-                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * 16f * gradientHeightInterpolant), Main.screenWidth, Main.screenHeight), new Color(85, 113, 255) * FadeOpacity);
-                spriteBatch.ResetToDefault();
+                spriteBatch.End();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, transformationMatrix);
             }
         }
     }

@@ -1,8 +1,14 @@
-﻿namespace Cascade.Content.Projectiles.Ambient
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Projectiles.Ambient
 {
-    public class Comet : ModProjectile, ILocalizedModType
+    public class Comet : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public new string LocalizationCategory => "Projectiles.Ambient";
+
+        public override string Texture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall";
+
+        public override string GlowTexture => "Cascade/Content/NPCs/CosmostoneShowers/Asteroids/CosmostoneAsteroidSmall_Glowmask";
 
         public override void SetStaticDefaults()
         {
@@ -58,41 +64,12 @@
 
         }
 
-        public float SetTrailWidth(float completionRatio)
-        {
-            return 32f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * Projectile.scale * Projectile.Opacity;
-        }
-
-        public Color SetTrailColor(float completionRatio)
-        {
-            return Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, completionRatio) * Projectile.Opacity;
-        }
-
-        public void DrawPrims()
-        {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 85);
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
-            DrawPrims();
-
             Projectile.DrawBackglow(Projectile.GetAlpha(Color.Cyan * 0.45f), 2f);
             //Projectile.DrawTextureOnProjectile(Projectile.GetAlpha(Color.White), Projectile.rotation, Projectile.scale, animated: true);
 
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
 
             int individualFrameHeight = texture.Height / Main.projFrames[Projectile.type];
             int currentYFrame = individualFrameHeight * Projectile.frame;
@@ -106,8 +83,8 @@
         public void DrawCosmostone(Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float worthless = 0f)
         {
 
-            Texture2D texture = CascadeTextureRegistry.Comet.Value;
-            Texture2D glowmask = CascadeTextureRegistry.CometGlowmask.Value;
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Texture2D glowmask = TextureAssets.GlowMask[Projectile.type].Value;
 
             Main.EntitySpriteDraw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
 
@@ -120,6 +97,23 @@
             shader.Apply();
             Main.spriteBatch.Draw(glowmask, position, sourceRectangle, color, rotation, origin, scale, effects, worthless);
             Main.spriteBatch.ResetToDefault();
+        }
+
+
+        public float TrailWidthFunction(float trailLengthInterpolant) => 32f * Utils.GetLerpValue(0.75f, 0f, trailLengthInterpolant, true) * Projectile.scale * Projectile.Opacity;
+
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.Lerp(Color.SkyBlue, Color.DeepSkyBlue, trailLengthInterpolant) * Projectile.Opacity;
+
+        public Vector2 TrailOffsetFunction(float trailLengthInterpolant) => Projectile.Size * 0.5f;
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
+        {
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(TextureAssets.Extra[ExtrasID.FlameLashTrailShape], 1);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly * 2.5f);
+
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, TrailOffsetFunction, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 24);
         }
     }
 }

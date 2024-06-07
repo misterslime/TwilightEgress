@@ -1,24 +1,22 @@
-﻿namespace Cascade.Content.Particles
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Particles
 {
     public class LightningArcParticle : CasParticle
     {
-        private float LightningLengthFactor;
+        public float PointDisplacementVariance;
 
-        private bool Initialized;
+        public float JaggednessNumerator;
 
-        private List<Vector2> LightningPoints;
+        public bool UseSmoothening;
 
-        private Vector2 ActualEndPosition;
+        public bool Initialized;
 
-        public float PointDisplacementVariance { get; set; }
+        public bool AdditiveBlending;
 
-        public float JaggednessNumerator { get; set; }
+        public Vector2 EndPosition;
 
-        public bool UseSmoothening { get; set; }
-
-        public bool AdditiveBlending { get; set; }
-
-        public Vector2 EndPosition { get; set; }
+        public List<Vector2> LightningPoints;
 
         public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
@@ -42,27 +40,21 @@
                 Initialized = true;
                 LightningPoints = CascadeUtilities.CreateLightningBoltPoints(Position, EndPosition, PointDisplacementVariance, JaggednessNumerator);
             }
-
-            LightningLengthFactor = Clamp(LightningLengthFactor + 0.15f, 0f, 1f);
-            ActualEndPosition += (LightningLengthFactor * EndPosition.Length()).ToRotationVector2();
         }
 
-        public float GetLightningWidth(float completionRatio) => Scale.X * Utils.GetLerpValue(1f, 0f, completionRatio, true) * Lerp(1f, 0f, LifetimeRatio);
+        public float LightningWidthFunction(float trailLengthInterpolant) => Scale.X * Utils.GetLerpValue(1f, 0f, trailLengthInterpolant, true) * Lerp(1f, 0f, LifetimeRatio);
 
-        public Color GetLightningColor(float completionRatio) => DrawColor;
+        public Color LightningColorFunction(float trailLengthInterpolant) => DrawColor;
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            /*spriteBatch.EnterShaderRegion(AdditiveBlending ? BlendState.Additive : BlendState.AlphaBlend);
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].UseImage1("Images/Misc/Perlin");
-            GameShaders.Misc["CalamityMod:HeavenlyGaleLightningArc"].Apply();
+            ShaderManager.TryGetShader("Luminance.StandardPrimitiveShader", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.ThinGlowStreak, 1, SamplerState.LinearWrap);
 
-            PrimitiveRenderer.RenderTrail(LightningPoints, new(GetLightningWidth, GetLightningColor), LightningPoints.Count * 2);
-            spriteBatch.ExitShaderRegion();*/
+            PrimitiveSettings settings = new(LightningWidthFunction, LightningColorFunction, null, false, false, smoothTrail);
+            PrimitiveRenderer.RenderTrail(LightningPoints, settings, LightningPoints.Count);
 
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(GetLightningWidth, GetLightningColor, Shader: shader);
-            PrimitiveRenderer.RenderTrail(LightningPoints, primSettings, LightningPoints.Count * 2);
+            spriteBatch.ExitShaderRegion();
         }
     }
 }

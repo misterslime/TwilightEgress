@@ -25,7 +25,7 @@ namespace Cascade.Content.Items.Dedicated.Marv
             Item.noMelee = true;
             Item.knockBack = 3f;
             Item.channel = true;
-            Item.value = CalamityGlobalItem.Rarity12BuyPrice;
+            Item.value = CalamityGlobalItem.RarityTurquoiseBuyPrice;
             Item.rare = ModContent.RarityType<Turquoise>();
             Item.autoReuse = true;
             Item.shootSpeed = 10f;

@@ -5,8 +5,52 @@ Mods: {
 				DisplayName: Burning Quasar
 				Tooltip: ""
 			}
+
+			CometstoneBrick: {
+				Tooltip: ""
+				DisplayName: Cometstone Brick
+			}
+
+			Placeables: {
+				SilicateClusterBrick: {
+					DisplayName: Silicate Cluster Brick
+					Tooltip: ""
+				}
+
+				ManaGrassSeeds: {
+					DisplayName: Mana Grass Seeds
+					Tooltip: ""
+				}
+			}
+
+			SailorsSingularity: {
+				DisplayName: Sailors Singularity
+				Tooltip: ""
+			}
+
+			SilicateCluster: {
+				DisplayName: Silicate Cluster
+				Tooltip: ""
+			}
+
+			Stellascope: {
+				DisplayName: Stellascope
+				Tooltip: ""
+			}
 		}
 
-		NPCs.Manaphage.DisplayName: Manaphage
+		NPCs: {
+			Manaphage.DisplayName: Manaphage
+			Miniphage.DisplayName: Miniphage
+		}
+
+		Projectiles: {
+			SailorsSingularityHoldout.DisplayName: Sailors Singularity Holdout
+			SailorStar.DisplayName: Sailor Star
+			SailorVortex.DisplayName: Sailor Vortex
+			SailorBlast.DisplayName: Sailor Blast
+			StellascopeStar.DisplayName: Stellascope Star
+			StellascopeHoldout.DisplayName: Stellascope Holdout
+		}
 	}
 }

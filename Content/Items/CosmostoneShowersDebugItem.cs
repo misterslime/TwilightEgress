@@ -47,7 +47,7 @@ namespace Cascade.Content.Items
 
             // Start the event if there are no issues.
             Main.NewText("Successfully started event!");
-            CosmostoneShowerEvent.CosmostoneShower = true;
+            EventHandlerManager.StartEvent<CosmostoneShowerEvent>();
             return true;
         }
     }

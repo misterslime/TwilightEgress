@@ -2,9 +2,9 @@ HolidayHalberd: {
 	DisplayName: Holiday Halberd
 	Tooltip:
 		'''
-		Swings a Halberd around the player
-		Releasing the Halberd throws it piercing three enemies and releasing a trail of splitting ornaments
+		Swings a festive halberd around the player
+		Releasing LMB throws it, piercing three enemies and releasing a trail of ornaments in its path
 		Stealth strikes spawn deadly Ice Shocks on hit which inflict Glacial State
-		[c/77e0ff:Lethal]
+		[c/77e0ff:'You became stronger.']
 		'''
 }

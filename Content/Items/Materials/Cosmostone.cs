@@ -4,6 +4,13 @@
     {
         public new string LocalizationCategory => "Items.Materials";
 
+        public override void SetStaticDefaults()
+        {
+            Item.ResearchUnlockCount = 25;
+            Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(6, 16));
+            ItemID.Sets.AnimatesAsSoul[Type] = true;
+        }
+
         public override void SetDefaults()
         {
             Item.width = 18;
@@ -18,7 +25,11 @@
 
         public override void PostUpdate()
         {
-            Lighting.AddLight(Item.Center, Color.LightBlue.ToVector3());    
+            Lighting.AddLight(Item.Center, Color.LightBlue.ToVector3());
+            if (Item.Center.Y <= Main.maxTilesY - 750f)
+                ItemID.Sets.ItemNoGravity[Type] = true;
+            else
+                ItemID.Sets.ItemNoGravity[Type] = false;
         }
     }
 }

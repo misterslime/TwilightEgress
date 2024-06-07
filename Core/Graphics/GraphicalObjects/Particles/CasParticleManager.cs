@@ -59,5 +59,17 @@ namespace Cascade.Core.Graphics.GraphicalObjects.Particles
 
             ActiveCasParticles.RemoveAll(p => p.Time >= p.Lifetime);
         }
+
+        public static int CountParticles<T>() where T : CasParticle
+        {
+            int count = 0;
+            foreach (CasParticle casParticle in ActiveCasParticles)
+            {
+                if (casParticle.GetType() == typeof(T))
+                    count++;
+            }
+
+            return count;
+        }
     }
 }

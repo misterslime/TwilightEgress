@@ -14,7 +14,7 @@ namespace Cascade.Content.Items.Accessories.Elementals.TwinGeminiGenies
             Item.width = 32;
             Item.height = 18;
             Item.accessory = true;
-            Item.value = CalamityGlobalItem.Rarity5BuyPrice;
+            Item.value = CalamityGlobalItem.RarityPinkBuyPrice;
             Item.rare = ItemRarityID.Pink;
         }
 
