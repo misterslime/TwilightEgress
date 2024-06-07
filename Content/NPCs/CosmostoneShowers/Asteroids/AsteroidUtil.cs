@@ -11,8 +11,12 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
         internal static List<int> ViableCollisionTypes = new List<int>()
         {
             ModContent.NPCType<CosmostoneAsteroidSmall>(),
-            ModContent.NPCType<ExodiumAsteroid>(),
-            ModContent.NPCType<CometstoneAsteroidLarge>(),
+            ModContent.NPCType<CosmostoneAsteroidMedium>(),
+            ModContent.NPCType<CosmostoneAsteroidLarge>(),
+            ModContent.NPCType<CosmostoneGeode>(),
+            ModContent.NPCType<SilicateAsteroidSmall>(),
+            ModContent.NPCType<SilicateAsteroidMedium>(),
+            ModContent.NPCType<SilicateAsteroidLarge>(),
         };
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
-    public class HolidayHalberdThrown : ModProjectile, ILocalizedModType
+    public class HolidayHalberdThrown : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         private ref float Timer => ref Projectile.ai[0];
 
@@ -14,7 +16,7 @@
 
         public override void SetStaticDefaults()
         {
-            ProjectileID.Sets.TrailCacheLength[Type] = 12;
+            ProjectileID.Sets.TrailCacheLength[Type] = 20;
             ProjectileID.Sets.TrailingMode[Type] = 1;
         }
 
@@ -98,15 +100,6 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-            // Get the draw points for the primitive trail.
-            for (int i = 0; i < 12; i++)
-            {
-                float localRotation = Projectile.oldRot[i];
-                if (i == 0)
-                    localRotation = Projectile.rotation;
-                Projectile.oldPos[i] = Projectile.position + localRotation.ToRotationVector2() * 78f * Projectile.scale;
-            }
-
             DrawHalberd();
             return false;
         }
@@ -147,28 +140,20 @@
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
         }
 
-        public float SetTrailWidth(float completionRatio)
+        public float TrailWidthFunction(float trailLengthInterploant) => 30f * Utils.GetLerpValue(0f, 1.35f, trailLengthInterploant / 0.1f, true) * Utils.GetLerpValue(1.35f, 0f, (trailLengthInterploant - 0.1f) / 0.9f, true) * Projectile.scale;
+
+        public Color TrailColorFunction(float trailLengthInterploant) => GetHalberdVisualColors();
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
-            return 30f * Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * Projectile.scale;
-        }
 
-        public Color SetTrailColor(float completionRatio) => GetHalberdVisualColors();
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.FadedStreak, 1, SamplerState.LinearWrap);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly);
 
-        public void DrawPrimTrail()
-        {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
-            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition;
-
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 65);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 65);
+            Vector2 trailOffset = Projectile.Size * 0.5f + Vector2.UnitX.RotatedBy(Projectile.rotation) * 90f;
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => trailOffset, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 40);
         }
     }
 }

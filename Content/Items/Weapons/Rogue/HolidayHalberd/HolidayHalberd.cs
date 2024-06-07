@@ -1,4 +1,6 @@
-﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
+﻿using CalamityMod.Items;
+
+namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
     public class HolidayHalberd : ModItem, ILocalizedModType
     {
@@ -18,10 +20,14 @@
             Item.noUseGraphic = true;
             Item.autoReuse = true;
             Item.channel = true;
+            Item.rare = ItemRarityID.Yellow;
+            Item.value = CalamityGlobalItem.RarityYellowBuyPrice;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.shoot = ModContent.ProjectileType<HolidayHalbertHoldout>();
             Item.shootSpeed = 1f;
         }
+
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] <= 0;
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

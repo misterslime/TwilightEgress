@@ -1,5 +1,4 @@
 ﻿using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
-using Cascade.Core.Graphics.GraphicalObjects.SkyEntitySystem;
 
 namespace Cascade.Content.Skies.SkyEntities
 {
@@ -9,10 +8,6 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public float MinScale;
 
-        public float RotationSpeed;
-
-        public float RotationDirection;
-
         public const int BaseLifespan = 2400;
 
         public Sirius(Vector2 position, Color color, float maxScale, int lifespan)
@@ -21,7 +16,7 @@ namespace Cascade.Content.Skies.SkyEntities
             Color = color;
             MaxScale = maxScale;
             MinScale = maxScale * 0.75f;
-            Lifespan = lifespan + BaseLifespan;
+            Lifetime = lifespan + BaseLifespan;
             Depth = 150f;
 
             Opacity = 0f;
@@ -30,7 +25,7 @@ namespace Cascade.Content.Skies.SkyEntities
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
-        public override string TexturePath => "CalamityMod/Projectiles/Summon/SiriusMinion";
+        public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
         public override SkyEntityDrawContext DrawContext => SkyEntityDrawContext.AfterCustomSkies;
 
@@ -38,17 +33,17 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Update()
         {
-            int timeToDisappear = Lifespan - 120;
+            int timeToDisappear = Lifetime - 120;
             int timeToAppear = 120;
             float appearInterpolant = Time / (float)timeToAppear;
             float twinkleInterpolant = CascadeUtilities.SineEaseInOut(Time / 120f);
             float disappearInterpolant = (Time - timeToDisappear) / 120f;
 
-            Scale = Lerp(MinScale, MaxScale, twinkleInterpolant);
+            Scale = new Vector2(Lerp(MinScale, MaxScale, twinkleInterpolant));
 
             if (Time <= timeToAppear)
                 Opacity = Lerp(0f, 1f, appearInterpolant);
-            if (Time >= timeToDisappear && Time <= Lifespan)
+            if (Time >= timeToDisappear && Time <= Lifetime)
                 Opacity = Lerp(Opacity, 0f, disappearInterpolant);
 
             Rotation += RotationSpeed * RotationDirection;
@@ -56,17 +51,18 @@ namespace Cascade.Content.Skies.SkyEntities
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D bloomTexture = ModContent.Request<Texture2D>("CalamityMod/UI/ModeIndicator/BloomFlare").Value;
+            Texture2D sirius = ModContent.Request<Texture2D>("CalamityMod/Projectiles/Summon/SiriusMinion").Value;
+            AtlasTexture bloomTexture = AtlasManager.GetTexture("Cascade.BloomFlare.png");
 
-            Vector2 mainOrigin = StoredTexture.Size() / 2f;
-            Vector2 bloomOrigin = bloomTexture.Size() / 2f;
+            Vector2 mainOrigin = sirius.Size() / 2f;
+            Vector2 bloomOrigin = bloomTexture.Size / 2f;
 
             Color color = Color * Opacity;
 
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.5f, Rotation, bloomOrigin, Scale * 0.8f, 0, 0f);
-            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.7f, -Rotation, bloomOrigin, Scale * 0.6f, 0, 0f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.5f, Rotation, bloomOrigin, Scale / 5f);
+            spriteBatch.Draw(bloomTexture, GetDrawPositionBasedOnDepth(), null, color * 0.7f, -Rotation, bloomOrigin, Scale / 3f);
 
-            spriteBatch.Draw(StoredTexture, GetDrawPositionBasedOnDepth(), null, Color.White * Opacity, 0f, mainOrigin, Scale, 0, 0f);
+            spriteBatch.Draw(sirius, GetDrawPositionBasedOnDepth(), null, Color.White * Opacity, 0f, mainOrigin, Scale, 0, 0f);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
+﻿using Cascade.Core.Graphics;
+
+namespace Cascade.Content.Items.Weapons.Rogue.HolidayHalberd
 {
-    public class HolidayHalbertHoldout : ModProjectile, ILocalizedModType
+    public class HolidayHalbertHoldout : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         private Player Owner => Main.player[Projectile.owner];
 
@@ -122,16 +124,8 @@
 
         public override bool PreDraw(ref Color lightColor)
         {
-            // Get the draw points for the primitive trail.
-            for (int i = 0; i < 12; i++)
-            {
-                float localRotation = Projectile.oldRot[i];
-                if (i == 0)
-                    localRotation = Projectile.rotation;
-                Projectile.oldPos[i] = Projectile.position + localRotation.ToRotationVector2() * 78f * Projectile.scale;
-            }
+           
 
-            DrawPrimTrail();
             DrawHalberd();
             return false;
         }
@@ -147,7 +141,7 @@
         }
 
         public void DrawHalberd()
-        {
+        {           
             Texture2D texture = TextureAssets.Projectile[Type].Value;
             SpriteEffects effects = Owner.direction < 0 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
@@ -172,28 +166,28 @@
             Main.EntitySpriteDraw(texture, drawPosition, null, Projectile.GetAlpha(Color.White), drawRotation, origin, Projectile.scale, effects, 0);
         }
 
-        public float SetTrailWidth(float completionRatio)
+        public float TrailWidthFunction(float trailLengthInterpolant) => 35f * Utils.GetLerpValue(1f, 0f, trailLengthInterpolant, true) * Projectile.scale;
+
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.Lerp(Color.White, GetHalberdVisualColors(), 0.85f);
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
         {
-            return 30f * Utils.GetLerpValue(1f, 0.4f, completionRatio, true) * Projectile.scale;
-        }
+            // Get the draw points for the primitive trail.
+            // This needs to be done at the same time the trail is being drawn, otherwise not every point will be properly adjusted.
+            for (int i = 0; i < 12; i++)
+            {
+                float localRotation = Projectile.oldRot[i];
+                if (i == 0)
+                    localRotation = Projectile.rotation;
+                Projectile.oldPos[i] = Projectile.position + localRotation.ToRotationVector2() * 78f * Projectile.scale;
+            }
 
-        public Color SetTrailColor(float completionRatio) => GetHalberdVisualColors();
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.LightStreak, 1, SamplerState.LinearWrap);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly);
 
-        public void DrawPrimTrail()
-        {
-            /*TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:TrailStreak"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:TrailStreak"].SetShaderTexture(ModContent.Request<Texture2D>("CalamityMod/ExtraTextures/Trails/FabstaffStreak", AssetRequestMode.AsyncLoad));
-            Vector2 trailOffset = Projectile.Size / 2f - Main.screenPosition; 
-
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), trailOffset, 36);
-            Main.spriteBatch.ExitShaderRegion();*/
-
-            Vector2 positionToCenterOffset = Projectile.Size * 0.5f;
-            ManagedShader shader = ShaderManager.GetShader("Luminance.StandardPrimitiveShader");
-            PrimitiveSettings primSettings = new(SetTrailWidth, SetTrailColor, _ => positionToCenterOffset, Shader: shader);
-            PrimitiveRenderer.RenderTrail(Projectile.oldPos.ToList(), primSettings, 36);
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => Projectile.Size * 0.5f, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 36);
         }
     }
 }

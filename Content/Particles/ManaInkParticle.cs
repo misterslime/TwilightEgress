@@ -20,6 +20,8 @@
 
         public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
+        public override BlendState BlendState => BlendState.Additive;
+
         public override void Update()
         {
             Rotation += Velocity.X * 0.004f;
