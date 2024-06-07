@@ -11,9 +11,9 @@ namespace Cascade.Content.Projectiles.Magic
         // Star drawcode shtuff
         public override string Texture => "Cascade/Assets/ExtraTextures/GreyscaleObjects/FourPointedStar_Large";
         private static readonly Color[] StarColorArray = [Color.RoyalBlue, Color.Cyan, Color.Blue, Color.BlueViolet, Color.Azure];
+        private Color StarColor = StarColorArray[Main.rand.Next(StarColorArray.Length)];
         private static Asset<Texture2D> StarTexture;
         private int Time;
-        private Color StarColor;
 
         // Star system shtuff
         private int PulseTimer = 60;
@@ -22,8 +22,6 @@ namespace Cascade.Content.Projectiles.Magic
         private bool ReceivingConstellation = false;
 
         public override void Load() => StarTexture = ModContent.Request<Texture2D>(Texture);
-
-        public override void OnSpawn(IEntitySource source) => StarColor = StarColorArray[Main.rand.Next(StarColorArray.Length)];
 
         public override void SetDefaults()
         {
@@ -61,7 +59,7 @@ namespace Cascade.Content.Projectiles.Magic
             // Would be cool to add a check to see if two star projectiles are colliding, and push them away from one another if they are
         }
 
-        public StellascopeStar FindSyncStar()
+        public StellascopeStar FindSyncStar() // maybe turn into an array
         {
             StellascopeStar sampleStar = null;
             foreach (Projectile projectile in Main.projectile)
