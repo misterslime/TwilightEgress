@@ -50,6 +50,8 @@
 
         public static readonly Asset<Texture2D> BlueCosmicGalaxyBlurred = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/BlueCosmicGalaxyBlurred");
 
+        public static readonly Asset<Texture2D> CosmostoneShowersNebulaColors = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/CosmostoneShowersNebulaColors");
+
         public static readonly Asset<Texture2D> GrainyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/GrainyNoise");
 
         public static readonly Asset<Texture2D> MeltyNoise = ModContent.Request<Texture2D>("Cascade/Assets/ExtraTextures/Gradients/MeltyNoise");
