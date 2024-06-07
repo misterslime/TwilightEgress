@@ -23,6 +23,11 @@ Mods: {
 				}
 			}
 
+			SailorsSingularity: {
+				DisplayName: Sailors Singularity
+				Tooltip: ""
+			}
+
 			SilicateCluster: {
 				DisplayName: Silicate Cluster
 				Tooltip: ""
@@ -40,6 +45,10 @@ Mods: {
 		}
 
 		Projectiles: {
+			SailorsSingularityHoldout.DisplayName: Sailors Singularity Holdout
+			SailorStar.DisplayName: Sailor Star
+			SailorVortex.DisplayName: Sailor Vortex
+			SailorBlast.DisplayName: Sailor Blast
 			StellascopeStar.DisplayName: Stellascope Star
 			StellascopeHoldout.DisplayName: Stellascope Holdout
 		}
