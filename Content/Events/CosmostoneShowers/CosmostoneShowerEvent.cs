@@ -8,6 +8,7 @@ using Cascade.Content.Skies.SkyEntities;
 using Cascade.Content.Skies.SkyEntities.StationaryAsteroids;
 using Cascade.Content.Skies.SkyEntities.TravellingAsteroid;
 using Cascade.Core.Graphics.GraphicalObjects.SkyEntities;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria.GameContent.Events;
 using Terraria.Graphics;
 
@@ -225,7 +226,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                         planetoidSpawnPosition = planetoidPositionWithRadius;
                     }
                 }
-                
+
                 if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
                 {
                     int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
@@ -237,6 +238,47 @@ namespace Cascade.Content.Events.CosmostoneShowers
         #endregion
 
         #region Visuals
+        #region Background Visuals
+        public static void RenderBackground(SpriteBatch spriteBatch, float globalOpacity)
+        {
+            SamplerState samplerState = SamplerState.LinearWrap;
+
+            // Makes the backgrounds move up or down/fade in and out on the screen depending on how high up near Space the player is.
+            float gradientHeightInterpolant = Lerp(0.1f, -1.6f, Main.Camera.Center.Y / (float)(Main.worldSurface * 16f - Main.maxTilesY * 0.3f));
+            float fadeOutInterpolant = Lerp(2f, 0.1f, Main.Camera.Center.Y / (float)(Main.worldSurface * 16f - Main.maxTilesY * 0.3f));
+
+            // Bakcground nebula.
+            Texture2D skyTexture = CascadeTextureRegistry.CosmostoneShowersNebulaColors.Value;
+
+            ShaderManager.TryGetShader("Cascade.CosmostoneShowersSkyShader", out ManagedShader cosmoSkyShader);
+            cosmoSkyShader.TrySetParameter("galaxyOpacity", globalOpacity);
+            cosmoSkyShader.TrySetParameter("fadeOutMargin", fadeOutInterpolant);
+            cosmoSkyShader.TrySetParameter("textureSize", new Vector2(skyTexture.Width, skyTexture.Height));
+            cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, samplerState);
+            cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 2, samplerState);
+            cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 3, samplerState);
+            cosmoSkyShader.Apply();
+
+            spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 50f), (int)(Main.screenWidth * 1.5f), (int)(Main.screenHeight * 1.5f)), Color.White * globalOpacity);
+
+            // Clouds below the nebula.
+            Texture2D cloudTexture = CascadeTextureRegistry.NeuronNebulaGalaxyBlurred.Value;
+
+            ShaderManager.TryGetShader("Cascade.CosmostoneShowersCloudsShader", out ManagedShader cosmoCloudsShader);
+            cosmoCloudsShader.TrySetParameter("cloudOpacity", globalOpacity * 0.6f);
+            cosmoCloudsShader.TrySetParameter("fadeOutMarginTop", 0.92f);
+            cosmoCloudsShader.TrySetParameter("fadeOutMarginBottom", 0.75f);
+            cosmoCloudsShader.TrySetParameter("erosionStrength", 0.8f);
+            cosmoCloudsShader.TrySetParameter("textureSize", cloudTexture.Size());
+            cosmoCloudsShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, samplerState);
+            cosmoCloudsShader.SetTexture(CascadeTextureRegistry.PerlinNoise3, 2, samplerState);
+            cosmoCloudsShader.SetTexture(MiscTexturesRegistry.WavyBlotchNoise.Value, 3, samplerState);
+            cosmoCloudsShader.Apply();
+
+            spriteBatch.Draw(cloudTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 250f), Main.screenWidth, Main.screenHeight), Color.White * globalOpacity);
+        }
+        #endregion
+
         #region Graphical Object Handling
         private void Visuals_SpawnForegroundParticles()
         {
@@ -389,7 +431,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     float depth = i + 3f;
 
                     int asteroid = asteroids.RandomElementByWeight(e => e.Value).Key;
-                    
+
                     switch (asteroid)
                     {
                         case 0:
@@ -427,6 +469,27 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 Vector2 position = new(x, y);
 
                 new Sirius(position, Color.SkyBlue, 2f, lifespan).Spawn();
+            }
+        }
+        #endregion
+
+        #region World Lighting
+        // Make things a little brighter during the event.
+        public override void ModifyLightingBrightness(ref float scale)
+        {
+            Player player = Main.LocalPlayer;
+            if (player.ZoneOverworldHeight || player.ZoneSkyHeight)
+                scale = 1.03f;
+        }
+
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
+        {
+            Player player = Main.LocalPlayer;
+            if (player.ZoneOverworldHeight || player.ZoneSkyHeight)
+            {
+                float brightnessMultiplierInterpolant = Lerp(2.15f, 1f, Main.Camera.Center.Y / (float)(Main.worldSurface * 16f - Main.maxTilesY * 0.3f));
+                tileColor *= brightnessMultiplierInterpolant;
+                backgroundColor *= brightnessMultiplierInterpolant;
             }
         }
         #endregion

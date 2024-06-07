@@ -43,45 +43,20 @@ namespace Cascade.Content.Skies
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
-            float gradientHeightInterpolant = Lerp(-0.1f, -0.35f, Main.LocalPlayer.Center.Y / (float)Main.worldSurface * 0.35f);
+            Matrix transformationMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
+            Vector3 matrixDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
+            transformationMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * matrixDirection;
+
+            // Render the background. 
             if (maxDepth >= float.MaxValue && minDepth < float.MaxValue)
             {
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
-
-                // Bakcground nebula.
-                Texture2D skyTexture = CascadeTextureRegistry.PurpleBlueNebulaGalaxyBlurred.Value;
-
-                ShaderManager.TryGetShader("Cascade.CosmostoneShowersSkyShader", out ManagedShader cosmoSkyShader);
-                cosmoSkyShader.TrySetParameter("galaxyOpacity", FadeOpacity * 0.15f);
-                cosmoSkyShader.TrySetParameter("fadeOutMargin", 0.85f);
-                cosmoSkyShader.TrySetParameter("textureSize", new Vector2(skyTexture.Width, skyTexture.Height));
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, SamplerState.LinearWrap);
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 2, SamplerState.LinearWrap);
-                cosmoSkyShader.SetTexture(CascadeTextureRegistry.PerlinNoise2, 3, SamplerState.LinearWrap);
-                cosmoSkyShader.Apply();
-
-                spriteBatch.Draw(skyTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 25f), Main.screenWidth, Main.screenHeight), Color.White * FadeOpacity);
-                spriteBatch.ExitShaderRegion();
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, transformationMatrix);
+                
+                CosmostoneShowerEvent.RenderBackground(spriteBatch, FadeOpacity);
 
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.EffectMatrix);
-
-                // Clouds below the nebula.
-                Texture2D cloudTexture = CascadeTextureRegistry.NeuronNebulaGalaxyBlurred.Value;
-
-                ShaderManager.TryGetShader("Cascade.CosmostoneShowersCloudsShader", out ManagedShader cosmoCloudsShader);
-                cosmoCloudsShader.TrySetParameter("cloudOpacity", FadeOpacity * 0.6f);
-                cosmoCloudsShader.TrySetParameter("fadeOutMargin", 0.55f);
-                cosmoCloudsShader.TrySetParameter("erosionStrength", 0.85f);
-                cosmoCloudsShader.TrySetParameter("textureSize", cloudTexture.Size());
-                cosmoCloudsShader.SetTexture(CascadeTextureRegistry.RealisticClouds, 1, SamplerState.LinearWrap);
-                cosmoCloudsShader.SetTexture(CascadeTextureRegistry.PerlinNoise3, 2, SamplerState.LinearWrap);
-                cosmoCloudsShader.SetTexture(MiscTexturesRegistry.TurbulentNoise.Value, 3, SamplerState.LinearWrap);
-                cosmoCloudsShader.Apply();
-
-                spriteBatch.Draw(cloudTexture, new Rectangle(0, (int)(Main.worldSurface * gradientHeightInterpolant + 450f), Main.screenWidth, Main.screenHeight), Color.White * FadeOpacity);
-                spriteBatch.ExitShaderRegion();
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, transformationMatrix);
             }
         }
     }

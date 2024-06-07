@@ -2,7 +2,7 @@
 
 namespace Cascade.Content.Items.Dedicated.Marv
 {
-    public class BoltStrike : ModProjectile, ILocalizedModType
+    public class BoltStrike : ModProjectile, ILocalizedModType, IPixelatedPrimitiveRenderer
     {
         public Player Owner => Main.player[Projectile.owner];
 
@@ -18,11 +18,8 @@ namespace Cascade.Content.Items.Dedicated.Marv
 
         public override string Texture => "Cascade/Content/Items/Dedicated/Marv/ElectricSkyBoltExplosion";
 
-        public PrimitiveDrawer TrailDrawer { get; set; } = null;
-
         public override void SetStaticDefaults()
         {
-            // DisplayName.SetDefault("Bolt Strike");
             ProjectileID.Sets.DrawScreenCheckFluff[Type] = 10000;
             ProjectileID.Sets.TrailCacheLength[Projectile.type] = 50;
             ProjectileID.Sets.TrailingMode[Projectile.type] = 1;
@@ -219,27 +216,6 @@ namespace Cascade.Content.Items.Dedicated.Marv
             }
         }
 
-        public float SetTrailWidth(float completionRatio)
-        {
-            return 40f * Utils.GetLerpValue(0.75f, 0f, completionRatio, true) * Projectile.scale * Projectile.Opacity;
-        }
-
-        public Color SetTrailColor(float completionRatio)
-        {
-            return Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480)) * Projectile.Opacity;
-        }
-
-        public void DrawPrims()
-        {
-            TrailDrawer ??= new PrimitiveDrawer(SetTrailWidth, SetTrailColor, true, GameShaders.Misc["CalamityMod:ArtemisLaser"]);
-
-            Main.spriteBatch.EnterShaderRegion();
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage1("Images/Extra_189");
-            GameShaders.Misc["CalamityMod:ArtemisLaser"].UseImage2("Images/Misc/Perlin");
-            TrailDrawer.DrawPrimitives(Projectile.oldPos.ToList(), Projectile.Size * 0.5f - Main.screenPosition, 85);
-            Main.spriteBatch.ExitShaderRegion();
-        }
-
         public override bool PreDraw(ref Color lightColor)
         {
             Texture2D texture = TextureAssets.Projectile[Type].Value;
@@ -271,12 +247,26 @@ namespace Cascade.Content.Items.Dedicated.Marv
                 Main.spriteBatch.ResetToDefault();
             }
 
-            // Draw the prim trail.
-            DrawPrims();
-
             // Draw the main sprite.
             Main.EntitySpriteDraw(texture, drawPosition, rec, Projectile.GetAlpha(color), rotation, rec.Size() / 2f, Projectile.scale, effects, 0);
             return false;
+        }
+
+        public float TrailWidthFunction(float trailLengthInterpolant) => 40f * Utils.GetLerpValue(0.75f, 0f, trailLengthInterpolant, true) * Projectile.scale * Projectile.Opacity;
+
+        public Color TrailColorFunction(float trailLengthInterpolant) => Color.Lerp(Color.Lerp(Color.Yellow, Color.Cyan, CascadeUtilities.SineEaseInOut(ColorTimer / 480)), Color.White, 0.45f) * Projectile.Opacity;
+
+        public void RenderPixelatedPrimitives(SpriteBatch spriteBatch)
+        {
+            if (AIPhase != 1)
+                return;
+
+            ShaderManager.TryGetShader("Cascade.SmoothTextureMapTrail", out ManagedShader smoothTrail);
+            smoothTrail.SetTexture(CascadeTextureRegistry.FadedStreak, 1, SamplerState.LinearWrap);
+            smoothTrail.TrySetParameter("time", Main.GlobalTimeWrappedHourly * 2.5f);
+
+            PrimitiveSettings settings = new(TrailWidthFunction, TrailColorFunction, _ => Projectile.Size * 0.5f, true, true, smoothTrail);
+            PrimitiveRenderer.RenderTrail(Projectile.oldPos, settings, 100);
         }
     }
 }

@@ -23,6 +23,8 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float2 pixelSize = 1.1 / textureSize;
     coords = round(coords / pixelSize) * pixelSize;
     
+    coords *= 1.25;
+    
     // Calculate distortion for the main noise texture.
     float2 distortionCoords = float2(coords.x + globalTime * 0.007, coords.y + globalTime * -0.002);
     distortionCoords *= 0.25;
@@ -38,12 +40,14 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     layerTwoCoords += float2(globalTime * -0.03, globalTime * -0.007);
     float4 layerTwoNoise = tex2D(cloudLayerTwoTexture, layerTwoCoords);
     
-    float2 maskCoords = float2(coords.x - globalTime * 0.04, coords.y + globalTime * 0.06);
-    maskCoords *= 1.5;
+    float2 maskCoords = float2(coords.x - cos(globalTime * 0.04), coords.y + sin(globalTime * 0.06));
+    maskCoords *= 0.75;
     float4 mask = tex2D(maskTexture, maskCoords);
     
-    float fadeOutRegion = 1 - (coords.y - fadeOutMargin) / (1 - fadeOutMargin);
-    return mask * 4 * (layerOneNoise * (layerTwoNoise * 0.5)) * pow(fadeOutRegion, 2) * galaxyOpacity;
+    // Make everything fade out at a certain margin.
+    float4 finalColor = mask * 2.65 * (layerOneNoise * (layerTwoNoise * 0.5)) * galaxyOpacity;
+    finalColor.rgba = finalColor.rgba * (1 - (coords.y * 2 - fadeOutMargin));
+    return finalColor;
 }
 
 technique Technique1

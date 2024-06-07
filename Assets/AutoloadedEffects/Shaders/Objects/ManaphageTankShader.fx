@@ -5,11 +5,13 @@ sampler distortionTexture : register(s2);
 float time;
 float manaCapacity;
 float3 manaColor;
-float pixelationFactor;
+float2 textureSize;
+float pixelSizeMultiplier;
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0) : COLOR0
 {
-    coords = round(coords * pixelationFactor) / pixelationFactor;
+    float2 pixelSize = (1.1 * pixelSizeMultiplier) / textureSize;
+    coords = round(coords / pixelSize) * pixelSize;
     
     // Distort the noise map using another noise texture.
     float2 distortionUV = float2(coords.x + time * 0.34, coords.y - time * 0.21);

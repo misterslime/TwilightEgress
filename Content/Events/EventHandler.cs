@@ -131,6 +131,20 @@ namespace Cascade.Content.Events
         public virtual void EditEventSpawnRate(Player player, ref int spawnRate, ref int maxSpawns) { }
 
         /// <summary>
+        /// Allows you to midfy the overall brightness of lights during this event, allowing to make effects similar to what
+        /// the Night Vision Buff or Darkness Debuff do to you. Values too high or low may result in glitches so beware.
+        /// </summary>
+        /// <param name="scale">The current brightness scale.</param>
+        public virtual void ModifyLightingBrightness(ref float scale) { }
+
+        /// <summary>
+        /// Allows you to modify what color the sun gives off.
+        /// </summary>
+        /// <param name="tileColor">The color of tiles.</param>
+        /// <param name="backgroundColor">The color of the background.</param>
+        public virtual void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor) { }
+
+        /// <summary>
         /// Override to place any code related to your custom event that should be reset upon loading and unloading a world. 
         /// </summary>
         public virtual void ResetEventStuff() { }

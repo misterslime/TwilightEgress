@@ -75,14 +75,26 @@ namespace Cascade.Content.Events
             }
         }
 
-        public void ResetAllEventStuff()
+        public override void ModifyLightingBrightness(ref float scale)
         {
             if (Events is not null)
             {
                 foreach (EventHandler eventHandler in Events.Values)
                 {
                     if (eventHandler.EventIsActive)
-                        eventHandler.ResetEventStuff();
+                        eventHandler.ModifyLightingBrightness(ref scale);
+                }
+            }
+        }
+
+        public override void ModifySunLightColor(ref Color tileColor, ref Color backgroundColor)
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.ModifySunLightColor(ref tileColor, ref backgroundColor);
                 }
             }
         }
@@ -110,6 +122,18 @@ namespace Cascade.Content.Events
         {
             if (Events?.TryGetValue(typeof(T), out EventHandler worldEvent) == true)
                 worldEvent.StopEvent();
+        }
+
+        private static void ResetAllEventStuff()
+        {
+            if (Events is not null)
+            {
+                foreach (EventHandler eventHandler in Events.Values)
+                {
+                    if (eventHandler.EventIsActive)
+                        eventHandler.ResetEventStuff();
+                }
+            }
         }
     }
 }
