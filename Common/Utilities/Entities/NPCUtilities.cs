@@ -162,5 +162,28 @@ namespace Cascade
                 searcher.targetRect = results.NearestTargetHitbox;
             }
         }
+
+        public static NPC FindClosestNPC(this NPC npc, out float distanceToNPC, params int[] typesToSearchFor)
+        {
+            NPC closestMatch = null;
+            distanceToNPC = 9999999f;
+
+            if (npc is null || !npc.active) 
+                return null;
+
+            foreach (NPC activeNPC in Main.ActiveNPCs)
+            {
+                bool canHit = Collision.CanHit(npc.Center, 1, 1, activeNPC.Center, 1, 1);
+                if (Vector2.DistanceSquared(npc.Center, activeNPC.Center) < distanceToNPC && canHit)
+                {
+                    distanceToNPC = Vector2.DistanceSquared(npc.Center, activeNPC.Center);
+                    closestMatch = activeNPC;
+                }
+            }
+
+            // Square root the distance to the closest NPC.
+            distanceToNPC = Sqrt(distanceToNPC);
+            return closestMatch;
+        }
     }
 }
