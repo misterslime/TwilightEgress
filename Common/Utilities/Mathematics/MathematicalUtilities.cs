@@ -62,5 +62,28 @@
 
             return results;
         }
+
+        /// <summary>
+        /// Creates an arc around an entity from its center which checks if they should turn around due to either approaching tiles or if they are
+        /// about to leave the bounds of space.
+        /// </summary>
+        /// <param name="minRadians">The minimum angle of the arc in radians.</param>
+        /// <param name="maxRadians">The maximum angle of the arc in radians</param>
+        /// <param name="radiansIncrement">By how many radians should the loop increment by when looping between the two angles.</param>
+        /// <param name="shouldTurnAround">Whether or not the entity should turn around or not.</param>
+        /// <param name="checkRadius">The radius of the arc from the center of the entity</param>
+        public static void CheckForTurnAround(this Entity entity, float minRadians, float maxRadians, float radiansIncrement, out bool shouldTurnAround, float checkRadius = 60f)
+        {
+            shouldTurnAround = false;
+            for (float i = minRadians; i < maxRadians; i += radiansIncrement)
+            {
+                Vector2 arcFromVelocity = entity.velocity.SafeNormalize(Vector2.Zero).RotatedBy(i);
+                if (!Collision.CanHit(entity.Center, 1, 1, entity.Center + arcFromVelocity * 60f, 1, 1))
+                {
+                    shouldTurnAround = true;
+                    break;
+                }
+            }
+        }
     }
 }
