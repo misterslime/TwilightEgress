@@ -6,6 +6,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 {
     public class Miniphage : BasePhage
     {
+        public const int PropulsionSpeedIndex = 14;
+
         public override float MaximumManaCapacity => 50f;
 
         public override void SetPhageDefaults()
@@ -73,7 +75,10 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
             ref float maxPropulsions = ref NPC.Cascade().ExtraAI[MaxPropulsionsIndex];
             ref float frameSpeed = ref NPC.Cascade().ExtraAI[FrameSpeedIndex];
 
-            float propulsionSpeed = Main.rand.NextFloat(5f, 7f);
+            bool applyBoidRules = Main.npc.Any(npc => npc.type == NPC.type && npc.Center.Distance(NPC.Center) < 200f);
+            Vector2 boidsVelocity = applyBoidRules ? BoidsRules(NPC) : Vector2.Zero;
+
+            float propulsionSpeed = Main.rand.NextFloat(2f, 5f);
             CheckForTurnAround(out bool turnAround);
 
             if (LocalAIState == 0f)
@@ -103,7 +108,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                     {
                         // Set a random movement angle initially.
                         if (Timer == 1 && !turnAround)
-                            jellyfishMovementAngle = Main.rand.NextFloat(Tau);
+                            jellyfishMovementAngle = applyBoidRules ? boidsVelocity.ToRotation() : jellyfishMovementAngle + Main.rand.NextFloat(-PiOver4, PiOver4);
 
                         // Stop searching for valid rotation angles once the Manaphage no longer needs to turn around.
                         if (!turnAround)
@@ -121,8 +126,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 // Move forward every few seconds.
                 if (Timer == jellyfishMovementInterval)
                 {
-                    Vector2 velocity = Vector2.One.RotatedBy(jellyfishMovementAngle) * propulsionSpeed;
-                    NPC.velocity = velocity;
+                    NPC.velocity = Vector2.One.RotatedBy(jellyfishMovementAngle) * propulsionSpeed;
 
                     UpdateAnimationFrames(default, 0f, 2);
 
@@ -163,6 +167,43 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
 
             SwitchBehavior_Latching(target);
             SwitchBehavior_Fleeing(target);
+        }
+
+        public Vector2 BoidsRules(NPC npc)
+        {
+            float distance = 30f;
+            Vector2 matchedVelocity = Vector2.Zero;
+            Vector2 centerOfMass = Vector2.Zero;
+            Vector2 avoidVelocity = Vector2.Zero;
+            NPC[] miniphages = Main.npc.Where(n => n.type == Type && n.Center.Distance(npc.Center) < 200f).ToArray();
+
+            for (int i = 0; i < miniphages.Length - 1; i++)
+            {
+                if (npc.whoAmI != miniphages[i].whoAmI)
+                {
+                    centerOfMass += miniphages[i].Center;
+
+                    matchedVelocity += miniphages[i].velocity;
+
+                    if (miniphages[i].WithinRange(npc.Center, distance))
+                        avoidVelocity -= (miniphages[i].Center - npc.position);
+                }
+            }
+
+            centerOfMass /= miniphages.Length - 1;
+            centerOfMass -= npc.Center;
+            centerOfMass.Normalize();
+
+            matchedVelocity /= miniphages.Length - 1;
+            matchedVelocity -= NPC.velocity;
+            matchedVelocity.Normalize();
+
+            avoidVelocity.Normalize();
+
+            Vector2 finalVelocity = centerOfMass + avoidVelocity + matchedVelocity;
+            finalVelocity.Normalize();
+
+            return finalVelocity;
         }
 
         public void DoBehavior_LazeAroundIdle(NPCAimedTarget target)
@@ -238,6 +279,9 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 return;
             }
 
+            bool applyBoidRules = Main.npc.Any(npc => npc.type == NPC.type && npc.Center.Distance(NPC.Center) < 200f);
+            Vector2 boidsVelocity = applyBoidRules ? BoidsRules(NPC) : Vector2.Zero;
+
             CheckForTurnAround(out bool turnAround);
 
             // Same code found in the DoBehavior_JellyfishPropulsion method above.
@@ -251,7 +295,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                 {
                     Vector2 vectorToPlayer = NPC.SafeDirectionTo(target.Center);
                     if (Timer == 1 && !turnAround)
-                        jellyfishMovementAngle = -vectorToPlayer.ToRotation();
+                        jellyfishMovementAngle = applyBoidRules ? boidsVelocity.ToRotation() : -vectorToPlayer.ToRotation() + Main.rand.NextFloat(-PiOver4, PiOver4) * 0.5f;
 
                     int frameY = (int)Floor(Lerp(0f, 1f, stretchInterpolant));
                     UpdateAnimationFrames(default, 0f, frameY);
@@ -261,6 +305,8 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Manaphages
                         FoundValidRotationAngle = true;
                         NPC.netUpdate = true;
                     }
+
+                    jellyfishMovementAngle = applyBoidRules ? boidsVelocity.ToRotation() : -vectorToPlayer.ToRotation() + Main.rand.NextFloat(-PiOver4, PiOver4) * 0.5f;
 
                     Vector2 centerAhead = NPC.Center - Vector2.UnitY.RotatedBy(NPC.rotation) * 128f;
                     jellyfishMovementAngle += -centerAhead.ToRotation() * 12f;

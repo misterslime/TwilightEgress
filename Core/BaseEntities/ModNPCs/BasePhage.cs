@@ -125,12 +125,14 @@ namespace Cascade.Core.BaseEntities.ModNPCs
             ref float spriteStretchX = ref NPC.Cascade().ExtraAI[SpriteStretchXIndex];
             ref float spriteStretchY = ref NPC.Cascade().ExtraAI[SpriteStretchYIndex];
             ref float manaTankShaderTime = ref NPC.Cascade().ExtraAI[ManaTankShaderTimeIndex];
+            ref float jellyfishMovementAngle = ref NPC.Cascade().ExtraAI[JellyfishMovementAngleIndex];
 
             AIState = (float)Utils.SelectRandom(Main.rand, ManaphageBehavior.Idle_JellyfishPropulsion, ManaphageBehavior.Idle_LazeAround);
             CurrentManaCapacity = Main.rand.NextBool(25) ? Main.rand.NextFloat(75f, 100f) : Main.rand.NextFloat(60f, 15f);
             spriteStretchX = 1f;
             spriteStretchY = 1f;
             manaTankShaderTime = Main.rand.NextFloat(0.25f, 0.75f) * Main.rand.NextBool().ToDirectionInt();
+            jellyfishMovementAngle = Main.rand.NextFloat(TwoPi);
             NPC.netUpdate = true;
         }
 
