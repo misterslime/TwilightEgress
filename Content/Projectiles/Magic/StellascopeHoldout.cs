@@ -33,7 +33,7 @@
                 Timer = 0;
             }
 
-            if (CalamityUtils.CantUseHoldout(Owner))
+            if (Owner.CantUseHoldout())
                 Projectile.Kill();
         }
 
