@@ -10,3 +10,8 @@ CosmostoneShowersDebugItem: {
 		This item will give you warnings if you fail to meet the above requirements.
 		'''
 }
+
+UIDebugItem: {
+	DisplayName: U I Debug Item
+	Tooltip: ""
+}
