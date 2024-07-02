@@ -12,6 +12,6 @@ CosmostoneShowersDebugItem: {
 }
 
 UIDebugItem: {
-	DisplayName: U I Debug Item
+	DisplayName: UI Debug Item
 	Tooltip: ""
 }
