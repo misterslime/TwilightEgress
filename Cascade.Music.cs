@@ -26,6 +26,7 @@ namespace Cascade
                 AddMusic("Assets/Sounds/Music/SecondLaw", "Second Law", "Sidetracked");
                 AddMusic("Assets/Sounds/Music/SupercellRogue", "Supercell Rogue", "Sidetracked");
                 AddMusic("Assets/Sounds/Music/YourSilhouette", "Your Silhouette", "Sidetracked");
+                AddMusic("Assets/Sounds/Music/ArdienaTheme", "You Left Your Canvas a Mile Back", "Sidetracked");
             }
         }
     }
