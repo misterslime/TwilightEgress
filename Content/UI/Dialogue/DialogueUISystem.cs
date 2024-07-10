@@ -174,9 +174,7 @@ namespace Cascade.Content.UI.Dialogue
         internal DialogueUIState DialogueUIState;
         
         public UserInterface DialogueUI;
-        
-        public static readonly SoundStyle UseSound = new("Windfall/Assets/Sounds/Items/JournalPageTurn");
-        
+                
         public Character CurrentSpeaker = new Character("None", new string[] { "None" });
         
         public Character SubSpeaker = new Character("None", new string[] { "None" });
@@ -237,13 +235,6 @@ namespace Cascade.Content.UI.Dialogue
         
         public void DisplayDialogueTree(int TreeIndex, int DialogueIndex = 0)
         {
-            /*SoundEngine.PlaySound(UseSound with
-            {
-                Pitch = -0.25f,
-                PitchVariance = 0.5f,
-                MaxInstances = 5,
-                SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
-            });*/
             isDialogueOpen = true;
             justOpened = true;
             speakerRight = true;
@@ -320,13 +311,6 @@ namespace Cascade.Content.UI.Dialogue
         
         public void HideDialogueUI()
         {
-            /*SoundEngine.PlaySound(UseSound with
-            {
-                Pitch = -0.25f,
-                PitchVariance = 0.5f,
-                MaxInstances = 5,
-                SoundLimitBehavior = SoundLimitBehavior.ReplaceOldest
-            });*/
             isDialogueOpen = false;
             DialogueUI?.SetState(null);           
         }
