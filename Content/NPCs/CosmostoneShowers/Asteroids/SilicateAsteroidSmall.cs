@@ -13,7 +13,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 8;
+            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.CannotDropSouls[Type] = true;
         }
@@ -45,7 +45,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(0.75f, 1.25f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.frame.Y = Main.rand.Next(0, 8) * 54;
+            NPC.frame.Y = Main.rand.Next(0, 6) * 42;
             NPC.netUpdate = true;
         }
 

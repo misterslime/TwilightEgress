@@ -14,13 +14,13 @@ namespace Cascade.Content.Skies.SkyEntities.TravellingAsteroid
             Lifetime = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.NextFloat() < 0.03f ? 1 : 0;
+            Frame = Main.rand.NextFloat() < 0.03f ? Main.rand.NextBool().ToInt() + 1 : 0;
             Rotation = Main.rand.NextFloat(Tau);
         }
 
         public override string AtlasTextureName => "Cascade.EmptyPixel.png";
 
-        public override int MaxVerticalFrames => 2;
+        public override int MaxVerticalFrames => 3;
 
         public override void Update()
         {
