@@ -190,8 +190,11 @@ namespace Cascade.Content.Events.CosmostoneShowers
                     { ModContent.NPCType<CosmostoneGeode>(), cosmostoneChance * smallAsteroidChance * 0.5f },
                     { ModContent.NPCType<SilicateAsteroidSmall>(), cometstoneChance * smallAsteroidChance },
                     { ModContent.NPCType<SilicateAsteroidMedium>(), cometstoneChance * mediumAsteroidChance },
-                    { ModContent.NPCType<SilicateAsteroidLarge>(), cometstoneChance * largeAsteroidChance }
+                    { ModContent.NPCType<SilicateAsteroidLarge>(), cometstoneChance * largeAsteroidChance },
                 };
+
+                if (NPC.downedBoss2)
+                    asteroids.Add(ModContent.NPCType<MeteoriteAsteroid>(), cosmostoneChance * largeAsteroidChance * 0.5f);
 
                 // Search for any active Planetoids currently viewable on-screen.
                 // Change the spawn position of asteroids to a radius around the center of these Planetoids if there are any active at the time.
@@ -352,6 +355,9 @@ namespace Cascade.Content.Events.CosmostoneShowers
                 { 6, cometstoneChance * largeAsteroidChance }
             };
 
+            if (NPC.downedBoss2)
+                asteroids.Add(7, cosmostoneChance * largeAsteroidChance * 0.5f);
+
             // Horizontally-travelling Asteroids.
             int travellingAsteroids = 0;
 
@@ -362,6 +368,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<TravellingSilicateAsteroidSmall>();
             travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<TravellingSilicateAsteroidMedium>();
             travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<TravellingSilicateAsteroidLarge>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<TravellingMeteoriteAsteroid>();
 
             if (travellingAsteroids < MaxTravellingAsteroids && Main.rand.NextBool(TravellingAsteroidSpawnChance))
             {
@@ -403,6 +410,9 @@ namespace Cascade.Content.Events.CosmostoneShowers
                         case 6:
                             new TravellingSilicateAsteroidLarge(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
                             break;
+                        case 7:
+                            new TravellingMeteoriteAsteroid(position, velocity, maxScale, depth, speed * Main.rand.NextFloat(0.01f, 0.02f), lifespan).Spawn();
+                            break;
                     }
                 }
             }
@@ -417,6 +427,7 @@ namespace Cascade.Content.Events.CosmostoneShowers
             stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationarySilicateAsteroidSmall>();
             stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationarySilicateAsteroidMedium>();
             stationaryAsteroids += SkyEntityManager.CountActiveSkyEntities<StationarySilicateAsteroidLarge>();
+            travellingAsteroids += SkyEntityManager.CountActiveSkyEntities<StationaryMeteoriteAsteroid>();
 
             if (stationaryAsteroids < MaxStationaryAsteroids && Main.rand.NextBool(StationaryAsteroidSpawnChance))
             {
@@ -454,6 +465,9 @@ namespace Cascade.Content.Events.CosmostoneShowers
                             break;
                         case 6:
                             new StationarySilicateAsteroidLarge(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
+                            break;
+                        case 7:
+                            new StationaryMeteoriteAsteroid(position, maxScale, depth, Main.rand.NextFloat(0.01f, 0.03f), lifespan).Spawn();
                             break;
                     }
                 }
