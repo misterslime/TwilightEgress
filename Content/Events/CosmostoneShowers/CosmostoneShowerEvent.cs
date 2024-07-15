@@ -232,7 +232,15 @@ namespace Cascade.Content.Events.CosmostoneShowers
 
                 if (CascadeUtilities.ObligatoryNetmodeCheckForSpawningEntities() && !Collision.SolidCollision(planetoidSpawnPosition, 1600, 1600) && activePlanetoids.Count < 10)
                 {
-                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, ModContent.NPCType<GalileoPlanetoid>());
+                    int[] planetoidTypes =
+                    {
+                        ModContent.NPCType<GalileoPlanetoid>(),
+                        ModContent.NPCType<ShatteredPlanetoid>()
+                    };
+
+                    int planetoid = planetoidTypes[Main.rand.Next(0, planetoidTypes.Length)];
+
+                    int p = Projectile.NewProjectile(new EntitySource_WorldEvent(), planetoidSpawnPosition, Vector2.Zero, ModContent.ProjectileType<NPCSpawner>(), 0, 0f, Main.myPlayer, planetoid);
                     if (Main.projectile.IndexInRange(p))
                         NetMessage.SendData(MessageID.SyncProjectile, -1, -1, null, p);
                 }
