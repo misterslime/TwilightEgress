@@ -101,7 +101,7 @@
 
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer);
-            
+
             foreach (SmartRenderer renderer in smartRenderers_DrawAfterNPCs)
                 renderer.DrawTarget(Main.spriteBatch);
 
@@ -160,7 +160,7 @@
             List<SmartRenderer> smartRenderers_DrawBeforeFilters = SmartRenderers.Where(x => x.ShouldDrawRenderer && x.DrawLayer == SmartRendererDrawLayer.BeforeFilters && !Main.gameMenu).ToList();
 
             foreach (SmartRenderer renderer in smartRenderers_DrawBeforeFilters)
-            {                    
+            {
                 // Draw the contents of the screen onto our target, then swap back to the screen target,
                 // where our target is then drawn with the screen's contents.
                 renderer.MainTarget.SwapToRenderTarget();

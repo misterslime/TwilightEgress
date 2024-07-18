@@ -37,6 +37,11 @@ Mods: {
 				DisplayName: Stellascope
 				Tooltip: ""
 			}
+
+			TimelessCascade: {
+				DisplayName: Timeless Cascade
+				Tooltip: ""
+			}
 		}
 
 		NPCs: {
@@ -51,6 +56,9 @@ Mods: {
 			SailorBlast.DisplayName: Sailor Blast
 			StellascopeStar.DisplayName: Stellascope Star
 			StellascopeHoldout.DisplayName: Stellascope Holdout
+			TimelessCascadeProj.DisplayName: Timeless Cascade Proj
+			TimelessCascadeExplode.DisplayName: Timeless Cascade Explode
+			TimelessCascadeShards.DisplayName: Timeless Cascade Shards
 		}
 	}
 }

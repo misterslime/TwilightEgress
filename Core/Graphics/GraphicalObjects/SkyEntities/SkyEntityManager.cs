@@ -34,7 +34,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntities
         #region Updating
         public override void PostUpdateEverything()
         {
-            FastParallel.For(0, ActiveSkyEntities.Count, (int x, int y, object context) =>
+            FastParallel.For(0, ActiveSkyEntities.Count, (x, y, context) =>
             {
                 for (int i = x; i < y; i++)
                 {

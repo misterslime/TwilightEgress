@@ -9,7 +9,7 @@
 
         public override sealed bool InstancePerEntity => true;
 
-        public override sealed bool AppliesToEntity(Item entity, bool lateInstantiation) 
+        public override sealed bool AppliesToEntity(Item entity, bool lateInstantiation)
             => lateInstantiation && (entity.type == TypeToOverride || AdditionalOverrideTypes.Contains(entity.type));
     }
 }

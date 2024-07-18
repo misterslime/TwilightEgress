@@ -1,4 +1,6 @@
-﻿namespace Cascade.Core.Graphics.Renderers.ScreenRenderers
+﻿using Cascade.Core.Graphics.Renderers;
+
+namespace Cascade.Core.Graphics.Renderers.ScreenRenderers
 {
     public class DarkVignetteRenderer : SmartRenderer
     {

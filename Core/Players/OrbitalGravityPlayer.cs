@@ -44,7 +44,7 @@ namespace Cascade.Core.Players
 
                 // Adjust the player's angle by the player's velocity, ensuring the player is constantly moving around the
                 // Planetoid at the correct speed.
-                PlayerAngle += (Planetoid.NPC.rotation / (Planetoid.NPC.rotation * 95f)) + Player.velocity.X / Planetoid.WalkableRadius;
+                PlayerAngle += Planetoid.NPC.rotation / (Planetoid.NPC.rotation * 95f) + Player.velocity.X / Planetoid.WalkableRadius;
                 PlayerAngle %= Tau;
 
                 // Eject the player from the Planetoid either once they jump or manage to leave a planetoid's attraction radius.
@@ -59,7 +59,7 @@ namespace Cascade.Core.Players
                 }
 
                 AngleSwitchTimer = Clamp(AngleSwitchTimer + 4f, 0f, MaxAngleSwitchTimer);
-            }  
+            }
             else
             {
                 AngleSwitchTimer = Clamp(AngleSwitchTimer - 4f, 0f, MaxAngleSwitchTimer);
@@ -76,8 +76,8 @@ namespace Cascade.Core.Players
                 // Ensure the player rotates towards the Planetoid properly.
                 drawInfo.drawPlayer.fullRotationOrigin = drawInfo.drawPlayer.Size / 2f;
                 drawInfo.drawPlayer.fullRotation = (PlayerAngle + PiOver2) * (AngleSwitchTimer / 59f);
-            }            
-            
+            }
+
         }
     }
 }

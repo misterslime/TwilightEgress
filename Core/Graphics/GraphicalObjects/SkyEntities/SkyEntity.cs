@@ -80,7 +80,7 @@ namespace Cascade.Core.Graphics.GraphicalObjects.SkyEntities
         /// <summary>
         /// The texture name of this sky entity on the sky entity atlas. Should be prefixed with "Cascade."
         /// </summary>
-        public abstract string AtlasTextureName { get; } 
+        public abstract string AtlasTextureName { get; }
 
         /// <summary>
         /// The amount of vertical frames this sky entity has in its spritesheet.

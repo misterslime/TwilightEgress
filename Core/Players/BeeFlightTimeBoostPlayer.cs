@@ -5,7 +5,7 @@ namespace Cascade.Core.Players
         public int BeeFlightBoost { get; set; }
 
         public override void UpdateEquips()
-        {            
+        {
             switch (BeeFlightBoost)
             {
                 case 1:

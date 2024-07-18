@@ -16,6 +16,6 @@ namespace Cascade.Core.Systems
                         recipe.DisableRecipe();
                 }
             }*/
-        } 
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Cascade.Core.Graphics.Renderers.ScreenRenderers
+﻿using Cascade.Core.Graphics.Renderers;
+
+namespace Cascade.Core.Graphics.Renderers.ScreenRenderers
 {
     public class ChromaticAbberationRenderer : SmartRenderer
     {
@@ -44,7 +46,7 @@
         }
 
         public override void DrawTarget(SpriteBatch spriteBatch)
-        {           
+        {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             ManagedScreenFilter shader = ShaderManager.GetFilter("Cascade.ChromaticAbberation");
