@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Download & Install tModLoader
         run: |
-          curl -s -L https://github.com/tModLoader/tModLoader/releases/latest/download/tModLoader.zip -o tModLoader.zip
+          curl -sL https://github.com/tModLoader/tModLoader/releases/latest/download/tModLoader.zip -o tModLoader.zip
           unzip -q -o tModLoader.zip -d ../tModLoader
           rm tModLoader.zip
 
@@ -37,8 +37,11 @@ jobs:
             <Import Project="tModLoader\tMLMod.targets" />
           </Project>
           EOF
-         
-      - name: Get Calamity and Luminance binaries
+
+      - name: Get Luminance binaries
+        run: curl --create-dirs -O --output-dir "${{ env.MODREADER_DIR }}/Luminance/" -sL "https://github.com/DominicKarma/Luminance/releases/latest/download/Luminance.dll" -o Luminance.dll
+
+      - name: Get Calamity binaries
         run: |
           cd ..
           mkdir ./Steam
@@ -48,11 +51,9 @@ jobs:
           rm steamcmd.zip
           
           .\steamcmd +force_install_dir . +login anonymous +workshop_download_item 1281930 2824688072 +quit
-          .\steamcmd +force_install_dir . +login anonymous +workshop_download_item 1281930 3222493606 +quit
           
           dotnet tool install -g Tomat.TML.Patcher
           tmlpatcher extract "${{ env.STEAM_INSTALL_DIR }}/2824688072/2024.4/CalamityMod.tmod" -o "${{ env.MODREADER_DIR }}/CalamityMod"
-          tmlpatcher extract "${{ env.STEAM_INSTALL_DIR }}/3222493606/2024.5/Luminance.tmod" -o "${{ env.MODREADER_DIR }}/Luminance"
           
           cd ..
           cd ./Cascade
