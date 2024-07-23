@@ -1,0 +1,70 @@
+﻿name: Test Builds
+
+on:
+  pull_request:
+    branches:
+      - 'development'
+      - 'public-release'
+      - 'main'
+  push:
+    branches:
+      - 'development'
+      - 'public-release'
+      - 'main'
+  
+env:
+  TML_SAVE_DIR: ./bin/Saves
+  STEAM_INSTALL_DIR: ./steamapps/workshop/content/1281930
+  MODREADER_DIR: ../../ModReader
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download & Install tModLoader
+        run: |
+          curl -s -L https://github.com/tModLoader/tModLoader/releases/latest/download/tModLoader.zip -o tModLoader.zip
+          unzip -q -o tModLoader.zip -d ../tModLoader
+          rm tModLoader.zip
+
+      - name: Create tModLoader.targets file
+        shell: bash
+        run: |
+          cat >> ../tModLoader.targets << EOF
+          <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+            <Import Project="tModLoader\tMLMod.targets" />
+          </Project>
+          EOF
+         
+      - name: Get Calamity and Luminance binaries
+        run: |
+          cd ..
+          mkdir ./Steam
+          cd ./Steam
+          curl -sL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip" -o steamcmd.zip
+          unzip steamcmd.zip
+          rm steamcmd.zip
+          
+          .\steamcmd +force_install_dir . +login anonymous +workshop_download_item 1281930 2824688072 +quit
+          .\steamcmd +force_install_dir . +login anonymous +workshop_download_item 1281930 3222493606 +quit
+          
+          dotnet tool install -g Tomat.TML.Patcher
+          tmlpatcher extract "${{ env.STEAM_INSTALL_DIR }}/2824688072/2024.4/CalamityMod.tmod" -o "${{ env.MODREADER_DIR }}/CalamityMod"
+          tmlpatcher extract "${{ env.STEAM_INSTALL_DIR }}/3222493606/2024.5/Luminance.tmod" -o "${{ env.MODREADER_DIR }}/Luminance"
+          
+          cd ..
+          cd ./Cascade
+
+      - name: Display file tree
+        run: tree /f /a ../../../
+
+      - name: Build mod solution
+        run: dotnet build Cascade.csproj --configuration Release
+
+      - name: Archive .tmod artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Cascade.tmod
+          path: ./bin/Saves/tModLoader/Mods/Cascade.tmod
