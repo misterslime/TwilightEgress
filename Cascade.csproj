@@ -12,6 +12,9 @@
 	<PropertyGroup>
 		<AssemblyName>Cascade</AssemblyName>
 		<LangVersion>latest</LangVersion>
+		
+		<!-- for github workflows -->
+		<ExtraBuildModFlags Condition="'$(TML_SAVE_DIR)' != ''">$(ExtraBuildModFlags)-savedirectory &quot;$([System.IO.Path]::GetFullPath('.'))/$(TML_SAVE_DIR)&quot; </ExtraBuildModFlags>
 	</PropertyGroup>
 
 	<!-- References -->
