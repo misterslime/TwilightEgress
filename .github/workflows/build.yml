@@ -76,6 +76,6 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_DEPLOY }}
           content: |
-            "Hey <@&1152482043532423179>!! New test build just dropped!
+            "Hey testers!! New test build just dropped!
             
-            Download it [here](https://github.com/TeamCascade/Cascade/actions/runs/${{ github.run_id }})"
+            Download it [here](https://github.com/TeamCascade/Cascade/actions/runs/${{ github.run_id }})."
