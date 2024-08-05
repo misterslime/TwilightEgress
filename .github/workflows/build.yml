@@ -1,11 +1,6 @@
 ﻿name: Test Builds
 
 on:
-  pull_request:
-    branches:
-      - 'development'
-      - 'public-release'
-      - 'main'
   push:
     branches:
       - 'development'
