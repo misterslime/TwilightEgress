@@ -42,6 +42,7 @@ Mods: {
 		NPCs: {
 			Manaphage.DisplayName: Manaphage
 			Miniphage.DisplayName: Miniphage
+			ArdienaNPC.DisplayName: Ardiena N P C
 		}
 
 		Projectiles: {
