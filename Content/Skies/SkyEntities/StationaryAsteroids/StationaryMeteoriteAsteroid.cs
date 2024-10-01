@@ -2,9 +2,9 @@
 
 namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 {
-    public class StationarySilicateAsteroidLarge : SkyEntity
+    public class StationaryMeteoriteAsteroid : SkyEntity
     {
-        public StationarySilicateAsteroidLarge(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
+        public StationaryMeteoriteAsteroid(Vector2 position, float scale, float depth, float rotationSpeed, int lifespan)
         {
             Position = position;
             Scale = new(scale);
@@ -13,14 +13,11 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
             Lifetime = lifespan;
 
             Opacity = 0f;
-            Frame = Main.rand.NextFloat() < 0.03f ? Main.rand.NextBool().ToInt() + 1 : 0;
             Rotation = Main.rand.NextFloat(Tau);
             RotationDirection = Main.rand.NextBool().ToDirectionInt();
         }
 
         public override string AtlasTextureName => "Cascade.EmptyPixel.png";
-
-        public override int MaxVerticalFrames => 3;
 
         public override void Update()
         {
@@ -37,13 +34,12 @@ namespace Cascade.Content.Skies.SkyEntities.StationaryAsteroids
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            Texture2D asteroid = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/SilicateAsteroidLarge").Value;
+            Texture2D asteroid = ModContent.Request<Texture2D>("Cascade/Content/NPCs/CosmostoneShowers/Asteroids/MeteoriteAsteroid").Value;
 
-            Rectangle frameRectangle = asteroid.Frame(1, MaxVerticalFrames, 0, Frame % MaxVerticalFrames);
-            Vector2 mainOrigin = frameRectangle.Size() / 2f;
+            Vector2 mainOrigin = asteroid.Size() / 2f;
             Color color = Color.Lerp(Color.White, Color.Black, 0.15f + Depth / 10f) * Opacity;
 
-            spriteBatch.Draw(asteroid, GetDrawPositionBasedOnDepth(), frameRectangle, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
+            spriteBatch.Draw(asteroid, GetDrawPositionBasedOnDepth(), null, color, Rotation, mainOrigin, Scale / Depth, 0, 0f);
         }
     }
 }

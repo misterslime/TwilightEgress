@@ -2,18 +2,18 @@
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Planetoids
 {
-    public class GalileoPlanetoid : BasePlanetoid, ILocalizedModType
+    public class ShatteredPlanetoid : BasePlanetoid, ILocalizedModType
     {
         public new string LocalizationCategory => "NPCs.Misc";
 
-        public override float MaximumAttractionRadius => 184f;
+        public override float MaximumAttractionRadius => 176f;
 
-        public override float WalkableRadius => 128f;
+        public override float WalkableRadius => 120f;
 
         public override void SafeSetDefaults()
         {
-            NPC.width = 128;
-            NPC.height = 128;
+            NPC.width = 120;
+            NPC.height = 120;
             NPC.lifeMax = 2;
             NPC.damage = 0;
             NPC.defense = 0;

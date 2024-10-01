@@ -1,0 +1,98 @@
+﻿name: Test Builds
+
+on:
+  push:
+    branches:
+      - 'development'
+      - 'public-release'
+      - 'main'
+  
+env:
+  TML_SAVE_DIR: ./bin/Saves
+  STEAM_INSTALL_DIR: ./steamapps/workshop/content/1281930
+  MODREADER_DIR: ../../ModReader
+
+jobs:
+  build:
+    permissions: write-all
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download & Install tModLoader
+        run: |
+          curl -sL https://github.com/tModLoader/tModLoader/releases/latest/download/tModLoader.zip -o tModLoader.zip
+          unzip -q -o tModLoader.zip -d ../tModLoader
+          rm tModLoader.zip
+
+      - name: Create tModLoader.targets file
+        shell: bash
+        run: |
+          cat >> ../tModLoader.targets << EOF
+          <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+            <Import Project="tModLoader\tMLMod.targets" />
+          </Project>
+          EOF
+
+      - name: Get Luminance binaries
+        run: curl --create-dirs -O --output-dir "${{ env.MODREADER_DIR }}/Luminance/" -sL "https://github.com/DominicKarma/Luminance/releases/latest/download/Luminance.dll" -o Luminance.dll
+
+      - name: Get Calamity binaries
+        run: |
+          curl --create-dirs -O --output-dir "${{ env.MODREADER_DIR }}/CalamityMod/" -sL "https://github.com/SpencerDawg/CalamityModPublic/releases/download/testing/CalamityMod.dll" -o CalamityMod.dll
+          
+          cd ..
+          cd ./Cascade
+#          cd ..
+#          mkdir ./Steam
+#          cd ./Steam
+#          curl -sL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip" -o steamcmd.zip
+#          unzip steamcmd.zip
+#          rm steamcmd.zip
+#          
+#          .\steamcmd +force_install_dir . +login anonymous +workshop_download_item 1281930 2824688072 +quit
+          
+#          dotnet tool install -g Tomat.TML.Patcher
+#          tmlpatcher extract "${{ env.STEAM_INSTALL_DIR }}/2824688072/2024.4/CalamityMod.tmod" -o "${{ env.MODREADER_DIR }}/CalamityMod"
+
+      - name: Build mod solution
+        run: dotnet build Cascade.csproj --configuration Release
+
+      - name: Create github release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: true
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.run_number }}${{ github.ref }}
+          body_path: description.txt
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        id: upload_release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bin/Saves/tModLoader/Mods/Cascade.tmod
+          asset_name: Cascade.tmod
+          asset_content_type: application/octet-stream
+
+      - name: Archive .tmod artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Cascade.tmod
+          path: ./bin/Saves/tModLoader/Mods/Cascade.tmod
+
+      - name: Deploy action into Discord
+        uses: sarisia/actions-status-discord@v1  
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_DEPLOY }}
+          content: |
+            "Hey testers!! New test build just dropped!
+            
+            Download it [here](${{ steps.upload_release.outputs.browser_download_url }})"

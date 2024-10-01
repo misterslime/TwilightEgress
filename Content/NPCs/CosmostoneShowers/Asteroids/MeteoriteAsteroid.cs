@@ -1,32 +1,25 @@
-﻿using Cascade.Content.Items.Materials;
-using Cascade.Core.BaseEntities.ModNPCs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cascade.Core.BaseEntities.ModNPCs;
 using Terraria.GameContent.ItemDropRules;
 
 namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
 {
-    public class SilicateAsteroidSmall : BaseAsteroid, ILocalizedModType
+    public class MeteoriteAsteroid : BaseAsteroid, ILocalizedModType
     {
         public new string LocalizationCategory => "NPCs.CosmostoneShowers";
 
         public override void SetStaticDefaults()
         {
-            Main.npcFrameCount[Type] = 6;
             NPCID.Sets.CantTakeLunchMoney[Type] = true;
             NPCID.Sets.CannotDropSouls[Type] = true;
         }
 
         public override void SetDefaults()
         {
-            NPC.width = 40;
-            NPC.height = 40;
+            NPC.width = 78;
+            NPC.height = 78;
             NPC.damage = 0;
             NPC.defense = 20;
-            NPC.lifeMax = 500;
+            NPC.lifeMax = 100;
             NPC.aiStyle = -1;
             NPC.dontCountMe = true;
             NPC.lavaImmune = true;
@@ -47,7 +40,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             NPC.rotation = Main.rand.NextFloat(TwoPi);
             NPC.scale = Main.rand.NextFloat(0.75f, 1.25f);
             NPC.spriteDirection = Main.rand.NextBool().ToDirectionInt();
-            NPC.frame.Y = Main.rand.Next(0, 6) * 42;
+            //NPC.frame.Y = Main.rand.Next(0, 8) * 54;
             NPC.netUpdate = true;
         }
 
@@ -77,7 +70,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             int chance = (int)(12 * Lerp(1f, 0.3f, NPC.scale / 2f) * Lerp(1f, 0.2f, item.pick / 250f));
             if (Main.rand.NextBool(chance))
             {
-                int itemType = ModContent.ItemType<SilicateCluster>();
+                int itemType = ItemID.Meteorite;
                 int itemStack = (int)Round(1 * Lerp(1f, 3f, NPC.scale / 2f));
                 int i = Item.NewItem(NPC.GetSource_OnHurt(player), NPC.Center + Main.rand.NextVector2Circular(NPC.width, NPC.height), itemType, itemStack);
                 if (Main.item.IndexInRange(i))
@@ -104,7 +97,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
         {
             int minimumStack = (int)Round(3 * Lerp(1f, 3f, NPC.scale / 2f));
             int maximumStack = (int)Round(5 * Lerp(1f, 3f, NPC.scale / 2f));
-            npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<SilicateCluster>(), default, minimumStack, maximumStack));
+            npcLoot.Add(ItemDropRule.Common(ItemID.Meteorite, default, minimumStack, maximumStack));
         }
 
         public override void HitEffect(NPC.HitInfo hit)
@@ -116,14 +109,14 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
                     Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f);
 
                     Dust d2 = Dust.NewDustPerfect(NPC.Center, DustID.TintableDust, speed * 5f * hit.HitDirection);
-                    d2.color = Color.Lerp(Color.SlateGray, Color.DarkGray, Main.rand.NextFloat());
+                    d2.color = Color.Lerp(new Color(147, 104, 87), new Color(39, 15, 29), Main.rand.NextFloat());
                     d2.scale = Main.rand.NextFloat(1f, 2f);
                 }
 
                 for (int i = 0; i < 12; i++)
                 {
                     Vector2 velocity = Vector2.UnitX.RotatedByRandom(TwoPi) * Main.rand.NextFloat(3f, 7f) * hit.HitDirection;
-                    Color initialColor = Color.DarkGray;
+                    Color initialColor = Color.SandyBrown;
                     Color fadeColor = Color.SaddleBrown;
                     float scale = Main.rand.NextFloat(0.85f, 1.75f) * NPC.scale;
                     float opacity = Main.rand.NextFloat(0.6f, 1f);
@@ -138,7 +131,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
                     Vector2 speed = Utils.RandomVector2(Main.rand, -1f, 1f);
 
                     Dust d2 = Dust.NewDustPerfect(NPC.Center, DustID.TintableDust, speed * 5f * hit.HitDirection);
-                    d2.color = Color.Lerp(Color.SlateGray, Color.DarkGray, Main.rand.NextFloat());
+                    d2.color = Color.Lerp(Color.SaddleBrown, Color.DarkOrange, Main.rand.NextFloat());
                     d2.scale = Main.rand.NextFloat(1f, 2f);
                 }
             }
@@ -150,7 +143,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             Vector2 drawPosition = NPC.Center - Main.screenPosition;
             Vector2 origin = NPC.frame.Size() / 2f;
 
-            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, drawColor, NPC.rotation, origin, NPC.scale, SpriteEffects.None);
+            Main.EntitySpriteDraw(texture, drawPosition, NPC.frame, NPC.GetAlpha(Color.White), NPC.rotation, origin, NPC.scale, SpriteEffects.None);
             return false;
         }
     }

@@ -17,6 +17,7 @@ namespace Cascade.Content.NPCs.CosmostoneShowers.Asteroids
             ModContent.NPCType<SilicateAsteroidSmall>(),
             ModContent.NPCType<SilicateAsteroidMedium>(),
             ModContent.NPCType<SilicateAsteroidLarge>(),
+            ModContent.NPCType<MeteoriteAsteroid>()
         };
     }
 }
